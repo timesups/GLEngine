@@ -1,4 +1,4 @@
-# GLEngineNew
+# GLEngine
 
 基于 OpenGL 的学习用小型渲染引擎，采用 **Entity–Component** 组织场景，自定义 **包裹式 GLSL** 管线描述，支持着色器 **热重载**，并集成 **Dear ImGui（docking 分支）** 作为编辑器 UI。
 
@@ -200,7 +200,7 @@ JSON 格式，当前版本 **v1**。由 `SceneSerializer` 读写。
 ## 命令行
 
 ```text
-GLEngineNew.exe [选项] [Project路径]
+GLEngine.exe [选项] [Project路径]
 
   -p, --project <路径>  指定项目根目录（含 Content/Project）；默认使用引擎根目录
   -h, --help            显示帮助
@@ -211,12 +211,12 @@ GLEngineNew.exe [选项] [Project路径]
 ## 仓库结构（概要）
 
 ```text
-GLEngineNew/
+GLEngine/
 ├── Content/
 │   ├── Engine/               # 引擎内置：shaders/、scenes/、hdr/、model/、materials/…
 │   └── Project/              # 项目内容：按子项目组织（如 Endfield/Perlica/…）
 ├── build/                    # CMake/Ninja 构建目录（gitignore）
-│   └── Debug/                # GLEngineNew.exe、PDB、运行时 DLL
+│   └── Debug/                # GLEngine.exe、PDB、运行时 DLL
 ├── cmake/toolchain/
 │   └── clang-windows.cmake
 ├── config.json               # 引擎配置（见上文）
@@ -282,7 +282,7 @@ cmake -S . -B build -G Ninja `
 ### 编译
 
 ```powershell
-cd GLEngineNew
+cd GLEngine
 .\scripts\build.ps1              # Debug
 .\scripts\build.ps1 -Config Release
 .\scripts\build.ps1 -Clean
@@ -295,7 +295,7 @@ cmake --preset clang-ninja-debug
 cmake --build --preset debug
 ```
 
-输出：`build\Debug\GLEngineNew.exe`（Release 为 `build\Release\`）。构建后会将 Assimp 等必要 DLL 复制到 exe 同目录。
+输出：`build\Debug\GLEngine.exe`（Release 为 `build\Release\`）。构建后会将 Assimp 等必要 DLL 复制到 exe 同目录。
 
 ### 运行
 
@@ -304,7 +304,7 @@ cmake --build --preset debug
 ```powershell
 .\scripts\run.ps1
 # 或
-.\build\Debug\GLEngineNew.exe
+.\build\Debug\GLEngine.exe
 ```
 
 调试（F5）时 `.vscode/launch.json` 已将 `cwd` 设为项目根。
@@ -328,7 +328,7 @@ cmake --build --preset debug
 | **clangd** | 补全、跳转、格式化 |
 
 1. 首次打开后执行 `.\scripts\build.ps1`
-2. 选择 **Debug GLEngineNew**，按 **F5**
+2. 选择 **Debug GLEngine**，按 **F5**
 3. 修改 `Content/` 下 shader 可在下一帧触发热重载
 
 - **可以卸载 VS IDE**（不再使用 `.sln`）

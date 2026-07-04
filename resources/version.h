@@ -13,5 +13,5 @@
 #define GLE_RC_FILE_DESCRIPTION "GLEngine Editor"
 #define GLE_RC_COMPANY_NAME "Greenland"
 #define GLE_RC_LEGAL_COPYRIGHT "Copyright (C) 2026"
-#define GLE_RC_INTERNAL_NAME "GLEngineNew"
-#define GLE_RC_ORIGINAL_FILENAME "GLEngineNew.exe"
+#define GLE_RC_INTERNAL_NAME "GLEngine"
+#define GLE_RC_ORIGINAL_FILENAME "GLEngine.exe"

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(GLEngineNew LANGUAGES C CXX)
+project(GLEngine LANGUAGES C CXX)
 
 if(WIN32)
     enable_language(RC)
@@ -30,7 +30,7 @@ elseif(MSVC)
     add_compile_options(/utf-8)
 endif()
 
-set(GLEngineNew_SOURCES
+set(GLEngine_SOURCES
     src/main.cpp
     src/Engine/Core/Config.cpp
     src/Engine/Core/Gui.cpp
@@ -89,21 +89,21 @@ set(GLEngineNew_SOURCES
     external/imgui/backends/imgui_impl_opengl3.cpp
 )
 
-add_executable(GLEngineNew ${GLEngineNew_SOURCES})
+add_executable(GLEngine ${GLEngine_SOURCES})
 
-target_sources(GLEngineNew PRIVATE
+target_sources(GLEngine PRIVATE
     "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/src/Engine/Core/RenderDocSupport.cpp>"
 )
 
-target_compile_definitions(GLEngineNew PRIVATE
+target_compile_definitions(GLEngine PRIVATE
     "$<$<CONFIG:Debug>:GLE_ENABLE_RENDERDOC=1>"
 )
 
-set_target_properties(GLEngineNew PROPERTIES
+set_target_properties(GLEngine PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/$<CONFIG>"
 )
 
-target_include_directories(GLEngineNew PRIVATE
+target_include_directories(GLEngine PRIVATE
     "${CPP_LIBRARY_ROOT}/include"
     "${CMAKE_SOURCE_DIR}/external"
     "${CMAKE_SOURCE_DIR}/external/imgui"
@@ -113,34 +113,34 @@ target_include_directories(GLEngineNew PRIVATE
 )
 
 if(WIN32)
-    target_sources(GLEngineNew PRIVATE "${CMAKE_SOURCE_DIR}/resources/app.rc")
+    target_sources(GLEngine PRIVATE "${CMAKE_SOURCE_DIR}/resources/app.rc")
     set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/app.rc" PROPERTIES
         OBJECT_DEPENDS "${CMAKE_SOURCE_DIR}/resources/icon/greenland.ico"
     )
 endif()
 
-target_link_directories(GLEngineNew PRIVATE "${CPP_LIBRARY_ROOT}/libs")
+target_link_directories(GLEngine PRIVATE "${CPP_LIBRARY_ROOT}/libs")
 
-set(GLEngineNew_ASSIMP_RELEASE_DLL assimp-vc143-mt.dll)
-set(GLEngineNew_ASSIMP_RELEASE_LIB assimp-vc143-mt)
+set(GLEngine_ASSIMP_RELEASE_DLL assimp-vc143-mt.dll)
+set(GLEngine_ASSIMP_RELEASE_LIB assimp-vc143-mt)
 if(NOT EXISTS "${CPP_LIBRARY_ROOT}/libs/assimp-vc143-mt.lib")
-    set(GLEngineNew_ASSIMP_RELEASE_DLL assimp-vc143-mtd.dll)
-    set(GLEngineNew_ASSIMP_RELEASE_LIB assimp-vc143-mtd)
+    set(GLEngine_ASSIMP_RELEASE_DLL assimp-vc143-mtd.dll)
+    set(GLEngine_ASSIMP_RELEASE_LIB assimp-vc143-mtd)
     message(STATUS "assimp-vc143-mt.lib not found; Release will use assimp-vc143-mtd")
 endif()
 
-target_link_libraries(GLEngineNew PRIVATE
+target_link_libraries(GLEngine PRIVATE
     opengl32
     unit
     "$<$<CONFIG:Debug>:glfw3D>"
     "$<$<NOT:$<CONFIG:Debug>>:glfw3>"
     "$<$<CONFIG:Debug>:assimp-vc143-mtd>"
-    "$<$<NOT:$<CONFIG:Debug>>:${GLEngineNew_ASSIMP_RELEASE_LIB}>"
+    "$<$<NOT:$<CONFIG:Debug>>:${GLEngine_ASSIMP_RELEASE_LIB}>"
 )
 
-add_custom_command(TARGET GLEngineNew POST_BUILD
+add_custom_command(TARGET GLEngine POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "$<$<CONFIG:Debug>:${CPP_LIBRARY_ROOT}/bin/assimp-vc143-mtd.dll>$<$<NOT:$<CONFIG:Debug>>:${CPP_LIBRARY_ROOT}/bin/${GLEngineNew_ASSIMP_RELEASE_DLL}>"
-        "$<TARGET_FILE_DIR:GLEngineNew>"
+        "$<$<CONFIG:Debug>:${CPP_LIBRARY_ROOT}/bin/assimp-vc143-mtd.dll>$<$<NOT:$<CONFIG:Debug>>:${CPP_LIBRARY_ROOT}/bin/${GLEngine_ASSIMP_RELEASE_DLL}>"
+        "$<TARGET_FILE_DIR:GLEngine>"
     COMMENT "Copying runtime DLLs next to the executable"
 )

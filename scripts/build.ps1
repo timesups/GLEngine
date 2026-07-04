@@ -69,4 +69,4 @@ Write-Host ">> cmake --build build" -ForegroundColor Cyan
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host ""
-Write-Host "Built: build\$Config\GLEngineNew.exe" -ForegroundColor Green
+Write-Host "Built: build\$Config\GLEngine.exe" -ForegroundColor Green

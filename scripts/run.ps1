@@ -2,9 +2,9 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $PSScriptRoot
 Set-Location $Root
 
-$exe = Join-Path $Root "build\Debug\GLEngineNew.exe"
+$exe = Join-Path $Root "build\Debug\GLEngine.exe"
 if (-not (Test-Path $exe)) {
-    $exe = Join-Path $Root "build\Release\GLEngineNew.exe"
+    $exe = Join-Path $Root "build\Release\GLEngine.exe"
 }
 if (-not (Test-Path $exe)) {
     Write-Error "Executable not found. Run .\scripts\build.ps1 first."
