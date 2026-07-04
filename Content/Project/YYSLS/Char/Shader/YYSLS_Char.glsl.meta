@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "4e407d20-38d0-4199-b1e3-2b72152c4cbb",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/YYSLS/Char/Shader/YYSLS_Char.glsl",
+    "type": "shader"
+}

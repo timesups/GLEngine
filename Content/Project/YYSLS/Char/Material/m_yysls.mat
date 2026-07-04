@@ -1,0 +1,37 @@
+{
+    "name": "m_yysls",
+    "properties": {
+        "_AttriMap": {
+            "path": "Content/Project/YYSLS/Char/Texture/Head_A.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_ColorMap": {
+            "path": "Content/Project/YYSLS/Char/Texture/Head_C.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_DetailMap": {
+            "path": "Content/Project/YYSLS/Char/Texture/Head_Detail.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_DetailTile": 10.0,
+        "_hue": [
+            0.0,
+            0.0
+        ],
+        "_maskMap": {
+            "path": "Content/Project/YYSLS/Char/Texture/Head_M.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_normalMap": {
+            "path": "Content/Project/YYSLS/Char/Texture/Head_N.png",
+            "srgb": true,
+            "type": "texture2d"
+        }
+    },
+    "shader": "Content/Project/YYSLS/Char/Shader/YYSLS_Char.glsl",
+    "showInUi": true
+}

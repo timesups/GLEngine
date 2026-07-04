@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "78b1c847-128b-4d05-8479-93babbf47a25",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/BloomSetup.glsl",
+    "type": "shader"
+}

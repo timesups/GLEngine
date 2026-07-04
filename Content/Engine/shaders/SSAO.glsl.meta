@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "1bc074fd-e56f-4fce-b0a2-ca3864559520",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/SSAO.glsl",
+    "type": "shader"
+}

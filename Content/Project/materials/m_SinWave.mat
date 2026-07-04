@@ -1,0 +1,14 @@
+﻿{
+    "name": "m_SinWave",
+    "properties": {
+        "_A": 0.5799999833106995,
+        "_D": [
+            1.0,
+            0.9399999976158142
+        ],
+        "_L": 10.899999618530273,
+        "_S": 5.739999771118164
+    },
+    "shader": "Content/Project/shaders/SinWave.glsl",
+    "showInUi": true
+}

@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "40790d1b-e531-414d-897d-dfc833fabb74",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/textures/floor/flooring_albedo.png",
+    "type": "texture"
+}

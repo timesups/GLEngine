@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "61dcf312-3d44-417c-9ef4-970f5f000010",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Engine/model/plane.fbx",
+    "type": "model"
+}

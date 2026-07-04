@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "ddcd2cb5-6278-493c-9e43-bb12de7ba035",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/ErrorShader.glsl",
+    "type": "shader"
+}

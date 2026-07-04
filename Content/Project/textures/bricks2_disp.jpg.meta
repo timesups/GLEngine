@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "7fea34fd-3735-45d2-b0be-69948dc382d9",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/textures/bricks2_disp.jpg",
+    "type": "texture"
+}

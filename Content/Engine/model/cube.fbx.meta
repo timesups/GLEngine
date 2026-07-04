@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "98f5404d-7e5d-4fdc-a862-279454ef3e19",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Engine/model/cube.fbx",
+    "type": "model"
+}

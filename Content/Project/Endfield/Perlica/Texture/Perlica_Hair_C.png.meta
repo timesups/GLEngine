@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "58dd03f3-3e78-4994-8d31-042cc52c655c",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/Endfield/Perlica/Texture/Perlica_Hair_C.png",
+    "type": "texture"
+}

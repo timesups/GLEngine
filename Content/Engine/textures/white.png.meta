@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "e8be3c02-de95-4b4b-aaa6-3de5c9487a36",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Engine/textures/white.png",
+    "type": "texture"
+}

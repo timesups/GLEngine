@@ -1,0 +1,37 @@
+# EditorConfig: 编辑器级基础约定（编码、换行、缩进）
+# 复杂 C++ 排版（大括号、指针对齐等）由 .clang-format 负责
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{cpp,h,hpp,c,cc,cxx}]
+indent_style = space
+indent_size = 4
+tab_width = 4
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.{ps1,sh,cmake}]
+indent_size = 4
+
+[CMakeLists.txt]
+indent_size = 4
+
+[*.glsl]
+indent_style = space
+indent_size = 4
+
+# 第三方源码：不自动删行尾空格，避免无意义 diff
+[external/**]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[build/**]
+insert_final_newline = false
+trim_trailing_whitespace = false

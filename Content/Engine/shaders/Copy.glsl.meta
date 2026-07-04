@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "676107cd-cf74-482c-8b71-620ce33a1b1a",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/Copy.glsl",
+    "type": "shader"
+}

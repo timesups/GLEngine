@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "4e98cad1-9442-4da1-9278-32b1a809100a",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/textures/flowmap.png",
+    "type": "texture"
+}

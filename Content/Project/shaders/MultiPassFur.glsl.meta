@@ -1,0 +1,9 @@
+﻿{
+    "dependencies": [],
+    "guid": "31d3954c-27ca-45cb-9190-a7d1da689f9c",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/shaders/MultiPassFur.glsl",
+    "type": "shader"
+}

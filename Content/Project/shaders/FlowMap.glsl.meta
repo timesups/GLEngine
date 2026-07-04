@@ -1,0 +1,9 @@
+﻿{
+    "dependencies": [],
+    "guid": "b1aeba04-d9d6-4614-8dd9-e08ca64dd0a7",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/shaders/FlowMap.glsl",
+    "type": "shader"
+}

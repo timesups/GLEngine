@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "40859d3f-93e3-46fe-945b-750418e933dd",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/BlurX.glsl",
+    "type": "shader"
+}

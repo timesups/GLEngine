@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "517f6a5c-4696-42a3-95be-6b24a9ae3dfe",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/textures/noise/WaterNoise.png",
+    "type": "texture"
+}

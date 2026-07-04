@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "c3d47301-0feb-4126-8bfa-03d478f4ce1d",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/textures/container2_specular.png",
+    "type": "texture"
+}

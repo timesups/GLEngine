@@ -1,0 +1,12 @@
+﻿{
+    "dependencies": [
+        "Content/Project/shaders/Water.glsl",
+        "Content/Project/textures/noise/WaterNoise.png"
+    ],
+    "guid": "cb3e4662-97e1-4130-9617-5ba7befa37fd",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/materials/m_water.mat",
+    "type": "material"
+}

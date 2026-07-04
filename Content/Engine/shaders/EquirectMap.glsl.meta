@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "00824c72-94aa-40e2-936d-2b059399b8d4",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Engine/shaders/EquirectMap.glsl",
+    "type": "shader"
+}

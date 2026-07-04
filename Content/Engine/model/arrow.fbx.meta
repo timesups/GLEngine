@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "d9b32d6b-04a6-4b17-bf45-f09217de3ce6",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/model/arrow.fbx",
+    "type": "model"
+}

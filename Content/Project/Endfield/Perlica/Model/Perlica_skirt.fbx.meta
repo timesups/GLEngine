@@ -1,0 +1,12 @@
+{
+    "dependencies": [
+        "Content/Project/Endfield/Perlica/Material/m_perlica_skirt.mat"
+    ],
+    "guid": "c9bdbf2f-14b2-4595-81df-7d3ed24a5610",
+    "importSettings": {
+        "defaultMaterial": "Content/Project/Endfield/Perlica/Material/m_perlica_skirt.mat",
+        "showInUi": true
+    },
+    "source": "Content/Project/Endfield/Perlica/Model/Perlica_skirt.fbx",
+    "type": "model"
+}

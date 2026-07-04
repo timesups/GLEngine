@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "30d29086-6d8d-49ea-ac7e-4afedb9f8793",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/SkyBox.glsl",
+    "type": "shader"
+}

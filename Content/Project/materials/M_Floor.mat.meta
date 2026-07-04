@@ -1,0 +1,19 @@
+{
+    "dependencies": [
+        "Content/Project/textures/floor/flooring_roughness.png",
+        "Content/Engine/shaders/DefaultLit.glsl",
+        "Content/Engine/textures/white.png",
+        "Content/Engine/textures/normal.png",
+        "Content/Engine/textures/grey.png",
+        "Content/Project/textures/floor/flooring_albedo.png",
+        "Content/Project/textures/floor/flooring_ao.png",
+        "Content/Project/textures/floor/flooring_normal.png",
+        "Content/Engine/textures/black.png"
+    ],
+    "guid": "43b643a1-2b64-4929-b6e7-381c16fc796b",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/materials/M_Floor.mat",
+    "type": "material"
+}

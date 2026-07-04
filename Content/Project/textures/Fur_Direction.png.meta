@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "9c345a97-d73e-4e62-b935-fce5b9125a15",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/textures/Fur_Direction.png",
+    "type": "texture"
+}

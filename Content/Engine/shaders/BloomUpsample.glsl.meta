@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "15727810-c23f-4268-948d-bab4425f9521",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/BloomUpsample.glsl",
+    "type": "shader"
+}

@@ -1,0 +1,13 @@
+﻿{
+    "dependencies": [
+        "Content/Project/shaders/FlowMap.glsl",
+        "Content/Project/textures/flowmap.png",
+        "Content/Project/textures/floor/flooring_albedo.png"
+    ],
+    "guid": "39ef151f-10da-4af8-a128-73d5fefd5fe3",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/materials/m_flowMap.mat",
+    "type": "material"
+}

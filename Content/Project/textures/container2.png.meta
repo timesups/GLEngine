@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "1dfda794-2c36-49f7-b035-c2b173c35845",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/textures/container2.png",
+    "type": "texture"
+}

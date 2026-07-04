@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "ba4bab68-b107-4cf0-a72d-353614149ab7",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/textures/bricks2.jpg",
+    "type": "texture"
+}

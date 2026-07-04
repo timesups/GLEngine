@@ -1,0 +1,10 @@
+{
+    "dependencies": [],
+    "guid": "01218394-8cd9-4fe8-99b9-65c26e72e9b2",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/YYSLS/Char/Texture/Head_M.png",
+    "type": "texture"
+}

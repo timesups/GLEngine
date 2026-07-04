@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "b670c6b6-c782-465c-a99c-aad7e9f0d016",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/DeferredLight.glsl",
+    "type": "shader"
+}

@@ -1,0 +1,26 @@
+﻿{
+    "name": "m_water",
+    "properties": {
+        "DENSITY": 3.2799999713897705,
+        "DETAIL_HEIGHT": 0.0,
+        "DETAIL_SCALE": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "IOR": 1.3329999446868896,
+        "_speed": 0.009999999776482582,
+        "uNoiseRG": {
+            "path": "Content/Project/textures/noise/WaterNoise.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "waterColour": [
+            0.10000000149011612,
+            0.75,
+            0.8999999761581421
+        ]
+    },
+    "shader": "Content/Project/shaders/Water.glsl",
+    "showInUi": true
+}

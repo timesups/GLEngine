@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "401ed8b5-241f-4c89-9651-0a3f5c26e37d",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Engine/model/sphere.fbx",
+    "type": "model"
+}

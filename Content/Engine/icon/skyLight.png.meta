@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "4d183aab-c35b-4110-ad0c-aa8cc7c3fe15",
+    "importSettings": {
+        "generateMips": false,
+        "showInUi": false,
+        "srgb": true
+    },
+    "source": "Content/Engine/icon/skyLight.png",
+    "type": "texture"
+}

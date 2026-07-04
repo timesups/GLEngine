@@ -1,0 +1,9 @@
+﻿{
+    "dependencies": [],
+    "guid": "23c3bd3c-1aa1-410b-aa80-46fd9cc230ec",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/shaders/SinWave.glsl",
+    "type": "shader"
+}

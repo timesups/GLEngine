@@ -1,0 +1,9 @@
+﻿{
+    "dependencies": [],
+    "guid": "6f81e349-7818-4dde-a93d-18d62bbb99b3",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/shaders/Water.glsl",
+    "type": "shader"
+}

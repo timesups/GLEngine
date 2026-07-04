@@ -1,0 +1,20 @@
+{
+    "dependencies": [
+        "Content/Project/Endfield/Perlica/Model/Perlica_face.fbx",
+        "Content/Project/Endfield/Perlica/Model/Leg.fbx",
+        "Content/Engine/hdr/sunny_rose_garden.hdr",
+        "Content/Project/Endfield/Perlica/Model/Outfit.fbx",
+        "Content/Project/Endfield/Perlica/Model/Perlica_eye.fbx",
+        "Content/Project/hdr/glasshouse_interior_1k.hdr",
+        "Content/Project/Endfield/Perlica/Material/M_Perlica.mat",
+        "Content/Project/Endfield/Perlica/Model/Perlica_hair.fbx",
+        "Content/Project/Endfield/Perlica/Model/Perlica_skirt.fbx",
+        "Content/Project/Endfield/Perlica/Model/Perlica_skin.fbx"
+    ],
+    "guid": "8f8374bc-6817-4b68-aeb6-9a4c7bc0d80a",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/Endfield/Perlica/scene/PerlicaScene.scene",
+    "type": "scene"
+}

@@ -1,0 +1,180 @@
+{
+    "activeCamera": "MainCamera",
+    "entities": [
+        {
+            "components": {
+                "Camera": {
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "imaging": {
+                        "aperture": 2.8,
+                        "exposureCompensationEv": 0.0,
+                        "iso": 100.0,
+                        "shutterSpeed": 0.01666666753590107
+                    },
+                    "near": 0.1,
+                    "postSetting": {
+                        "bloom": [
+                            0.85,
+                            0.2,
+                            0.5,
+                            0.0
+                        ],
+                        "ssao": [
+                            1.0,
+                            0.005,
+                            1.0,
+                            1.0
+                        ],
+                        "tonemap": [
+                            1.0,
+                            2.2,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        5.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "MainCamera"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "engine://materials/DefaultMaterial",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "engine://model/plane.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        -1.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        20.0,
+                        20.0,
+                        20.0
+                    ]
+                }
+            },
+            "name": "e_plane"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "engine://materials/DefaultMaterial",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "engine://model/sphere.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "e_sphere"
+        },
+        {
+            "components": {
+                "SkyBox": {
+                    "brightness": 1.0,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "cubemapPreview": 0,
+                    "drawBackground": true,
+                    "ibl": "engine://hdr/sunny_rose_garden.hdr",
+                    "iblLightingEnabled": true,
+                    "iblLightingIntensity": 1.0,
+                    "intensity": 0.2
+                }
+            },
+            "name": "skybox"
+        },
+        {
+            "components": {
+                "Light": {
+                    "bias": 0.002,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "farPlane": 20.0,
+                    "inCutoff": 15.0,
+                    "intensity": 100000.0,
+                    "nearPlane": -20.0,
+                    "outCutoff": 35.0,
+                    "pcfSample": 1,
+                    "shadowArea": 20.0,
+                    "shadowRes": 1024,
+                    "type": "Directional"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        220.0,
+                        40.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "sun"
+        }
+    ],
+    "name": "Default",
+    "version": 1
+}

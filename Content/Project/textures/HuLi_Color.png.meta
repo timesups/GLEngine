@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "65a13511-0977-4204-ab95-68cdcfb94de6",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/textures/HuLi_Color.png",
+    "type": "texture"
+}

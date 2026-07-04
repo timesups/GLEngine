@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "aace4fab-5dc7-4313-9e9b-a8eece9a83af",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Engine/textures/normal.png",
+    "type": "texture"
+}

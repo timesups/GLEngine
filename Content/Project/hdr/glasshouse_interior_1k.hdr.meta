@@ -1,0 +1,16 @@
+{
+    "dependencies": [],
+    "guid": "de273971-ee9c-489a-b9c6-57c6342722ac",
+    "importSettings": {
+        "generateMips": true,
+        "kIrradianceFaceSize": 32,
+        "kMinPrefilterFaceSize": 512,
+        "kPhiSamples": 64,
+        "kPrefilterFaceSize": 0,
+        "kThetaSamples": 32,
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/hdr/glasshouse_interior_1k.hdr",
+    "type": "cubemap"
+}

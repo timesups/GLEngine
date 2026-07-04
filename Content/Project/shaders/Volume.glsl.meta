@@ -1,0 +1,9 @@
+﻿{
+    "dependencies": [],
+    "guid": "a48d09ac-aeed-42d3-952b-40ba6259b3b0",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/shaders/Volume.glsl",
+    "type": "shader"
+}

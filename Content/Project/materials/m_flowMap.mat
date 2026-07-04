@@ -1,0 +1,17 @@
+﻿{
+    "name": "m_flowMap",
+    "properties": {
+        "_FlowMap": {
+            "path": "Content/Project/textures/flowmap.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_MainTex": {
+            "path": "Content/Project/textures/floor/flooring_albedo.png",
+            "srgb": true,
+            "type": "texture2d"
+        }
+    },
+    "shader": "Content/Project/shaders/FlowMap.glsl",
+    "showInUi": true
+}

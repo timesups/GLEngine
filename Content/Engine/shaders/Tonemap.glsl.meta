@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "76c93902-363a-4cab-a53a-585dccf862a5",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/Tonemap.glsl",
+    "type": "shader"
+}

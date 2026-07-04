@@ -1,0 +1,13 @@
+﻿{
+  "name": "M_HuLi",
+  "shader": "Content/Engine/shaders/DefaultLit.glsl",
+  "showInUi": true,
+  "properties": {
+    "_ShadingModel": 3,
+    "_baseColor": {
+      "type": "texture2d",
+      "path": "Content/Project/textures/HuLi_Color.png",
+      "srgb": true
+    }
+  }
+}

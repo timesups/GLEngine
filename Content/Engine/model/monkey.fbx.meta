@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "c4fbc044-fdbc-4f84-be3f-26c3ddbb299a",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Engine/model/monkey.fbx",
+    "type": "model"
+}

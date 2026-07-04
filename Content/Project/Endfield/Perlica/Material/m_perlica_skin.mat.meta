@@ -1,0 +1,19 @@
+{
+    "dependencies": [
+        "Content/Project/Endfield/Perlica/Shader/Endfield.glsl",
+        "Content/Engine/shaders/DefaultLit.glsl",
+        "engine://textures/white.png",
+        "Content/Project/Endfield/Perlica/Texture/Perlica_Skin_N.png",
+        "engine://textures/normal.png",
+        "engine://textures/grey.png",
+        "Content/Engine/textures/grey.png",
+        "Content/Project/Endfield/Perlica/Texture/Perlica_Skin_C.png",
+        "Content/Engine/textures/white.png"
+    ],
+    "guid": "fdfc088c-5d5e-4464-961c-f4bd1981fbbb",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/Endfield/Perlica/Material/m_perlica_skin.mat",
+    "type": "material"
+}

@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "5dd00013-8e61-4212-a95c-d0fcb8fc9cd7",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/Billboard.glsl",
+    "type": "shader"
+}

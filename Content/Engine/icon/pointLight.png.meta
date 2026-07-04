@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "df403389-9f78-434f-9b10-ccc560101b92",
+    "importSettings": {
+        "generateMips": false,
+        "showInUi": false,
+        "srgb": true
+    },
+    "source": "Content/Engine/icon/pointLight.png",
+    "type": "texture"
+}

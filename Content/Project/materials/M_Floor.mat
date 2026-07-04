@@ -1,0 +1,35 @@
+{
+    "name": "M_Floor",
+    "properties": {
+        "_ShadingModel": 1,
+        "_ao": {
+            "path": "Content/Project/textures/floor/flooring_ao.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_baseColor": {
+            "path": "Content/Project/textures/floor/flooring_albedo.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_metaMul": 0.0,
+        "_metallic": {
+            "path": "Content/Engine/textures/black.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_normal": {
+            "path": "Content/Project/textures/floor/flooring_normal.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_rouMul": 1.0,
+        "_roughness": {
+            "path": "Content/Project/textures/floor/flooring_roughness.png",
+            "srgb": true,
+            "type": "texture2d"
+        }
+    },
+    "shader": "Content/Engine/shaders/DefaultLit.glsl",
+    "showInUi": true
+}

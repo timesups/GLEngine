@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "f0672ab2-385d-46ec-aac5-01cde53a8f25",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Engine/textures/black.png",
+    "type": "texture"
+}

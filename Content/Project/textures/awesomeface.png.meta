@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "c75f3a24-d0a4-42bb-8990-7311a18f7b7c",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/textures/awesomeface.png",
+    "type": "texture"
+}

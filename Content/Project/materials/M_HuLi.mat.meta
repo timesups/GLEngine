@@ -1,0 +1,9 @@
+﻿{
+    "dependencies": [],
+    "guid": "36ab9aba-d319-4523-a61f-39a78ada4d94",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/materials/M_HuLi.mat",
+    "type": "material"
+}

@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "2e5a00aa-24be-4785-a652-1c11e178607c",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/SSAO_Blur.glsl",
+    "type": "shader"
+}

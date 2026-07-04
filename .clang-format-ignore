@@ -1,0 +1,5 @@
+external/
+build/
+build-clang-test/
+cmake-build/
+Content/

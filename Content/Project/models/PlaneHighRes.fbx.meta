@@ -1,0 +1,9 @@
+﻿{
+    "dependencies": [],
+    "guid": "9be1eefc-10d4-4f11-930a-121f07508abe",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/models/PlaneHighRes.fbx",
+    "type": "model"
+}

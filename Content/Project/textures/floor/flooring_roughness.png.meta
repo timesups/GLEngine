@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "857ea8a3-a990-4462-a080-047d181d4f68",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/textures/floor/flooring_roughness.png",
+    "type": "texture"
+}

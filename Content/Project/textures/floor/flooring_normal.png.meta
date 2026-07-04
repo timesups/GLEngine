@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "b50343ba-e3f6-4db5-b23f-9fcd732c8a74",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/textures/floor/flooring_normal.png",
+    "type": "texture"
+}

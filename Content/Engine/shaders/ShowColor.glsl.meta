@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "c75f1ad8-8280-44c8-a6c4-6b00458fcf59",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Engine/shaders/ShowColor.glsl",
+    "type": "shader"
+}

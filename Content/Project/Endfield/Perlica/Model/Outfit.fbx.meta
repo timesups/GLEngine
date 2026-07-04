@@ -1,0 +1,12 @@
+{
+    "dependencies": [
+        "Content/Project/Endfield/Perlica/Material/M_Perlica.mat"
+    ],
+    "guid": "18e32d03-1ef7-4272-baf2-b7373bc7ab63",
+    "importSettings": {
+        "defaultMaterial": "Content/Project/Endfield/Perlica/Material/M_Perlica.mat",
+        "showInUi": true
+    },
+    "source": "Content/Project/Endfield/Perlica/Model/Outfit.fbx",
+    "type": "model"
+}

@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "252d1e53-7982-43e6-9df5-6043e94f9ef6",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/DownSample.glsl",
+    "type": "shader"
+}

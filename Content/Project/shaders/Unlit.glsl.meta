@@ -1,0 +1,9 @@
+﻿{
+    "dependencies": [],
+    "guid": "61520ec8-8eea-4331-a94d-4ea2600edff5",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/shaders/Unlit.glsl",
+    "type": "shader"
+}

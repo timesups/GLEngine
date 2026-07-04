@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "4427744d-ceb6-4b72-b5d3-54901956805f",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/textures/bricks2_normal.jpg",
+    "type": "texture"
+}

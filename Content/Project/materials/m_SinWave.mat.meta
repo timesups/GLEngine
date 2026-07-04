@@ -1,0 +1,11 @@
+﻿{
+    "dependencies": [
+        "Content/Project/shaders/SinWave.glsl"
+    ],
+    "guid": "c1e5c3a1-ab89-434a-a0ff-d594d8220f5c",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/materials/m_SinWave.mat",
+    "type": "material"
+}

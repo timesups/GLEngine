@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "eba8b821-b7a3-44c4-979b-f6d919692eeb",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/CustomDepth.glsl",
+    "type": "shader"
+}

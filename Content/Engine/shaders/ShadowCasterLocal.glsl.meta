@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "e308f28e-0631-4306-8a04-d05ba5273cc0",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/ShadowCasterLocal.glsl",
+    "type": "shader"
+}

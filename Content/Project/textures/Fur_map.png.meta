@@ -1,0 +1,10 @@
+﻿{
+    "dependencies": [],
+    "guid": "00fc025e-e082-44f6-ad3c-e6f4a7b0e46e",
+    "importSettings": {
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/textures/Fur_map.png",
+    "type": "texture"
+}

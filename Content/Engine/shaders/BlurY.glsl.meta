@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "cbf5c239-85d7-455a-901d-231cea440cdc",
+    "importSettings": {
+        "showInUi": false
+    },
+    "source": "Content/Engine/shaders/BlurY.glsl",
+    "type": "shader"
+}

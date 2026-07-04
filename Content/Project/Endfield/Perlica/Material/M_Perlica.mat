@@ -1,0 +1,29 @@
+{
+    "name": "M_Perlica",
+    "properties": {
+        "_Attribute": {
+            "path": "Content/Engine/textures/grey.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_Color": {
+            "path": "Content/Project/Endfield/Perlica/Texture/Perlica_Outfit_C.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_Mask": {
+            "path": "Content/Engine/textures/white.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_Normal": {
+            "path": "Content/Project/Endfield/Perlica/Texture/Perlica_Outfit_N.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_metallic": 0.0,
+        "_roughness": 0.5
+    },
+    "shader": "Content/Project/Endfield/Perlica/Shader/Endfield.glsl",
+    "showInUi": true
+}

@@ -1,0 +1,19 @@
+{
+    "dependencies": [
+        "Content/Project/Endfield/Perlica/Shader/Endfield.glsl",
+        "Content/Engine/shaders/DefaultLit.glsl",
+        "engine://textures/white.png",
+        "Content/Project/Endfield/Perlica/Texture/Perlica_Hair_C.png",
+        "engine://textures/normal.png",
+        "engine://textures/grey.png",
+        "Content/Engine/textures/white.png",
+        "Content/Engine/textures/grey.png",
+        "Content/Engine/textures/normal.png"
+    ],
+    "guid": "1fc205f0-d85d-4c41-8a18-3a6e69ace2ee",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/Endfield/Perlica/Material/m_perlica_hair.mat",
+    "type": "material"
+}
