@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "f5d78949-8933-468e-9f33-d5ff0af57329",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Engine/scenes/Default.scene",
+    "type": "scene"
+}

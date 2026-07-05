@@ -1,7 +1,6 @@
 #ifndef LIGHT_INCLUDE
 #define LIGHT_INCLUDE
 
-
 struct Light
 {
     vec3 position;

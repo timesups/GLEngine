@@ -1,4 +1,4 @@
-﻿{
+{
     "dependencies": [
         "Content/Project/shaders/Water.glsl",
         "Content/Project/textures/noise/WaterNoise.png"

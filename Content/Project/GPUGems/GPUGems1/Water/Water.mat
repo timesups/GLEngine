@@ -1,0 +1,6 @@
+{
+    "name": "Water",
+    "properties": {},
+    "shader": "Content/Project/GPUGems/GPUGems1/Water/Water.glsl",
+    "showInUi": true
+}

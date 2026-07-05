@@ -1,0 +1,153 @@
+{
+    "activeCamera": "MainCamera",
+    "entities": [
+        {
+            "components": {
+                "Camera": {
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "imaging": {
+                        "aperture": 2.799999952316284,
+                        "exposureCompensationEv": 0.0,
+                        "iso": 100.0,
+                        "shutterSpeed": 0.01666666753590107
+                    },
+                    "near": 0.10000000149011612,
+                    "postSetting": {
+                        "bloom": [
+                            0.8500000238418579,
+                            0.20000000298023224,
+                            0.5,
+                            0.0
+                        ],
+                        "ssao": [
+                            1.0,
+                            0.004999999888241291,
+                            1.0,
+                            1.0
+                        ],
+                        "tonemap": [
+                            1.0,
+                            2.200000047683716,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                },
+                "Transform": {
+                    "position": [
+                        5.913790702819824,
+                        1.4998016357421875,
+                        4.673851013183594
+                    ],
+                    "rotation": [
+                        -11.40010929107666,
+                        -48.4799919128418,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "MainCamera"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/materials/m_water.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/models/Fishka_2.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": true
+                    }
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Fish"
+        },
+        {
+            "components": {
+                "SkyBox": {
+                    "brightness": 1.0,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "cubemapPreview": 0,
+                    "drawBackground": true,
+                    "ibl": "Content/Engine/hdr/sunny_rose_garden.hdr",
+                    "iblLightingEnabled": true,
+                    "iblLightingIntensity": 1.0,
+                    "intensity": 1.0
+                }
+            },
+            "name": "Skybox"
+        },
+        {
+            "components": {
+                "Light": {
+                    "bias": 0.0020000000949949026,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "farPlane": 20.0,
+                    "inCutoff": 15.0,
+                    "intensity": 200000.0,
+                    "nearPlane": -20.0,
+                    "outCutoff": 35.0,
+                    "pcfSample": 1,
+                    "shadowArea": 20.0,
+                    "shadowRes": 1024,
+                    "type": "Directional"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        -11.0,
+                        -481.5,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Sun"
+        }
+    ],
+    "name": "WaterRender",
+    "version": 1
+}

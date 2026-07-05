@@ -1,0 +1,13 @@
+{
+    "dependencies": [
+        "Content/Engine/shaders/DefaultLit.glsl",
+        "Content/Project/GPUGems/GPUGems1/Water/Water.glsl",
+        "Content/Engine/textures/white.png"
+    ],
+    "guid": "5ff87b53-feb4-4dce-baeb-7f697c6b9323",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/GPUGems/GPUGems1/Water/Water.mat",
+    "type": "material"
+}

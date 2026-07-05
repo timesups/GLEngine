@@ -1,0 +1,13 @@
+{
+    "dependencies": [
+        "Content/Project/models/PlaneHighRes.fbx",
+        "Content/Engine/hdr/sunny_rose_garden.hdr",
+        "Content/Project/GPUGems/GPUGems1/Water/Water.mat"
+    ],
+    "guid": "ee0cd193-29ff-43a2-bdb7-cfede93c98ab",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/GPUGems/GPUGems1/Water/WaterRender.scene",
+    "type": "scene"
+}

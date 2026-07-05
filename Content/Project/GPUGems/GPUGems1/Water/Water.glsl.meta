@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "d66e9e62-3bd7-411d-bb7a-7142f7ed8b81",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/GPUGems/GPUGems1/Water/Water.glsl",
+    "type": "shader"
+}

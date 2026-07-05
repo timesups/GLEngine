@@ -74,8 +74,8 @@ set(GLEngine_SOURCES
     src/Engine/Asset/Types/Texture/Texture2DArray.cpp
     src/Engine/Asset/Types/ShaderPass.cpp
     src/Engine/Renderer/RenderPipeline/DeferredRender.cpp
-    src/Engine/Renderer/RenderPipeline/DeferredPlusRender.cpp
     src/Engine/Renderer/RenderPipeline/ForwardRender.cpp
+    src/Engine/Renderer/RenderPipeline/EndfieldPipeline.cpp
     src/Engine/Renderer/RenderPipeline/RenderPipeline.cpp
     src/Engine/Renderer/RenderPipeline/RenderPipelineRegistry.cpp
     external/glad/glad.c
@@ -116,6 +116,11 @@ if(WIN32)
     target_sources(GLEngine PRIVATE "${CMAKE_SOURCE_DIR}/resources/app.rc")
     set_source_files_properties("${CMAKE_SOURCE_DIR}/resources/app.rc" PROPERTIES
         OBJECT_DEPENDS "${CMAKE_SOURCE_DIR}/resources/icon/greenland.ico"
+    )
+    # Release: GUI subsystem (no console window); Debug keeps console for logs.
+    target_link_options(GLEngine PRIVATE
+        "$<$<NOT:$<CONFIG:Debug>>:LINKER:/SUBSYSTEM:WINDOWS>"
+        "$<$<NOT:$<CONFIG:Debug>>:LINKER:/ENTRY:mainCRTStartup>"
     )
 endif()
 
