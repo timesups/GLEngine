@@ -96,6 +96,153 @@ TexFormatType ChannelsToFormat(int channels, bool SRGB)
     return formatType;
 }
 
+int ChannelsFromPixelFormat(GLenum format)
+{
+    switch (format)
+    {
+    case GL_RED:
+    case GL_GREEN:
+    case GL_BLUE:
+    case GL_ALPHA:
+    case GL_DEPTH_COMPONENT:
+        return 1;
+    case GL_RG:
+        return 2;
+    case GL_RGB:
+    case GL_BGR:
+        return 3;
+    case GL_RGBA:
+    case GL_BGRA:
+        return 4;
+    default:
+        return 0;
+    }
+}
+
+bool InferPixelLayoutFromInternal(GLenum internalFormat, GLenum& pixelFormat, GLenum& pixelType, int& channels)
+{
+    switch (internalFormat)
+    {
+    case GL_R8:
+        pixelFormat = GL_RED;
+        pixelType = GL_UNSIGNED_BYTE;
+        channels = 1;
+        return true;
+    case GL_RG8:
+        pixelFormat = GL_RG;
+        pixelType = GL_UNSIGNED_BYTE;
+        channels = 2;
+        return true;
+    case GL_RGB8:
+        pixelFormat = GL_RGB;
+        pixelType = GL_UNSIGNED_BYTE;
+        channels = 3;
+        return true;
+    case GL_RGBA8:
+    case GL_RGBA:
+        pixelFormat = GL_RGBA;
+        pixelType = GL_UNSIGNED_BYTE;
+        channels = 4;
+        return true;
+    case GL_SRGB8:
+        pixelFormat = GL_RGB;
+        pixelType = GL_UNSIGNED_BYTE;
+        channels = 3;
+        return true;
+    case GL_SRGB8_ALPHA8:
+        pixelFormat = GL_RGBA;
+        pixelType = GL_UNSIGNED_BYTE;
+        channels = 4;
+        return true;
+    case GL_R16F:
+    case GL_R32F:
+    case GL_RED:
+        pixelFormat = GL_RED;
+        pixelType = GL_FLOAT;
+        channels = 1;
+        return true;
+    case GL_RG16F:
+        pixelFormat = GL_RG;
+        pixelType = GL_FLOAT;
+        channels = 2;
+        return true;
+    case GL_RG32F:
+        pixelFormat = GL_RG;
+        pixelType = GL_FLOAT;
+        channels = 2;
+        return true;
+    case GL_RGB16F:
+        pixelFormat = GL_RGB;
+        pixelType = GL_FLOAT;
+        channels = 3;
+        return true;
+    case GL_RGBA16F:
+        pixelFormat = GL_RGBA;
+        pixelType = GL_FLOAT;
+        channels = 4;
+        return true;
+    case GL_RGBA32F:
+        pixelFormat = GL_RGBA;
+        pixelType = GL_FLOAT;
+        channels = 4;
+        return true;
+    case GL_R11F_G11F_B10F:
+        pixelFormat = GL_RGB;
+        pixelType = GL_FLOAT;
+        channels = 3;
+        return true;
+    case GL_DEPTH_COMPONENT16:
+        pixelFormat = GL_DEPTH_COMPONENT;
+        pixelType = GL_UNSIGNED_SHORT;
+        channels = 1;
+        return true;
+    case GL_DEPTH_COMPONENT24:
+        pixelFormat = GL_DEPTH_COMPONENT;
+        pixelType = GL_UNSIGNED_INT;
+        channels = 1;
+        return true;
+    case GL_DEPTH_COMPONENT32F:
+        pixelFormat = GL_DEPTH_COMPONENT;
+        pixelType = GL_FLOAT;
+        channels = 1;
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool ResolveTextureLayout(const TextureDesc& desc, ResolvedTextureLayout& out)
+{
+    if (desc.internalFormat == 0)
+    {
+        if (desc.channels <= 0)
+            return false;
+
+        const TexFormatType ft = ChannelsToFormat(desc.channels, desc.srgb);
+        out.internalFormat = ft.Format;
+        out.pixelFormat = ft.Type;
+        out.pixelType = GL_UNSIGNED_BYTE;
+        out.channels = desc.channels;
+        out.autoFormat = true;
+        return true;
+    }
+
+    out.internalFormat = desc.internalFormat;
+    out.autoFormat = false;
+
+    if (desc.pixelFormat != 0 && desc.pixelType != 0)
+    {
+        out.pixelFormat = desc.pixelFormat;
+        out.pixelType = desc.pixelType;
+        out.channels = desc.channels > 0 ? desc.channels : ChannelsFromPixelFormat(desc.pixelFormat);
+        return out.channels > 0;
+    }
+
+    if (!InferPixelLayoutFromInternal(desc.internalFormat, out.pixelFormat, out.pixelType, out.channels))
+        return false;
+    return true;
+}
+
 Texture::Texture() : m_width(0), m_height(0), m_channels(0)
 {
     glGenTextures(1, &m_id);
@@ -147,17 +294,17 @@ TextureDesc TextureDesc::MakeAuto(int width, int height, int channels, bool srgb
     return d;
 }
 
-TextureDesc TextureDesc::MakeExplicit(int width, int height, int channels, GLenum internalFmt, GLenum format,
-                                      GLenum type, bool srgb)
+TextureDesc TextureDesc::MakeExplicit(int width, int height, GLenum internalFmt, GLenum format, GLenum type, bool srgb)
 {
     TextureDesc d;
     d.width = width;
     d.height = height;
-    d.channels = channels;
     d.srgb = srgb;
     d.internalFormat = internalFmt;
     d.pixelFormat = format;
     d.pixelType = type;
+    if (format != 0)
+        d.channels = ChannelsFromPixelFormat(format);
     return d;
 }
 

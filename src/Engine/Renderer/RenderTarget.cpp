@@ -49,7 +49,6 @@ bool RenderTarget::CreateAttachments(const FramebufferDesc& desc)
     {
         RenderTargetAttachment attachment;
         attachment.binding.point = attachmentDesc.attachmentPoint;
-        attachment.binding.gbufferTag = attachmentDesc.gbufferTag;
 
         if (attachmentDesc.storage == AttachmentStorage::RenderBuffer)
         {
@@ -263,19 +262,15 @@ const RenderTargetAttachment* RenderTarget::FindDepthAttachment() const
     return const_cast<RenderTarget*>(this)->FindDepthAttachment();
 }
 
-RenderTargetAttachment* RenderTarget::FindGBufferAttachment(GBufferTarget target)
+int RenderTarget::ColorAttachmentCount() const
 {
-    for (RenderTargetAttachment& attachment : m_attachments)
+    int count = 0;
+    for (const RenderTargetAttachment& attachment : m_attachments)
     {
-        if (attachment.binding.gbufferTag == target)
-            return &attachment;
+        if (attachment.binding.point >= GL_COLOR_ATTACHMENT0 && attachment.binding.point <= GL_COLOR_ATTACHMENT15)
+            ++count;
     }
-    return nullptr;
-}
-
-const RenderTargetAttachment* RenderTarget::FindGBufferAttachment(GBufferTarget target) const
-{
-    return const_cast<RenderTarget*>(this)->FindGBufferAttachment(target);
+    return count;
 }
 
 Texture& RenderTarget::ColorAttachment(int index)
@@ -307,20 +302,6 @@ Texture& RenderTarget::DepthAttachment()
 const Texture& RenderTarget::DepthAttachment() const
 {
     return const_cast<RenderTarget*>(this)->DepthAttachment();
-}
-
-Texture& RenderTarget::GetGBufferTexture(GBufferTarget target)
-{
-    if (RenderTargetAttachment* attachment = FindGBufferAttachment(target))
-        return *attachment->texture;
-    static Texture2D fallback;
-    Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': GBuffer target {} not found", m_name, static_cast<int>(target));
-    return fallback;
-}
-
-const Texture& RenderTarget::GetGBufferTexture(GBufferTarget target) const
-{
-    return const_cast<RenderTarget*>(this)->GetGBufferTexture(target);
 }
 
 void RenderTarget::DrawBufferTo(RenderTarget& dec, std::shared_ptr<Shader> shader, const std::string& name)
@@ -356,22 +337,27 @@ void RenderTarget::UpsampleBufferTo(RenderTarget& mip, RenderTarget& dest, std::
 
 int RenderTarget::BindGBufferTexture(int offset)
 {
-    int i = 0;
-    for (; i < static_cast<int>(GBufferTarget::Count); ++i)
+    const int colorCount = ColorAttachmentCount();
+    for (int i = 0; i < colorCount; ++i)
+        ColorAttachment(i).Bind(i + offset);
+
+    int bound = colorCount;
+    if (FindDepthAttachment())
     {
-        auto target = static_cast<GBufferTarget>(i);
-        GetGBufferTexture(target).Bind(i + offset);
+        DepthAttachment().Bind(offset + colorCount);
+        ++bound;
     }
-    return i;
+    return bound;
 }
 
 void RenderTarget::UnbindGBufferTexture()
 {
-    for (int i = 0; i < static_cast<int>(GBufferTarget::Count); ++i)
-    {
-        auto target = static_cast<GBufferTarget>(i);
-        GetGBufferTexture(target).UnBind();
-    }
+    const int colorCount = ColorAttachmentCount();
+    for (int i = 0; i < colorCount; ++i)
+        ColorAttachment(i).UnBind();
+
+    if (FindDepthAttachment())
+        DepthAttachment().UnBind();
 }
 
 void RenderTarget::Resize(int width, int height)

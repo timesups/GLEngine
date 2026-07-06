@@ -32,7 +32,7 @@ bool DeferredRender::OnInit(const int width, const int height)
 bool DeferredRender::InitSSAO(const int width, const int height)
 {
 
-    TextureDesc desc_ssao = TextureDesc::MakeExplicit(width, height, 3, GL_RED, GL_RED, GL_FLOAT);
+    TextureDesc desc_ssao = TextureDesc::MakeExplicit(width, height, GL_R32F, GL_RED, GL_FLOAT);
     desc_ssao.sampler.minFilter = GL_NEAREST;
     desc_ssao.sampler.magFilter = GL_NEAREST;
     m_buf_ssao.CreateColorOnly("SSAO", width, height, desc_ssao);
@@ -60,7 +60,7 @@ bool DeferredRender::InitSSAO(const int width, const int height)
         glm::vec3 noise(randomFloats(generator) * 2.0 - 1.0, randomFloats(generator) * 2.0 - 1.0, 0.0f);
         ssaoNoise.push_back(noise);
     }
-    TextureDesc desc_noise = TextureDesc::MakeExplicit(4, 4, 3, GL_RGB16F, GL_RGB, GL_FLOAT, false);
+    TextureDesc desc_noise = TextureDesc::MakeExplicit(4, 4, GL_RGB16F, GL_RGB, GL_FLOAT);
     desc_noise.sampler.minFilter = GL_NEAREST;
     desc_noise.sampler.magFilter = GL_NEAREST;
     desc_noise.sampler.wrapS = GL_REPEAT;
@@ -114,13 +114,13 @@ void DeferredRender::DrawSSAO(RenderContext& context)
         shader->SetValue(valueName + std::to_string(i) + "]", m_ssaoKernel[i]);
     }
 
-    m_buf_geo.GetGBufferTexture(GBufferTarget::NormalXY).Bind(0);
-    m_buf_geo.GetGBufferTexture(GBufferTarget::Depth).Bind(1);
+    m_buf_geo.ColorAttachment(1).Bind(0);
+    m_buf_geo.DepthAttachment().Bind(1);
     m_ssao_noise->Bind(2);
 
     AssetManager::Get().GetScreenMesh()->Draw();
-    m_buf_geo.GetGBufferTexture(GBufferTarget::NormalXY).UnBind();
-    m_buf_geo.GetGBufferTexture(GBufferTarget::Depth).UnBind();
+    m_buf_geo.ColorAttachment(1).UnBind();
+    m_buf_geo.DepthAttachment().UnBind();
     m_ssao_noise->UnBind();
 
     m_buf_ssao.UnBind();

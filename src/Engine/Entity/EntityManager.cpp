@@ -1,8 +1,11 @@
 #include "EntityManager.h"
 #include "Components/Camera.h"
-#include "Components/Light.h"
+#include "Components/light/DirectionalLight.h"
+#include "Components/light/Light.h"
+#include "Components/light/PointLight.h"
+#include "Components/light/SpotLight.h"
 #include "Components/MeshRender.h"
-#include "Components/SkyBox.h"
+#include "Components/light/SkyBox.h"
 #include "Components/Transform.h"
 #include "Entity.h"
 
@@ -92,38 +95,54 @@ std::shared_ptr<Entity> EntityManager::CreateSkyBoxEntity(const std::string& nam
 std::shared_ptr<Entity> EntityManager::CreateLight(const std::string& name, LightType type)
 {
     auto entity = CreateEntity(name);
-    entity->AddComponent<Light>();
-    entity->GetComponent<Light>()->type = type;
     entity->AddComponent<Transform>();
-    m_Lights.push_back(entity);
-    entity->GetComponent<Light>()->m_ShadowRes = ShadowRes::L1024;
-    entity->GetComponent<Light>()->m_farPlane = 20.0;
+    Light* light = nullptr;
 
     switch (type)
     {
     case LightType::Directional:
-        entity->GetComponent<Light>()->m_nearPlane = -20.0;
-        entity->GetComponent<Light>()->m_bias = 0.002;
-        entity->GetComponent<Light>()->SetIntensity(
-            LightingConvention::DirectionalCalibrationBaseline::kDefaultDirectionalLux);
-        break;
-    case LightType::PointLight:
-        entity->GetComponent<Light>()->m_inCutoff = 180;
-        entity->GetComponent<Light>()->m_outCutoff = 180;
-        entity->GetComponent<Light>()->m_pcfSample = 4;
-        entity->GetComponent<Light>()->m_bias = 0.01;
-        entity->GetComponent<Light>()->SetIntensity(
-            LightingConvention::PointLightBaseline::kDefaultPointLumens);
-        break;
-    case LightType::SpotLight:
-        entity->GetComponent<Light>()->m_pcfSample = 4;
-        entity->GetComponent<Light>()->m_bias = 0.5;
-        entity->GetComponent<Light>()->SetIntensity(
-            LightingConvention::PointLightBaseline::kDefaultSpotLumens);
-        break;
-    case LightType::SkyLight:
+    {
+        auto* directional = entity->AddComponent<DirectionalLight>();
+        directional->m_ShadowRes = ShadowRes::L1024;
+        directional->m_farPlane = 20.0f;
+        directional->m_nearPlane = -20.0f;
+        directional->m_bias = 0.002f;
+        directional->SetIntensity(LightingConvention::DirectionalCalibrationBaseline::kDefaultDirectionalLux);
+        light = directional;
         break;
     }
+    case LightType::PointLight:
+    {
+        auto* point = entity->AddComponent<PointLight>();
+        point->m_ShadowRes = ShadowRes::L1024;
+        point->m_farPlane = 20.0f;
+        point->m_inCutoff = 180.f;
+        point->m_outCutoff = 180.f;
+        point->m_pcfSample = 4;
+        point->m_bias = 0.01f;
+        point->SetIntensity(LightingConvention::PointLightBaseline::kDefaultPointLumens);
+        light = point;
+        break;
+    }
+    case LightType::SpotLight:
+    {
+        auto* spot = entity->AddComponent<SpotLight>();
+        spot->m_ShadowRes = ShadowRes::L1024;
+        spot->m_farPlane = 20.0f;
+        spot->m_pcfSample = 4;
+        spot->m_bias = 0.5f;
+        spot->SetIntensity(LightingConvention::PointLightBaseline::kDefaultSpotLumens);
+        light = spot;
+        break;
+    }
+    case LightType::SkyLight:
+        LogA(LogLevel::WARNING, "CreateLight(SkyLight) is deprecated; use CreateSkyBoxEntity instead");
+        return entity;
+    }
+
+    if (light)
+        m_Lights.push_back(entity);
+
     LogA(LogLevel::INFO, "CreateLight '{}' type={}", entity->m_name, static_cast<int>(type));
     return entity;
 }

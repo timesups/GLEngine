@@ -37,7 +37,6 @@ struct FramebufferAttachmentBinding
     int cubeFace = -1;
     int layer = 0;
     int mipLevel = 0;
-    GBufferTarget gbufferTag = GBufferTarget::Count;
 };
 
 class Framebuffer

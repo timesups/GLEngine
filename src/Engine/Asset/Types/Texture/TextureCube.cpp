@@ -59,41 +59,28 @@ size_t CalcFaceByteSize(int width, int height, GLenum pixelFormat, GLenum pixelT
 
 bool TextureCube::Create(const TextureDesc& desc, const void* pixelData)
 {
-    if (desc.width <= 0 || desc.height <= 0 || desc.channels <= 0)
+    if (desc.width <= 0 || desc.height <= 0)
     {
-        LogA(LogLevel::ERROR, "TextureCube::Create: invalid size {}x{} ch={}", desc.width, desc.height, desc.channels);
+        LogA(LogLevel::ERROR, "TextureCube::Create: invalid size {}x{}", desc.width, desc.height);
         return false;
     }
 
-    GLenum internalFmt = desc.internalFormat;
-    GLenum pixelFmt = desc.pixelFormat;
-    GLenum pixelType = desc.pixelType;
+    ResolvedTextureLayout layout;
+    if (!ResolveTextureLayout(desc, layout))
+    {
+        LogA(LogLevel::ERROR, "TextureCube::Create: failed to resolve texture layout (internal=0x{:X})",
+             desc.internalFormat);
+        return false;
+    }
 
-    if (desc.internalFormat == 0)
-    {
-        const TexFormatType ft = ChannelsToFormat(desc.channels, desc.srgb);
-        internalFmt = ft.Format;
-        pixelFmt = ft.Type;
-        pixelType = GL_UNSIGNED_BYTE;
-        m_autoFormat = true;
-    }
-    else
-    {
-        if (desc.pixelFormat == 0 || desc.pixelType == 0)
-        {
-            LogA(LogLevel::ERROR,
-                 "TextureCube::Create: custom internalFormat requires non-zero pixelFormat and pixelType");
-            return false;
-        }
-        internalFmt = desc.internalFormat;
-        pixelFmt = desc.pixelFormat;
-        pixelType = desc.pixelType;
-        m_autoFormat = false;
-    }
+    const GLenum internalFmt = layout.internalFormat;
+    const GLenum pixelFmt = layout.pixelFormat;
+    const GLenum pixelType = layout.pixelType;
+    m_autoFormat = layout.autoFormat;
 
     m_width = desc.width;
     m_height = desc.height;
-    m_channels = desc.channels;
+    m_channels = layout.channels;
     m_srgb = desc.srgb;
     m_internalFormat = internalFmt;
     m_pixelFormat = pixelFmt;

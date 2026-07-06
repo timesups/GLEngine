@@ -2,9 +2,9 @@
 #include <glm/glm.hpp>
 #include <memory>
 
-#include "../../Core/Config.h"
-#include "../../Core/LightingConvention.h"
-#include "Component.h"
+#include "../../../Core/Config.h"
+#include "../../../Core/LightingConvention.h"
+#include "../Component.h"
 
 enum class LightType
 {
@@ -21,6 +21,7 @@ enum class ShadowRes
     L2048 = 2048,
     L4096 = 4096
 };
+
 enum class Direction
 {
     RIGHT = 0,
@@ -71,13 +72,17 @@ struct alignas(16) LightInputData
 
 class Transform;
 class Shader;
-class Model;
 
 class Light : public Component
 {
   public:
-    virtual void Init() override;
-    virtual void Render() override;
+    ~Light() override = default;
+
+    virtual LightType GetType() const = 0;
+
+    void Init() override;
+    void Render() override;
+
     float GetIntensity() const;
     void SetIntensity(float intensity);
     glm::vec3 GetColor() const;
@@ -86,26 +91,25 @@ class Light : public Component
     /// 与 Transform::GetForwardVector / 相机视线一致：光锥轴、定向光朝向
     const glm::vec3& GetDirection() const;
     glm::vec3 GetPosition();
-    glm::mat4 GetProjectMatrix() const;
-    glm::mat4 GetViewMatrix(Direction direction = Direction::RIGHT) const;
-    /// 定向光：lux→shader L_i；点光/聚光：lumen（shader 侧 1/(4π·d²)）
-    float GetShaderRadianceScale() const;
-    /// 编辑器图标亮度（与物理上传解耦，避免大 lm 值过曝）
-    float GetIconBrightnessScale() const;
-  private:
-    void RenderDirectionalLight();
 
-  public:
-    LightType type;
-    float m_inCutoff = 15;
-    float m_outCutoff = 35;
+    virtual float GetShaderRadianceScale() const;
+    virtual float GetIconBrightnessScale() const;
+    virtual glm::mat4 GetProjectMatrix() const;
+    virtual glm::mat4 GetViewMatrix(Direction direction = Direction::RIGHT) const;
 
     float m_nearPlane = 0.01f;
     float m_farPlane = 7.5f;
-    float m_bias = 0.0005;
+    float m_bias = 0.0005f;
     int m_pcfSample = 1;
-    float m_shadow_area = 20.0;
     ShadowRes m_ShadowRes = ShadowRes::L512;
+
+  protected:
+    void RenderBillboardIcon(const char* iconPath);
+    Transform* EnsureTransform();
+    Transform* TransformPtr() const
+    {
+        return m_transform;
+    }
 
   private:
     /// 定向光：lux（lm/m²）；点光/聚光：lumen（lm）
@@ -113,6 +117,4 @@ class Light : public Component
     glm::vec3 m_color = glm::vec3(1, 1, 1);
     Transform* m_transform = nullptr;
     std::shared_ptr<Shader> m_iconShader;
-    std::shared_ptr<Model> arrowModel = nullptr;
-    std::shared_ptr<Shader> m_lightMeshShader = nullptr;
 };

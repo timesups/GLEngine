@@ -1,10 +1,10 @@
 #include "SkyBox.h"
-#include "../../Asset/AssetManager.h"
-#include "../../Asset/Types/Mesh.h"
-#include "../../Asset/Types/Shader.h"
-#include "../../Asset/Types/Texture/IBLImage.h"
-#include "../../Asset/Types/Texture/TextureCube.h"
-#include "../../Core/Log.h"
+#include "../../../Asset/AssetManager.h"
+#include "../../../Asset/Types/Mesh.h"
+#include "../../../Asset/Types/Shader.h"
+#include "../../../Asset/Types/Texture/IBLImage.h"
+#include "../../../Asset/Types/Texture/TextureCube.h"
+#include "../../../Core/Log.h"
 #include <memory>
 
 #define MODULE "SkyBox"

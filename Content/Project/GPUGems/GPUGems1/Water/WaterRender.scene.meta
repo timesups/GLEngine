@@ -2,6 +2,7 @@
     "dependencies": [
         "Content/Project/models/PlaneHighRes.fbx",
         "Content/Engine/hdr/sunny_rose_garden.hdr",
+        "Content/Engine/model/cube.fbx",
         "Content/Project/GPUGems/GPUGems1/Water/Water.mat"
     ],
     "guid": "ee0cd193-29ff-43a2-bdb7-cfede93c98ab",

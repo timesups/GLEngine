@@ -19,9 +19,11 @@
 #include "../Core/LightingConvention.h"
 #include "../Core/util.h"
 #include "../Entity/Components/Camera.h"
-#include "../Entity/Components/Light.h"
+#include "../Entity/Components/light/DirectionalLight.h"
+#include "../Entity/Components/light/Light.h"
+#include "../Entity/Components/light/LocalLight.h"
 #include "../Entity/Components/MeshRender.h"
-#include "../Entity/Components/SkyBox.h"
+#include "../Entity/Components/light/SkyBox.h"
 #include "../Entity/Components/Transform.h"
 #include "../Entity/Entity.h"
 #include "../Entity/EntityManager.h"
@@ -395,17 +397,24 @@ nlohmann::json SerializeLight(const Light* light)
     if (!light)
         return json;
 
-    json["type"] = LightTypeToString(light->type);
+    json["type"] = LightTypeToString(light->GetType());
     json["color"] = Vec3ToJson(light->GetColor());
     json["intensity"] = light->GetIntensity();
-    json["inCutoff"] = light->m_inCutoff;
-    json["outCutoff"] = light->m_outCutoff;
     json["nearPlane"] = light->m_nearPlane;
     json["farPlane"] = light->m_farPlane;
     json["bias"] = light->m_bias;
     json["pcfSample"] = light->m_pcfSample;
-    json["shadowArea"] = light->m_shadow_area;
     json["shadowRes"] = static_cast<int>(light->m_ShadowRes);
+
+    if (const DirectionalLight* directional = dynamic_cast<const DirectionalLight*>(light))
+    {
+        json["shadowArea"] = directional->m_shadow_area;
+    }
+    if (const LocalLight* local = dynamic_cast<const LocalLight*>(light))
+    {
+        json["inCutoff"] = local->m_inCutoff;
+        json["outCutoff"] = local->m_outCutoff;
+    }
     return json;
 }
 
@@ -414,20 +423,10 @@ void ApplyLight(Light* light, const nlohmann::json& json)
     if (!light || !json.is_object())
         return;
 
-    if (json.contains("type"))
-    {
-        LightType type = light->type;
-        if (LightTypeFromString(json.at("type").get<std::string>(), type))
-            light->type = type;
-    }
     if (json.contains("color"))
         light->SetColor(JsonToVec3(json.at("color"), light->GetColor()));
     if (json.contains("intensity"))
         light->SetIntensity(json.at("intensity").get<float>());
-    if (json.contains("inCutoff"))
-        light->m_inCutoff = json.at("inCutoff").get<float>();
-    if (json.contains("outCutoff"))
-        light->m_outCutoff = json.at("outCutoff").get<float>();
     if (json.contains("nearPlane"))
         light->m_nearPlane = json.at("nearPlane").get<float>();
     if (json.contains("farPlane"))
@@ -436,10 +435,21 @@ void ApplyLight(Light* light, const nlohmann::json& json)
         light->m_bias = json.at("bias").get<float>();
     if (json.contains("pcfSample"))
         light->m_pcfSample = json.at("pcfSample").get<int>();
-    if (json.contains("shadowArea"))
-        light->m_shadow_area = json.at("shadowArea").get<float>();
     if (json.contains("shadowRes"))
         light->m_ShadowRes = static_cast<ShadowRes>(json.at("shadowRes").get<int>());
+
+    if (DirectionalLight* directional = dynamic_cast<DirectionalLight*>(light))
+    {
+        if (json.contains("shadowArea"))
+            directional->m_shadow_area = json.at("shadowArea").get<float>();
+    }
+    if (LocalLight* local = dynamic_cast<LocalLight*>(light))
+    {
+        if (json.contains("inCutoff"))
+            local->m_inCutoff = json.at("inCutoff").get<float>();
+        if (json.contains("outCutoff"))
+            local->m_outCutoff = json.at("outCutoff").get<float>();
+    }
 }
 
 nlohmann::json SerializeSkyBox(SkyBox* skyBox)

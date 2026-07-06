@@ -46,7 +46,8 @@ struct TextureDesc
     bool generateMips = false;
 
     static TextureDesc MakeAuto(int width, int height, int channels, bool srgb);
-    static TextureDesc MakeExplicit(int width, int height, int channels, GLenum internalFmt, GLenum format, GLenum type,
+    /// 指定 internalFormat 与上传 format/type；channels 由 format 推导
+    static TextureDesc MakeExplicit(int width, int height, GLenum internalFmt, GLenum format, GLenum type,
                                     bool srgb = false);
 };
 
@@ -55,6 +56,19 @@ int ResolveMipLevels(const TextureDesc& desc);
 void FinishTextureMipSetup(GLenum target, int mipLevels, bool generateMips, GLenum minFilter);
 
 TexFormatType ChannelsToFormat(int channels, bool SRGB);
+int ChannelsFromPixelFormat(GLenum format);
+bool InferPixelLayoutFromInternal(GLenum internalFormat, GLenum& pixelFormat, GLenum& pixelType, int& channels);
+
+struct ResolvedTextureLayout
+{
+    GLenum internalFormat = 0;
+    GLenum pixelFormat = 0;
+    GLenum pixelType = GL_UNSIGNED_BYTE;
+    int channels = 0;
+    bool autoFormat = true;
+};
+
+bool ResolveTextureLayout(const TextureDesc& desc, ResolvedTextureLayout& out);
 void ApplySampler(GLenum target, const TextureDesc& desc);
 
 class Texture

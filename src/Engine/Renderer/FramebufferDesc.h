@@ -6,16 +6,6 @@
 #include <string>
 #include <vector>
 
-enum GBufferTarget : uint8_t
-{
-    AlbdeoAO = 0, // rgb: Albedo, a: ao
-    NormalXY = 1, // rg: normal xy
-    MRSC = 2,     // r: Metallic, g: Roughness, b: specular, a: custom
-    Flag = 3,
-    Depth = 4,
-    Count,
-};
-
 enum class AttachmentStorage
 {
     Texture,
@@ -28,8 +18,6 @@ struct FramebufferAttachmentDesc
     AttachmentStorage storage = AttachmentStorage::Texture;
     TextureDesc texture;
     RenderBufferDesc renderBuffer;
-    /// 非 GBuffer 附件保持为 GBufferTarget::Count
-    GBufferTarget gbufferTag = GBufferTarget::Count;
 };
 
 struct FramebufferDesc
@@ -40,6 +28,14 @@ struct FramebufferDesc
     std::vector<FramebufferAttachmentDesc> attachments;
     /// MRT 绘制目标；为空时由 Build 根据颜色附件自动推导
     std::vector<GLenum> drawBuffers;
+
+    /// 追加颜色附件，返回 GL_COLOR_ATTACHMENT0 + index
+    GLenum AddColorAttachment(const TextureDesc& texture);
+    /// 设置深度纹理附件（替换已有 depth / depth-stencil）
+    void SetDepthAttachment(const TextureDesc& depthTexture);
+    /// 设置 depth-stencil RenderBuffer 附件（替换已有 depth / depth-stencil）
+    void SetDepthStencilAttachment(const RenderBufferDesc& renderBuffer);
+    int ColorAttachmentCount() const { return static_cast<int>(drawBuffers.size()); }
 };
 
 namespace RenderTargetFormats

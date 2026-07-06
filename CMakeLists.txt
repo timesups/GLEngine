@@ -45,9 +45,13 @@ set(GLEngine_SOURCES
     src/Engine/Scene/SceneSerializer.cpp
     src/Engine/Entity/Components/Camera.cpp
     src/Engine/Entity/Components/Component.cpp
-    src/Engine/Entity/Components/Light.cpp
+    src/Engine/Entity/Components/light/Light.cpp
+    src/Engine/Entity/Components/light/LocalLight.cpp
+    src/Engine/Entity/Components/light/DirectionalLight.cpp
+    src/Engine/Entity/Components/light/PointLight.cpp
+    src/Engine/Entity/Components/light/SpotLight.cpp
     src/Engine/Entity/Components/MeshRender.cpp
-    src/Engine/Entity/Components/SkyBox.cpp
+    src/Engine/Entity/Components/light/SkyBox.cpp
     src/Engine/Entity/Components/Transform.cpp
     src/Engine/Asset/AssetManager.cpp
     src/Engine/Asset/AssetDatabase.cpp

@@ -58,7 +58,7 @@ class Gui
     void RefreshAssetBrowserListing();
     void SyncAssetDetailFromBrowserSelection();
     void ClearAssetBrowserSelection();
-    void ShowScene();
+    void ShowCreate();
 #if GLE_ENABLE_RENDERDOC
     void ShowRenderDoc();
 #endif
@@ -110,7 +110,6 @@ class Gui
     bool m_createEntityAddTransform = true;
     int m_createEntityModelIdx = 0;
     int m_createEntityCubemapIdx = 0;
-    char m_createEntityName[128] = "New Entity";
     std::string m_createEntityStatus;
     char m_materialCreateName[128] = "NewMaterial";
     bool m_openCreateMaterialModal = false;

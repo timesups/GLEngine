@@ -6,7 +6,7 @@
 #include "UniformBuffer.h"
 
 #include "../Entity/Components/Camera.h"
-#include "../Entity/Components/Light.h"
+#include "../Entity/Components/light/Light.h"
 
 class RenderPipeline;
 

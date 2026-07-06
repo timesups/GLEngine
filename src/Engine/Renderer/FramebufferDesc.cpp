@@ -1,5 +1,7 @@
 #include "FramebufferDesc.h"
 
+#include <algorithm>
+
 namespace
 {
 TextureDesc WithSize(int width, int height, const TextureDesc& desc)
@@ -10,9 +12,23 @@ TextureDesc WithSize(int width, int height, const TextureDesc& desc)
     return out;
 }
 
-TextureDesc LinearClampColorBase(int channels, GLenum internalFmt, GLenum format, GLenum type)
+void RemoveAttachmentPoint(std::vector<FramebufferAttachmentDesc>& attachments, GLenum point)
 {
-    TextureDesc desc = TextureDesc::MakeExplicit(0, 0, channels, internalFmt, format, type, false);
+    attachments.erase(
+        std::remove_if(attachments.begin(), attachments.end(),
+                       [point](const FramebufferAttachmentDesc& a) { return a.attachmentPoint == point; }),
+        attachments.end());
+}
+
+void RemoveDepthAttachments(std::vector<FramebufferAttachmentDesc>& attachments)
+{
+    RemoveAttachmentPoint(attachments, GL_DEPTH_ATTACHMENT);
+    RemoveAttachmentPoint(attachments, GL_DEPTH_STENCIL_ATTACHMENT);
+}
+
+TextureDesc LinearClampBase(GLenum internalFmt, GLenum format, GLenum type)
+{
+    TextureDesc desc = TextureDesc::MakeExplicit(0, 0, internalFmt, format, type);
     desc.sampler.minFilter = GL_LINEAR;
     desc.sampler.magFilter = GL_LINEAR;
     desc.sampler.wrapS = GL_CLAMP_TO_EDGE;
@@ -20,9 +36,9 @@ TextureDesc LinearClampColorBase(int channels, GLenum internalFmt, GLenum format
     return desc;
 }
 
-TextureDesc NearestClampBase(int channels, GLenum internalFmt, GLenum format, GLenum type)
+TextureDesc NearestClampBase(GLenum internalFmt, GLenum format, GLenum type)
 {
-    TextureDesc desc = TextureDesc::MakeExplicit(0, 0, channels, internalFmt, format, type, false);
+    TextureDesc desc = TextureDesc::MakeExplicit(0, 0, internalFmt, format, type);
     desc.sampler.minFilter = GL_NEAREST;
     desc.sampler.magFilter = GL_NEAREST;
     desc.sampler.wrapS = GL_CLAMP_TO_EDGE;
@@ -32,21 +48,57 @@ TextureDesc NearestClampBase(int channels, GLenum internalFmt, GLenum format, GL
 }
 } // namespace
 
+GLenum FramebufferDesc::AddColorAttachment(const TextureDesc& texture)
+{
+    const int colorIndex = ColorAttachmentCount();
+    const GLenum point = GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(colorIndex);
+
+    FramebufferAttachmentDesc attachment;
+    attachment.attachmentPoint = point;
+    attachment.storage = AttachmentStorage::Texture;
+    attachment.texture = WithSize(width, height, texture);
+    attachments.push_back(attachment);
+    drawBuffers.push_back(point);
+    return point;
+}
+
+void FramebufferDesc::SetDepthAttachment(const TextureDesc& depthTexture)
+{
+    RemoveDepthAttachments(attachments);
+
+    FramebufferAttachmentDesc depth;
+    depth.attachmentPoint = GL_DEPTH_ATTACHMENT;
+    depth.storage = AttachmentStorage::Texture;
+    depth.texture = WithSize(width, height, depthTexture);
+    attachments.push_back(depth);
+}
+
+void FramebufferDesc::SetDepthStencilAttachment(const RenderBufferDesc& renderBuffer)
+{
+    RemoveDepthAttachments(attachments);
+
+    FramebufferAttachmentDesc depthStencil;
+    depthStencil.attachmentPoint = GL_DEPTH_STENCIL_ATTACHMENT;
+    depthStencil.storage = AttachmentStorage::RenderBuffer;
+    depthStencil.renderBuffer = renderBuffer;
+    attachments.push_back(depthStencil);
+}
+
 namespace RenderTargetFormats
 {
 TextureDesc SceneColor()
 {
-    return LinearClampColorBase(3, GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT);
+    return LinearClampBase(GL_R11F_G11F_B10F, GL_RGB, GL_FLOAT);
 }
 
 TextureDesc ShadowDepth()
 {
-    return NearestClampBase(1, GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT);
+    return NearestClampBase(GL_DEPTH_COMPONENT32F, GL_DEPTH_COMPONENT, GL_FLOAT);
 }
 
 TextureDesc WaterBack()
 {
-    return NearestClampBase(4, GL_RGBA32F, GL_RGBA, GL_FLOAT);
+    return NearestClampBase(GL_RGBA32F, GL_RGBA, GL_FLOAT);
 }
 
 TextureDesc BloomHalf()
@@ -60,18 +112,8 @@ FramebufferDesc SceneColorDepth(const std::string& name, int width, int height, 
     desc.name = name;
     desc.width = width;
     desc.height = height;
-
-    FramebufferAttachmentDesc color;
-    color.attachmentPoint = GL_COLOR_ATTACHMENT0;
-    color.texture = WithSize(width, height, colorDesc);
-    desc.attachments.push_back(color);
-
-    FramebufferAttachmentDesc depth;
-    depth.attachmentPoint = GL_DEPTH_ATTACHMENT;
-    depth.texture = WithSize(width, height, ShadowDepth());
-    desc.attachments.push_back(depth);
-
-    desc.drawBuffers = {GL_COLOR_ATTACHMENT0};
+    desc.AddColorAttachment(colorDesc);
+    desc.SetDepthAttachment(ShadowDepth());
     return desc;
 }
 
@@ -81,13 +123,7 @@ FramebufferDesc ColorOnly(const std::string& name, int width, int height, const 
     desc.name = name;
     desc.width = width;
     desc.height = height;
-
-    FramebufferAttachmentDesc color;
-    color.attachmentPoint = GL_COLOR_ATTACHMENT0;
-    color.texture = WithSize(width, height, colorDesc);
-    desc.attachments.push_back(color);
-
-    desc.drawBuffers = {GL_COLOR_ATTACHMENT0};
+    desc.AddColorAttachment(colorDesc);
     return desc;
 }
 
@@ -97,12 +133,7 @@ FramebufferDesc DepthOnly(const std::string& name, int width, int height, const 
     desc.name = name;
     desc.width = width;
     desc.height = height;
-
-    FramebufferAttachmentDesc depth;
-    depth.attachmentPoint = GL_DEPTH_ATTACHMENT;
-    depth.texture = WithSize(width, height, depthDesc);
-    desc.attachments.push_back(depth);
-
+    desc.SetDepthAttachment(depthDesc);
     desc.drawBuffers = {};
     return desc;
 }
@@ -114,32 +145,11 @@ FramebufferDesc GBuffer(const std::string& name, int width, int height)
     desc.width = width;
     desc.height = height;
 
-    auto addColor = [&](GBufferTarget tag, const TextureDesc& texDesc)
-    {
-        FramebufferAttachmentDesc attachment;
-        attachment.attachmentPoint = GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(tag);
-        attachment.texture = WithSize(width, height, texDesc);
-        attachment.gbufferTag = tag;
-        desc.attachments.push_back(attachment);
-        desc.drawBuffers.push_back(attachment.attachmentPoint);
-    };
-
-    TextureDesc albedo = LinearClampColorBase(4, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
-    TextureDesc normal = LinearClampColorBase(4, GL_RGBA32F, GL_RGBA, GL_FLOAT);
-    TextureDesc mrsc = LinearClampColorBase(4, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
-    TextureDesc flag = LinearClampColorBase(4, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
-
-    addColor(GBufferTarget::AlbdeoAO, albedo);
-    addColor(GBufferTarget::NormalXY, normal);
-    addColor(GBufferTarget::MRSC, mrsc);
-    addColor(GBufferTarget::Flag, flag);
-
-    FramebufferAttachmentDesc depth;
-    depth.attachmentPoint = GL_DEPTH_ATTACHMENT;
-    depth.texture = WithSize(width, height, ShadowDepth());
-    depth.gbufferTag = GBufferTarget::Depth;
-    desc.attachments.push_back(depth);
-
+    desc.AddColorAttachment(LinearClampBase(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+    desc.AddColorAttachment(LinearClampBase(GL_RGBA32F, GL_RGBA, GL_FLOAT));
+    desc.AddColorAttachment(LinearClampBase(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+    desc.AddColorAttachment(LinearClampBase(GL_RGBA8, GL_RGBA, GL_UNSIGNED_BYTE));
+    desc.SetDepthAttachment(ShadowDepth());
     return desc;
 }
 
@@ -176,20 +186,8 @@ FramebufferDesc SceneColorDepthStencil(const std::string& name, int width, int h
     desc.name = name;
     desc.width = width;
     desc.height = height;
-
-    FramebufferAttachmentDesc color;
-    color.attachmentPoint = GL_COLOR_ATTACHMENT0;
-    color.storage = AttachmentStorage::Texture;
-    color.texture = WithSize(width, height, colorDesc);
-    desc.attachments.push_back(color);
-
-    FramebufferAttachmentDesc depthStencil;
-    depthStencil.attachmentPoint = GL_DEPTH_STENCIL_ATTACHMENT;
-    depthStencil.storage = AttachmentStorage::RenderBuffer;
-    depthStencil.renderBuffer = DepthStencilRBO(width, height);
-    desc.attachments.push_back(depthStencil);
-
-    desc.drawBuffers = {GL_COLOR_ATTACHMENT0};
+    desc.AddColorAttachment(colorDesc);
+    desc.SetDepthStencilAttachment(DepthStencilRBO(width, height));
     return desc;
 }
 } // namespace RenderTargetFormats

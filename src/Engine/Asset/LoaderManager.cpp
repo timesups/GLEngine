@@ -830,7 +830,7 @@ bool LoaderManager::LoadIBLMapFromFile(const std::string& path, std::shared_ptr<
             return false;
         }
 
-        TextureDesc desc = TextureDesc::MakeExplicit(width, height, nChannels, GL_RGB16F, GL_RGB, GL_FLOAT);
+        TextureDesc desc = TextureDesc::MakeExplicit(width, height, GL_RGB16F, GL_RGB, GL_FLOAT);
         desc.sampler.wrapS = GL_REPEAT;
         desc.sampler.wrapT = GL_CLAMP_TO_EDGE;
         desc.sampler.wrapR = GL_CLAMP_TO_EDGE;

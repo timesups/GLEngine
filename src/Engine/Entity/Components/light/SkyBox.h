@@ -18,6 +18,11 @@ class SkyBox : public Light
     SkyBox();
     ~SkyBox();
 
+    LightType GetType() const override
+    {
+        return LightType::SkyLight;
+    }
+
     void Init() override;
     void Update(float deltaTime) override;
     void Render() override;

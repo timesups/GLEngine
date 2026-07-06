@@ -14,9 +14,13 @@
 #include <vector>
 
 #include "../Entity/Components/Camera.h"
-#include "../Entity/Components/Light.h"
+#include "../Entity/Components/light/DirectionalLight.h"
+#include "../Entity/Components/light/Light.h"
+#include "../Entity/Components/light/LocalLight.h"
+#include "../Entity/Components/light/PointLight.h"
+#include "../Entity/Components/light/SpotLight.h"
 #include "../Entity/Components/MeshRender.h"
-#include "../Entity/Components/SkyBox.h"
+#include "../Entity/Components/light/SkyBox.h"
 #include "../Entity/Components/Transform.h"
 #include "../Entity/Entity.h"
 #include "../Entity/EntityManager.h"
@@ -1266,7 +1270,7 @@ ImGuiID Gui::BuildWidgets(RenderContext& context)
     ShowDetail();
     ShowOutline();
     ShowAssetBrowser(context);
-    ShowScene();
+    ShowCreate();
 #if GLE_ENABLE_RENDERDOC
     if (Config::Get().enableRenderDoc)
         ShowRenderDoc();
@@ -2531,74 +2535,100 @@ void Gui::ShowDetail()
 
     if (Light* light = ent->GetComponent<Light>())
     {
-        if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
+        if (dynamic_cast<SkyBox*>(light))
+        {
+            // SkyBox 有独立面板
+        }
+        else if (ImGui::CollapsingHeader("Light", ImGuiTreeNodeFlags_DefaultOpen))
         {
             glm::vec3 color = light->GetColor();
             if (ImGui::ColorEdit3("Color", &color.x))
                 light->SetColor(color);
 
             float intensity = light->GetIntensity();
-            if (light->type == LightType::Directional)
+            if (DirectionalLight* directional = dynamic_cast<DirectionalLight*>(light))
             {
                 if (ImGui::DragFloat("Illuminance (lux)", &intensity, 1000.0f, 0.0f, 200000.0f, "%.0f"))
-                    light->SetIntensity(intensity);
+                    directional->SetIntensity(intensity);
                 ImGui::TextDisabled("Ref: 100k lux ~ outdoor sun; gray18 HDR ~ %.5f",
                                     LightingConvention::DirectionalCalibrationMeasured::
                                         kReferenceHdrGray18AtReferenceLux);
+
+                if (ImGui::CollapsingHeader("Shadow", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    float z_near = directional->m_nearPlane;
+                    if (ImGui::DragFloat("near palne", &z_near))
+                        directional->m_nearPlane = z_near;
+
+                    float z_far = directional->m_farPlane;
+                    if (ImGui::DragFloat("far plane", &z_far))
+                        directional->m_farPlane = z_far;
+
+                    float bias = directional->m_bias;
+                    if (ImGui::DragFloat("bias", &bias, 0.0001, 0.0, 1.0, "%.6f"))
+                        directional->m_bias = bias;
+
+                    int pcfSample = directional->m_pcfSample;
+                    if (ImGui::DragInt("Pcf Sample", &pcfSample, 1, 0, 8))
+                        directional->m_pcfSample = pcfSample;
+
+                    float shadow_area = directional->m_shadow_area;
+                    if (ImGui::DragFloat("Shadow Area", &shadow_area, 0.1, 0.0, 100.0))
+                        directional->m_shadow_area = shadow_area;
+
+                    static const char* shadowResItems[4] = {"512", "1024", "2048", "4096"};
+                    ShadowRes res = directional->m_ShadowRes;
+                    int current_item = (int)res / 512 - 1;
+                    if (ImGui::Combo("Model", &current_item, shadowResItems, 4))
+                        directional->m_ShadowRes = static_cast<ShadowRes>((current_item + 1) * 512);
+                }
             }
-            else if (light->type == LightType::PointLight || light->type == LightType::SpotLight)
+            else if (LocalLight* local = dynamic_cast<LocalLight*>(light))
             {
                 if (ImGui::DragFloat("Luminous flux (lm)", &intensity, 10.0f, 0.0f, 50000.0f, "%.0f"))
-                    light->SetIntensity(intensity);
+                    local->SetIntensity(intensity);
                 ImGui::TextDisabled("E @ 1m (face to light): %.1f lux", intensity * LightingConvention::kInvFourPi);
-                ImGui::TextDisabled("Default bulb ref: %.0f lm", LightingConvention::PointLightBaseline::kDefaultPointLumens);
+                ImGui::TextDisabled("Default bulb ref: %.0f lm",
+                                    LightingConvention::PointLightBaseline::kDefaultPointLumens);
+
+                if (SpotLight* spot = dynamic_cast<SpotLight*>(local))
+                {
+                    float inCutOff = spot->m_inCutoff;
+                    if (ImGui::DragFloat("in Cut Off", &inCutOff))
+                        spot->m_inCutoff = inCutOff;
+
+                    float outCutoff = spot->m_outCutoff;
+                    if (ImGui::DragFloat("out Cut Off", &outCutoff))
+                        spot->m_outCutoff = outCutoff;
+                }
+
+                if (ImGui::CollapsingHeader("Shadow", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    float z_near = local->m_nearPlane;
+                    if (ImGui::DragFloat("near palne", &z_near))
+                        local->m_nearPlane = z_near;
+
+                    float z_far = local->m_farPlane;
+                    if (ImGui::DragFloat("far plane", &z_far))
+                        local->m_farPlane = z_far;
+
+                    float bias = local->m_bias;
+                    if (ImGui::DragFloat("bias", &bias, 0.0001, 0.0, 1.0, "%.6f"))
+                        local->m_bias = bias;
+
+                    int pcfSample = local->m_pcfSample;
+                    if (ImGui::DragInt("Pcf Sample", &pcfSample, 1, 0, 8))
+                        local->m_pcfSample = pcfSample;
+
+                    static const char* shadowResItems[4] = {"512", "1024", "2048", "4096"};
+                    ShadowRes res = local->m_ShadowRes;
+                    int current_item = (int)res / 512 - 1;
+                    if (ImGui::Combo("Model", &current_item, shadowResItems, 4))
+                        local->m_ShadowRes = static_cast<ShadowRes>((current_item + 1) * 512);
+                }
             }
             else if (ImGui::DragFloat("Intensity", &intensity, 0.1f, 0.0f, 100.0f))
                 light->SetIntensity(intensity);
-
-            if (light->type == LightType::SpotLight)
-            {
-                float inCutOff = light->m_inCutoff;
-                if (ImGui::DragFloat("in Cut Off", &inCutOff))
-                    light->m_inCutoff = inCutOff;
-
-                float outCutoff = light->m_outCutoff;
-                if (ImGui::DragFloat("out Cut Off", &outCutoff))
-                    light->m_outCutoff = outCutoff;
-            }
-
-            if (ImGui::CollapsingHeader("Shadow", ImGuiTreeNodeFlags_DefaultOpen))
-            {
-                float z_near = light->m_nearPlane;
-                if (ImGui::DragFloat("near palne", &z_near))
-                    light->m_nearPlane = z_near;
-
-                float z_far = light->m_farPlane;
-                if (ImGui::DragFloat("far plane", &z_far))
-                    light->m_farPlane = z_far;
-
-                float bias = light->m_bias;
-                if (ImGui::DragFloat("bias", &bias, 0.0001, 0.0, 1.0, "%.6f"))
-                    light->m_bias = bias;
-
-                int pcfSample = light->m_pcfSample;
-                if (ImGui::DragInt("Pcf Sample", &pcfSample, 1, 0, 8))
-                    light->m_pcfSample = pcfSample;
-
-                float shadow_area = light->m_shadow_area;
-                if (ImGui::DragFloat("Shadow Area", &shadow_area, 0.1, 0.0, 100.0))
-                    light->m_shadow_area = shadow_area;
-
-                // shadow size
-                static const char* shadowResItems[4] = {"512", "1024", "2048", "4096"};
-                ShadowRes res = light->m_ShadowRes;
-                int current_item = (int)res / 512 - 1;
-                if (ImGui::Combo("Model", &current_item, shadowResItems, 4))
-                {
-                    res = (ShadowRes)((current_item + 1) * 512);
-                    light->m_ShadowRes = res;
-                }
-            }
         }
     }
 
@@ -3136,19 +3166,19 @@ void Gui::SelectEntity(const std::shared_ptr<Entity>& entity)
     }
 }
 
-void Gui::ShowScene()
+void Gui::ShowCreate()
 {
-    if (!ImGui::Begin("Scene"))
+    if (!ImGui::Begin("Create"))
     {
         ImGui::End();
         return;
     }
 
-    ImGui::TextUnformatted("Create Entity");
-    ImGui::InputText("Name", m_createEntityName, IM_ARRAYSIZE(m_createEntityName));
-
     static const char* kEntityTypes[] = {
         "Empty", "Camera", "Mesh Render", "Directional Light", "Point Light", "Spot Light", "Skybox",
+    };
+    static const char* kDefaultEntityNames[] = {
+        "Entity", "Camera", "MeshRender", "DirectionalLight", "PointLight", "SpotLight", "Skybox",
     };
     ImGui::Combo("Type", &m_createEntityType, kEntityTypes, IM_ARRAYSIZE(kEntityTypes));
 
@@ -3207,7 +3237,10 @@ void Gui::ShowScene()
     ImGui::BeginDisabled(!canCreate);
     if (ImGui::Button("Create", ImVec2(-1.f, 0.f)))
     {
-        const std::string name = m_createEntityName;
+        const int typeIdx = m_createEntityType;
+        const std::string name = (typeIdx >= 0 && typeIdx < IM_ARRAYSIZE(kDefaultEntityNames))
+                                     ? kDefaultEntityNames[typeIdx]
+                                     : "Entity";
         EntityManager& em = EntityManager::Get();
         std::shared_ptr<Entity> created;
 
@@ -3271,9 +3304,6 @@ void Gui::ShowScene()
 
     if (!m_createEntityStatus.empty())
         ImGui::TextWrapped("%s", m_createEntityStatus.c_str());
-
-    ImGui::Separator();
-    ImGui::Text("Entities in scene: %zu", EntityManager::Get().GetEntityCount());
 
     ImGui::End();
 }

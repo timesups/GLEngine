@@ -10,7 +10,10 @@
 
 #include "../Core/LightingConvention.h"
 
-#include "../Entity/Components/SkyBox.h"
+#include "../Entity/Components/light/DirectionalLight.h"
+#include "../Entity/Components/light/Light.h"
+#include "../Entity/Components/light/LocalLight.h"
+#include "../Entity/Components/light/SkyBox.h"
 
 #include "../Asset/Types/Texture/IBLImage.h"
 #include "../Asset/Types/Texture/TextureCube.h"
@@ -99,7 +102,7 @@ void Renderer::UploadLightData()
         if (!light)
             continue;
 
-        if (light->type == LightType::Directional)
+        if (DirectionalLight* directional = dynamic_cast<DirectionalLight*>(light))
         {
             // 目前只接受一个定向光
             if (DirectionalLightCount != 0)
@@ -112,35 +115,36 @@ void Renderer::UploadLightData()
                 }
                 continue;
             }
-            lightData._MainLightDir = glm::vec4(light->GetDirection(), light->m_bias);
+            lightData._MainLightDir = glm::vec4(directional->GetDirection(), directional->m_bias);
             // _MainLightColor.rgb = color × DirectionalLuxToShaderLi(lux)；见 LightingConvention.h
             lightData._MainLightColor =
-                glm::vec4(light->GetColor() * light->GetShaderRadianceScale(), light->m_pcfSample);
-            lightData._MainLightMatrix = light->GetProjectMatrix() * light->GetViewMatrix();
-            lightData.param1.x = light->m_nearPlane;
-            lightData.param1.y = light->m_farPlane;
+                glm::vec4(directional->GetColor() * directional->GetShaderRadianceScale(), directional->m_pcfSample);
+            lightData._MainLightMatrix = directional->GetProjectMatrix() * directional->GetViewMatrix();
+            lightData.param1.x = directional->m_nearPlane;
+            lightData.param1.y = directional->m_farPlane;
             DirectionalLightCount++;
         }
         // 局部灯光
-        else if (localLightCount < Config::MaxLocalLight)
+        else if (LocalLight* local = dynamic_cast<LocalLight*>(light))
         {
+            if (localLightCount >= Config::MaxLocalLight)
+                continue;
+
             LocalLightData data{};
-            data.Position = light->GetPosition();
+            data.Position = local->GetPosition();
             // color.rgb = color × lumens；shader 衰减 1/(4π·dist²)，见 LightingConvention.h
-            data.Color = glm::vec4(light->GetColor() * light->GetShaderRadianceScale(), 0.0);
-            data.Direction = light->GetDirection();
-            data.inCutOff = glm::cos(glm::radians(light->m_inCutoff));
-            data.outCutOff = glm::cos(glm::radians(light->m_outCutoff));
+            data.Color = glm::vec4(local->GetColor() * local->GetShaderRadianceScale(), 0.0);
+            data.Direction = local->GetDirection();
+            data.inCutOff = glm::cos(glm::radians(local->m_inCutoff));
+            data.outCutOff = glm::cos(glm::radians(local->m_outCutoff));
 
-            data.param1.x = light->m_nearPlane;
-            data.param1.y = light->m_farPlane;
-            data.param1.z = light->m_bias;
-            data.param1.w = (float)light->m_pcfSample;
+            data.param1.x = local->m_nearPlane;
+            data.param1.y = local->m_farPlane;
+            data.param1.z = local->m_bias;
+            data.param1.w = (float)local->m_pcfSample;
 
-            for (int i = 0; i < 6; i++)
-            {
-                data.matrix[i] = light->GetProjectMatrix() * light->GetViewMatrix((Direction)i);
-            }
+            for (int face = 0; face < 6; face++)
+                data.matrix[face] = local->GetProjectMatrix() * local->GetViewMatrix(static_cast<Direction>(face));
 
             lightData._localLights[localLightCount] = data;
             localLightCount++;

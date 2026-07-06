@@ -6,43 +6,31 @@
 
 bool Texture2DArray::Create(const TextureDesc& desc, const void* pixelData)
 {
-    if (desc.width <= 0 || desc.height <= 0 || desc.channels <= 0 || desc.layerCount <= 0)
+    if (desc.width <= 0 || desc.height <= 0 || desc.layerCount <= 0)
     {
-        LogA(LogLevel::ERROR, "Texture2DArray::Create: invalid size {}x{} ch={} layers={}", desc.width, desc.height,
-             desc.channels, desc.layerCount);
+        LogA(LogLevel::ERROR, "Texture2DArray::Create: invalid size {}x{} layers={}", desc.width, desc.height,
+             desc.layerCount);
+        return false;
+    }
+
+    ResolvedTextureLayout layout;
+    if (!ResolveTextureLayout(desc, layout))
+    {
+        LogA(LogLevel::ERROR, "Texture2DArray::Create: failed to resolve texture layout (internal=0x{:X})",
+             desc.internalFormat);
         return false;
     }
 
     m_LayerCount = desc.layerCount;
 
-    GLenum internalFmt = desc.internalFormat;
-    GLenum pixelFmt = desc.pixelFormat;
-    GLenum pixelType = desc.pixelType;
-
-    if (desc.internalFormat == 0)
-    {
-        const TexFormatType ft = ChannelsToFormat(desc.channels, desc.srgb);
-        internalFmt = ft.Format;
-        pixelFmt = ft.Type;
-        pixelType = GL_UNSIGNED_BYTE;
-        m_autoFormat = true;
-    }
-    else
-    {
-        if (desc.pixelFormat == 0 || desc.pixelType == 0)
-        {
-            LogA(LogLevel::ERROR, "Texture2DArray::Create: custom internalFormat requires pixelFormat and pixelType");
-            return false;
-        }
-        internalFmt = desc.internalFormat;
-        pixelFmt = desc.pixelFormat;
-        pixelType = desc.pixelType;
-        m_autoFormat = false;
-    }
+    const GLenum internalFmt = layout.internalFormat;
+    const GLenum pixelFmt = layout.pixelFormat;
+    const GLenum pixelType = layout.pixelType;
+    m_autoFormat = layout.autoFormat;
 
     m_width = desc.width;
     m_height = desc.height;
-    m_channels = desc.channels;
+    m_channels = layout.channels;
     m_srgb = desc.srgb;
     m_internalFormat = internalFmt;
     m_pixelFormat = pixelFmt;

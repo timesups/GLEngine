@@ -432,22 +432,25 @@ std::shared_ptr<Material> AssetManager::FindLoadedMaterialBySourcePath(const std
 
 std::shared_ptr<Material> AssetManager::LoadMaterial(const std::string& path)
 {
-    const std::string resolvedPath = ResolveAssetPath(path);
-    if (resolvedPath.empty())
+    const std::string key = NormalizeAssetKey(path);
+    if (key.empty())
     {
         LogA(LogLevel::ERROR, "LoadMaterial: invalid asset ref '{}'", path);
         return nullptr;
     }
+
+    if (const auto cached = m_materials.find(key); cached != m_materials.end())
+        return cached->second;
 
     std::vector<std::string> dependencies;
     std::shared_ptr<Material> mat = BuildMaterialFromFile(path, &dependencies);
     if (!mat)
         return nullptr;
 
-    mat->m_sourcePath = resolvedPath;
-    m_materials[resolvedPath] = mat;
-    AssetDataBase::Get().UpdateDependencies(resolvedPath, dependencies);
-    LogA(LogLevel::INFO, "LoadMaterial OK: '{}' queue={} from {}", mat->m_name, mat->GetRenderQueue(), resolvedPath);
+    mat->m_sourcePath = key;
+    m_materials[key] = mat;
+    AssetDataBase::Get().UpdateDependencies(key, dependencies);
+    LogA(LogLevel::INFO, "LoadMaterial OK: '{}' queue={} from {}", mat->m_name, mat->GetRenderQueue(), key);
     return mat;
 }
 
@@ -490,7 +493,7 @@ std::shared_ptr<Texture2D> AssetManager::CreateSolidColorTexture2D(const std::st
 
     auto tex = std::make_shared<Texture2D>();
     const float pixel[3] = {linearRgb.r, linearRgb.g, linearRgb.b};
-    TextureDesc desc = TextureDesc::MakeExplicit(1, 1, 3, GL_RGB16F, GL_RGB, GL_FLOAT);
+    TextureDesc desc = TextureDesc::MakeExplicit(1, 1, GL_RGB16F, GL_RGB, GL_FLOAT);
     desc.sampler.minFilter = GL_LINEAR;
     desc.sampler.magFilter = GL_LINEAR;
     desc.sampler.wrapS = GL_CLAMP_TO_EDGE;

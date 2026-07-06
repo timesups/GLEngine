@@ -52,8 +52,6 @@ class RenderTarget
     const Texture& ColorAttachment(int index = 0) const;
     Texture& DepthAttachment();
     const Texture& DepthAttachment() const;
-    Texture& GetGBufferTexture(GBufferTarget target);
-    const Texture& GetGBufferTexture(GBufferTarget target) const;
     const RenderTargetAttachment* FindDepthAttachment() const;
 
     Framebuffer& GetFramebuffer();
@@ -72,8 +70,7 @@ class RenderTarget
     RenderTargetAttachment* FindColorAttachment(int index);
     const RenderTargetAttachment* FindColorAttachment(int index) const;
     RenderTargetAttachment* FindDepthAttachment();
-    RenderTargetAttachment* FindGBufferAttachment(GBufferTarget target);
-    const RenderTargetAttachment* FindGBufferAttachment(GBufferTarget target) const;
+    int ColorAttachmentCount() const;
 
     std::vector<RenderTargetAttachment> m_attachments;
     Framebuffer m_framebuffer;

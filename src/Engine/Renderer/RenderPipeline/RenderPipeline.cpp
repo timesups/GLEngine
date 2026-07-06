@@ -9,8 +9,9 @@
 #include "../../Asset/Types/Texture/TextureCube.h"
 #include "../../Core/Log.h"
 #include "../../Core/util.h"
-#include "../../Entity/Components/Light.h"
-#include "../../Entity/Components/SkyBox.h"
+#include "../../Entity/Components/light/DirectionalLight.h"
+#include "../../Entity/Components/light/Light.h"
+#include "../../Entity/Components/light/SkyBox.h"
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/RenderUnitFilter.h"
 #include "../CubemapBaker.h"
@@ -142,7 +143,7 @@ void RenderPipeline::DrawShadowMap(RenderContext& context)
         if (!light)
             continue;
 
-        if (light->type == LightType::Directional)
+        if (DirectionalLight* directional = dynamic_cast<DirectionalLight*>(light))
         {
             // 目前只接受一个定向光
             if (DirectionalLightCount != 0)
@@ -156,7 +157,7 @@ void RenderPipeline::DrawShadowMap(RenderContext& context)
                 continue;
             }
             // 绘制主光shadowmap
-            m_buf_shadow.Bind(true, (int)light->m_ShadowRes, (int)light->m_ShadowRes);
+            m_buf_shadow.Bind(true, (int)directional->m_ShadowRes, (int)directional->m_ShadowRes);
             Util::ClearScreen(GL_DEPTH_BUFFER_BIT);
             EntityManager::Get().DrawRenderQueue(0, RenderQueue::OpaqueUpperBound, m_shadowMaterialGloabl,
                                                  RenderUnitFilter::CastShadow());

@@ -33,6 +33,12 @@ class Entity
         auto it = m_components.find(typeid(T));
         if (it != m_components.end())
             return static_cast<T*>(it->second.get());
+
+        for (auto& pair : m_components)
+        {
+            if (T* component = dynamic_cast<T*>(pair.second.get()))
+                return component;
+        }
         return nullptr;
     }
 
@@ -44,6 +50,12 @@ class Entity
         auto it = m_components.find(typeid(T));
         if (it != m_components.end())
             return static_cast<const T*>(it->second.get());
+
+        for (const auto& pair : m_components)
+        {
+            if (const T* component = dynamic_cast<const T*>(pair.second.get()))
+                return component;
+        }
         return nullptr;
     }
 
@@ -57,7 +69,15 @@ class Entity
     template <typename T>
     bool HasComponent()
     {
-        return m_components.find(typeid(T)) != m_components.end();
+        if (m_components.find(typeid(T)) != m_components.end())
+            return true;
+
+        for (const auto& pair : m_components)
+        {
+            if (dynamic_cast<T*>(pair.second.get()))
+                return true;
+        }
+        return false;
     }
 
     void Init();

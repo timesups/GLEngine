@@ -7,9 +7,9 @@
 #include "Engine/Core/Log.h"
 #include "Engine/Core/RenderDocSupport.h"
 #include "Engine/Core/Window.h"
-#include "Engine/Entity/Components/Light.h"
+#include "Engine/Entity/Components/light/Light.h"
 #include "Engine/Entity/Components/MeshRender.h"
-#include "Engine/Entity/Components/SkyBox.h"
+#include "Engine/Entity/Components/light/SkyBox.h"
 #include "Engine/Entity/Components/Transform.h"
 #include "Engine/Entity/EntityManager.h"
 #include "Engine/Renderer/RenderContext.h"
@@ -62,33 +62,6 @@ void PrintUsage(const char* executable)
 }
 } // namespace
 
-void CreateDefaultScene()
-{
-    std::shared_ptr<Material> material = AssetManager::Get().GetAsset<Material>("engine://materials/DefaultMaterial");
-    auto model = AssetManager::Get().GetAsset<Model>("engine://model/plane.fbx");
-
-    auto MR = EntityManager::Get().CreateMeshRenderEntity("e_plane", model);
-    MR->GetComponent<Transform>()->SetPosition(0, -1, 0);
-    MR->GetComponent<Transform>()->SetScale(20, 20, 20);
-    MR->GetComponent<MeshRender>()->SetMaterial(0, material);
-
-    model = AssetManager::Get().GetAsset<Model>("engine://model/sphere.fbx");
-    MR = EntityManager::Get().CreateMeshRenderEntity("e_sphere", model);
-    MR->GetComponent<MeshRender>()->SetMaterial(0, material);
-
-    auto e_skybox = EntityManager::Get().CreateSkyBoxEntity(
-        "skybox", AssetManager::Get().GetAsset<IBLImage>("engine://hdr/sunny_rose_garden.hdr"));
-    SkyBox* sky = e_skybox->GetComponent<SkyBox>();
-    sky->SetIntensity(0.2f);
-    sky->SetBrightness(1.0f);
-    sky->SetIBLLightingEnabled(true);
-    sky->SetIBLLightingIntensity(1.0f);
-    sky->SetDrawBackgroundEnabled(true);
-
-    auto sun = EntityManager::Get().CreateLight("sun", LightType::Directional);
-    sun->GetComponent<Transform>()->SetRotation(220, 40, 0);
-}
-
 int main(int argc, char** argv)
 {
     const LaunchOptions opts = ParseCommandLine(argc, argv);
@@ -134,7 +107,6 @@ int main(int argc, char** argv)
     else
     {
         LogA(LogLevel::WARNING, "Scene load failed ({}), falling back to CreateDefaultScene", msg);
-        CreateDefaultScene();
         SceneSession::Get().Reset();
     }
     EntityManager::Get().Init();

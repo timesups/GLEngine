@@ -1,10 +1,10 @@
 {
     "dependencies": [
-        "Content/Project/textures/floor/flooring_roughness.png",
         "Content/Engine/shaders/DefaultLit.glsl",
-        "Content/Engine/textures/white.png",
-        "Content/Engine/textures/normal.png",
+        "Content/Project/textures/floor/flooring_roughness.png",
         "Content/Engine/textures/grey.png",
+        "Content/Engine/textures/normal.png",
+        "Content/Engine/textures/white.png",
         "Content/Project/textures/floor/flooring_albedo.png",
         "Content/Project/textures/floor/flooring_ao.png",
         "Content/Project/textures/floor/flooring_normal.png",

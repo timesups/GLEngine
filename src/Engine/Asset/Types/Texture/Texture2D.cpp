@@ -7,41 +7,28 @@
 
 bool Texture2D::Create(const TextureDesc& desc, const void* pixelData)
 {
-    if (desc.width <= 0 || desc.height <= 0 || desc.channels <= 0)
+    if (desc.width <= 0 || desc.height <= 0)
     {
-        LogA(LogLevel::ERROR, "Create: invalid size {}x{} ch={}", desc.width, desc.height, desc.channels);
+        LogA(LogLevel::ERROR, "Create: invalid size {}x{}", desc.width, desc.height);
+        return false;
+    }
+
+    ResolvedTextureLayout layout;
+    if (!ResolveTextureLayout(desc, layout))
+    {
+        LogA(LogLevel::ERROR, "Create: failed to resolve texture layout (internal=0x{:X})", desc.internalFormat);
         return false;
     }
 
     m_srgb = desc.srgb;
     m_width = desc.width;
     m_height = desc.height;
-    m_channels = desc.channels;
+    m_channels = layout.channels;
+    m_autoFormat = layout.autoFormat;
 
-    GLenum internalFmt = 0;
-    GLenum pixelFmt = 0;
-    GLenum pixelType = GL_UNSIGNED_BYTE;
-
-    if (desc.internalFormat == 0)
-    {
-        const TexFormatType ft = ChannelsToFormat(desc.channels, desc.srgb);
-        internalFmt = ft.Format;
-        pixelFmt = ft.Type;
-        pixelType = GL_UNSIGNED_BYTE;
-        m_autoFormat = true;
-    }
-    else
-    {
-        internalFmt = desc.internalFormat;
-        m_autoFormat = false;
-        if (desc.pixelFormat == 0 || desc.pixelType == 0)
-        {
-            LogA(LogLevel::ERROR, "Create: custom internalFormat requires non-zero pixelFormat and pixelType");
-            return false;
-        }
-        pixelFmt = desc.pixelFormat;
-        pixelType = desc.pixelType;
-    }
+    const GLenum internalFmt = layout.internalFormat;
+    const GLenum pixelFmt = layout.pixelFormat;
+    const GLenum pixelType = layout.pixelType;
 
     m_internalFormat = internalFmt;
     m_pixelFormat = pixelFmt;
