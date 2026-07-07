@@ -88,6 +88,8 @@ void MeshRender::RenderSection(const size_t index, std::shared_ptr<Material> mat
         data.mModel = transform->GetModelMatrix();
         data.mNormal = transform->GetNormalMatrix();
     }
+    data.boundingBoxMax = m_bounds.GetMaxPoint();
+    data.boundingBoxMin = m_bounds.GetMinPoint();
     mat->Apply(data);
 }
 void MeshRender::RenderSection(const size_t index)

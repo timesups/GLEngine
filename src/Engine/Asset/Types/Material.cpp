@@ -242,6 +242,8 @@ void Material::Apply(const MaterialApplyData& applyData)
             pass->SetValue("_UseInstancing", 0);
             pass->SetValue("GL_MATRIX_M", applyData.mModel);
             pass->SetValue("GL_MATRIX_N", applyData.mNormal);
+            pass->SetValue("_BoundingBoxMax", applyData.boundingBoxMax);
+            pass->SetValue("_BoundingBoxMin", applyData.boundingBoxMin);
             applyShaderProperties(*pass);
             pass->SetState();
             pass->SetValue("_DrawCount", pass->GetOptions().DrawTimes);

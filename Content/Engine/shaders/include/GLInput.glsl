@@ -96,6 +96,8 @@ struct InstanceData
 {
     mat4 model;
     mat4 normal;
+    vec4 _InstanceBoundingBoxMax;
+    vec4 _InstanceBoundingBoxMin;
 };
 
 layout(std430, binding = 3) buffer instance_buffer
@@ -110,6 +112,10 @@ uniform mat4 GL_MATRIX_N;
 uniform int _UseInstancing;
 uniform int _InstanceOffset;
 uniform int _InstanceCount;
+
+
+uniform vec3 _BoundingBoxMax;
+uniform vec3 _BoundingBoxMin;
 
 //需要逐pass输入的数据
 uniform int _PassIndex;

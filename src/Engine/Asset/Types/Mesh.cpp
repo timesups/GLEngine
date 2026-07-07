@@ -43,12 +43,12 @@ const glm::vec3& Bounds::GetMaxPoint()
     return m_max;
 }
 
-glm::vec3 Bounds::GetMinPoint()
+const glm::vec3& Bounds::GetMinPoint()
 {
     return m_min;
 }
 
-glm::vec3 Bounds::GetCenterPoint()
+const glm::vec3& Bounds::GetCenterPoint()
 {
     glm::vec3 point = m_max + m_min;
     return glm::vec3(point.x / 2, point.y / 2, point.z / 2);

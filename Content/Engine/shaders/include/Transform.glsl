@@ -1,22 +1,51 @@
 #ifndef TRANSFORM_INCLUDE
 #define TRANSFORM_INCLUDE
 
-mat4 GetModelMatrix()
+// 顶点写入 instance 索引，片段通过 flat varying 读取（当前 profile 片段不可用 gl_InstanceID）
+#ifdef VERTEX
+flat out int v_InstanceIndex;
+#elif defined(FRAGMENT)
+flat in int v_InstanceIndex;
+#endif
+
+int GetInstanceIndex()
 {
 #ifdef VERTEX
-    if (_UseInstancing != 0)
-        return _Instances[_InstanceOffset + gl_InstanceID].model;
+    v_InstanceIndex = (_UseInstancing != 0) ? (_InstanceOffset + gl_InstanceID) : 0;
+    return v_InstanceIndex;
+#elif defined(FRAGMENT)
+    return v_InstanceIndex;
+#else
+    return 0;
 #endif
+}
+
+mat4 GetModelMatrix()
+{
+    if (_UseInstancing != 0)
+        return _Instances[GetInstanceIndex()].model;
     return GL_MATRIX_M;
 }
 
 mat4 GetNormalMatrix()
 {
-#ifdef VERTEX
     if (_UseInstancing != 0)
-        return _Instances[_InstanceOffset + gl_InstanceID].normal;
-#endif
+        return _Instances[GetInstanceIndex()].normal;
     return GL_MATRIX_N;
+}
+
+vec3 GetBoundingBoxMax()
+{
+    if (_UseInstancing != 0)
+        return _Instances[GetInstanceIndex()]._InstanceBoundingBoxMax.xyz;
+    return _BoundingBoxMax;
+}
+
+vec3 GetBoundingBoxMin()
+{
+    if (_UseInstancing != 0)
+        return _Instances[GetInstanceIndex()]._InstanceBoundingBoxMin.xyz;
+    return _BoundingBoxMin;
 }
 
 vec4 ObjectToClipPos(vec3 pos)

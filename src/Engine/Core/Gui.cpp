@@ -2313,7 +2313,7 @@ void Gui::ShowDetail()
     }
 
     ImGui::InputText("Name", m_detailNameBuf, IM_ARRAYSIZE(m_detailNameBuf));
-    if (ent->m_name != m_detailNameBuf)
+    if (ent->m_name != m_detailNameBuf && m_detailNameBuf[0] != '\0')
     {
         ent->m_name = m_detailNameBuf;
         SceneSession::Get().MarkDirty();
@@ -2358,7 +2358,21 @@ void Gui::ShowDetail()
                 cam->SetFov(fov);
                 SceneSession::Get().MarkDirty();
             }
-            ImGui::Text("Clip near %.2f  far %.2f", cam->GetNear(), cam->GetFar());
+
+            float zNear = cam->GetNear();
+            const float zFar = cam->GetFar();
+            if (ImGui::DragFloat("Near", &zNear, 0.01f, 0.001f, zFar - 0.001f, "%.3f"))
+            {
+                cam->SetNear(zNear);
+                SceneSession::Get().MarkDirty();
+            }
+
+            float zFarEdit = cam->GetFar();
+            if (ImGui::DragFloat("Far", &zFarEdit, 1.f, cam->GetNear() + 0.001f, 100000.f, "%.1f"))
+            {
+                cam->SetFar(zFarEdit);
+                SceneSession::Get().MarkDirty();
+            }
         }
         if (ImGui::CollapsingHeader("Post Process", ImGuiTreeNodeFlags_DefaultOpen))
         {
@@ -3366,16 +3380,21 @@ void Gui::ShowOutline()
 
     if (ImGui::BeginListBox(" ", ImVec2(-FLT_MIN, -FLT_MIN)))
     {
+        const auto& entities = EntityManager::Get().GetEntities();
         for (int n = 0; n < entityCount; n++)
         {
             const bool is_selected = (item_selected_idx == n);
-            if (ImGui::Selectable(EntityManager::Get().GetEntities()[n]->m_name.c_str(), is_selected))
+            const std::string& entityName = entities[static_cast<size_t>(n)]->m_name;
+            const char* label = entityName.empty() ? "(unnamed)" : entityName.c_str();
+            ImGui::PushID(n);
+            if (ImGui::Selectable(label, is_selected))
             {
                 item_selected_idx = n;
                 m_detailLastSelectedIdx = -1;
                 m_detailViewMode = DetailViewMode::Entity;
                 m_assetBrowserLastSyncedDetailIndices = m_assetBrowserSelectedIndices;
             }
+            ImGui::PopID();
 
             // if (item_highlight && ImGui::IsItemHovered())
             //     item_highlighted_idx = n;

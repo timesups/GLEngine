@@ -14,6 +14,8 @@ struct MaterialApplyData
 {
     glm::mat4 mModel;
     glm::mat4 mNormal;
+    glm::vec3 boundingBoxMax{};
+    glm::vec3 boundingBoxMin{};
     MeshSection* section;
 };
 

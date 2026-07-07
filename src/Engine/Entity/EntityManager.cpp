@@ -3,26 +3,25 @@
 #include "Components/light/DirectionalLight.h"
 #include "Components/light/Light.h"
 #include "Components/light/PointLight.h"
+#include "Components/light/SkyBox.h"
 #include "Components/light/SpotLight.h"
 #include "Components/MeshRender.h"
-#include "Components/light/SkyBox.h"
 #include "Components/Transform.h"
 #include "Entity.h"
 
 #include <algorithm>
 
 #include "../Asset/AssetManager.h"
-#include "../Core/LightingConvention.h"
 #include "../Asset/Types/Material.h"
 #include "../Asset/Types/Model.h"
 #include "../Asset/Types/RenderQueue.h"
 #include "../Asset/Types/Texture/IBLImage.h"
+#include "../Core/LightingConvention.h"
 #include "../Core/Log.h"
 #include "../Core/util.h"
 #include "../Renderer/DrawBatch.h"
 #include "../Renderer/InstanceBuffer.h"
 #include "../Renderer/RenderContext.h"
-
 
 #define MODULE "EntityManager"
 
@@ -354,11 +353,11 @@ void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive
 
     auto resolveTransform = [&](const RenderUnit& unit) -> GPUInstanceData
     {
-        GPUInstanceData data{};
         Transform* transform = unit.meshRenser->GetEntity()->GetComponent<Transform>();
-        data.mModel = transform ? transform->GetModelMatrix() : glm::mat4(1.0f);
-        data.mNormal = transform ? transform->GetNormalMatrix() : glm::mat4(1.0f);
-        return data;
+        const glm::mat4 model = transform ? transform->GetModelMatrix() : glm::mat4(1.0f);
+        const glm::mat4 normal = transform ? transform->GetNormalMatrix() : glm::mat4(1.0f);
+        return MakeGPUInstanceData(model, normal, unit.meshRenser->m_bounds.GetMaxPoint(),
+                                 unit.meshRenser->m_bounds.GetMinPoint());
     };
 
     std::vector<DrawBatch> batches = BuildDrawBatches(renderUnits, minQueueInclusive, maxQueueExclusive, overridePtr,
@@ -387,6 +386,8 @@ void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive
             data.section = batch.section;
             data.mModel = batch.instances[0].mModel;
             data.mNormal = batch.instances[0].mNormal;
+            data.boundingBoxMax = glm::vec3(batch.instances[0].boundingBoxMax);
+            data.boundingBoxMin = glm::vec3(batch.instances[0].boundingBoxMin);
             mat->Apply(data);
         }
     }

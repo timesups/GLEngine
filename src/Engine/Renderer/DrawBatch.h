@@ -18,7 +18,23 @@ struct GPUInstanceData
 {
     glm::mat4 mModel;
     glm::mat4 mNormal;
+    /// xyz = world-space AABB; w 保留对齐，与 GLSL std430 一致
+    glm::vec4 boundingBoxMax{0.f};
+    glm::vec4 boundingBoxMin{0.f};
 };
+
+static_assert(sizeof(GPUInstanceData) == 160, "GPUInstanceData must match GLSL InstanceData (std430)");
+
+inline GPUInstanceData MakeGPUInstanceData(const glm::mat4& model, const glm::mat4& normal, const glm::vec3& bboxMax,
+                                           const glm::vec3& bboxMin)
+{
+    GPUInstanceData data{};
+    data.mModel = model;
+    data.mNormal = normal;
+    data.boundingBoxMax = glm::vec4(bboxMax, 0.f);
+    data.boundingBoxMin = glm::vec4(bboxMin, 0.f);
+    return data;
+}
 
 struct BatchKey
 {

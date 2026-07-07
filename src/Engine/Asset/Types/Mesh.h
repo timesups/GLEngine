@@ -13,8 +13,8 @@ struct Bounds
     void FromMaxMinPoints(const glm::vec3& max, const glm::vec3& min);
     void ApplyMatrix(const glm::mat4& mat);
     const glm::vec3& GetMaxPoint();
-    glm::vec3 GetMinPoint();
-    glm::vec3 GetCenterPoint();
+    const glm::vec3& GetMinPoint();
+    const glm::vec3& GetCenterPoint();
 
   private:
     std::vector<glm::vec3> m_initial_cornerPoints;
