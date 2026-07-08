@@ -203,6 +203,28 @@ bool RenderTarget::CreateDepth(const std::string& name, int width, int height, c
     return Build(RenderTargetFormats::DepthOnly(name, width, height, textureDesc));
 }
 
+unsigned int RenderTarget::BindAttachments(const unsigned int start)
+{
+    unsigned int next = start;
+    for (size_t i = 0; i < m_attachments.size(); i++)
+    {
+        std::shared_ptr<Texture> tex = m_attachments[i].texture;
+        if (tex)
+            tex->Bind(next);
+        next++;
+    }
+    return next;
+}
+void RenderTarget::UnBindAttachments()
+{
+    for (size_t i = 0; i < m_attachments.size(); i++)
+    {
+        std::shared_ptr<Texture> tex = m_attachments[i].texture;
+        if (tex)
+            tex->UnBind();
+    }
+}
+
 bool RenderTarget::AddAttachment(RenderTargetAttachment& attachment, TextureType type)
 {
     attachment.binding.textureTarget = TextureTargetFromType(type);
@@ -250,8 +272,7 @@ RenderTargetAttachment* RenderTarget::FindDepthAttachment()
 {
     for (RenderTargetAttachment& attachment : m_attachments)
     {
-        if (attachment.binding.point == GL_DEPTH_ATTACHMENT ||
-            attachment.binding.point == GL_DEPTH_STENCIL_ATTACHMENT)
+        if (attachment.binding.point == GL_DEPTH_ATTACHMENT || attachment.binding.point == GL_DEPTH_STENCIL_ATTACHMENT)
             return &attachment;
     }
     return nullptr;
@@ -319,7 +340,7 @@ void RenderTarget::DrawBufferTo(RenderTarget& dec, std::shared_ptr<Shader> shade
 }
 
 void RenderTarget::UpsampleBufferTo(RenderTarget& mip, RenderTarget& dest, std::shared_ptr<Shader> shader,
-                                   const std::string& name)
+                                    const std::string& name)
 {
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, name.c_str());
     dest.Bind(false);
@@ -360,8 +381,9 @@ void RenderTarget::UnbindGBufferMaterialTextures()
 
 void RenderTarget::ApplyGeometryDrawBuffers()
 {
-    m_framebuffer.SetDrawBuffers({GL_COLOR_ATTACHMENT0 + GBufferLayout::AlbedoAO, GL_COLOR_ATTACHMENT0 + GBufferLayout::NormalXY,
-                                  GL_COLOR_ATTACHMENT0 + GBufferLayout::MRSC, GL_COLOR_ATTACHMENT0 + GBufferLayout::Flag});
+    m_framebuffer.SetDrawBuffers(
+        {GL_COLOR_ATTACHMENT0 + GBufferLayout::AlbedoAO, GL_COLOR_ATTACHMENT0 + GBufferLayout::NormalXY,
+         GL_COLOR_ATTACHMENT0 + GBufferLayout::MRSC, GL_COLOR_ATTACHMENT0 + GBufferLayout::Flag});
     m_framebuffer.ApplyDrawBuffers();
 }
 
@@ -476,9 +498,8 @@ bool RenderTarget::BindArrayTargetLayer(unsigned int layer, RenderTargetAttachme
         return false;
 
     m_framebuffer.Bind(false);
-    const bool ok =
-        m_framebuffer.BindTextureLayer(attachment->binding.point, attachment->texture,
-                                       attachment->binding.textureTarget, static_cast<int>(layer));
+    const bool ok = m_framebuffer.BindTextureLayer(attachment->binding.point, attachment->texture,
+                                                   attachment->binding.textureTarget, static_cast<int>(layer));
     m_framebuffer.Unbind();
     return ok;
 }

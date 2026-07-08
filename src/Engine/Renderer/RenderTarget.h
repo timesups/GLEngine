@@ -33,6 +33,8 @@ class RenderTarget
     void CreateColorOnly(const std::string& name, int width, int height, const TextureDesc& textureDesc);
     void CreateDepth(const std::string& name, int width, int height);
     bool CreateDepth(const std::string& name, int width, int height, const TextureDesc& textureDesc);
+    unsigned int BindAttachments(const unsigned int start = 0);
+    void UnBindAttachments();
 
     bool AddAttachment(RenderTargetAttachment& attachment, TextureType type);
 
@@ -51,8 +53,7 @@ class RenderTarget
     void Bind(bool debug, int width = 0, int height = 0);
     void UnBind();
     void BlitTo(RenderTarget& dst, FramebufferBlitMask mask) const;
-    void BlitColorAttachmentTo(RenderTarget& dst, int srcColorIndex, int dstColorIndex,
-                               FramebufferBlitMask mask) const;
+    void BlitColorAttachmentTo(RenderTarget& dst, int srcColorIndex, int dstColorIndex, FramebufferBlitMask mask) const;
     bool BindArrayTargetLayer(unsigned int layer, RenderTargetAttachment* attachment);
 
     Texture& ColorAttachment(int index = 0);

@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "9f79cfb0-d9d2-4105-b243-f518ea54f925",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/Endfield/Texture/Perlica_Outfit_C.png",
+    "type": "texture"
+}

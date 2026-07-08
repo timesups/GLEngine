@@ -1,0 +1,97 @@
+{
+    "activeCamera": "MainCamera",
+    "entities": [
+        {
+            "components": {
+                "Camera": {
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "imaging": {
+                        "aperture": 2.799999952316284,
+                        "exposureCompensationEv": 0.0,
+                        "iso": 100.0,
+                        "shutterSpeed": 0.01666666753590107
+                    },
+                    "near": 0.10000000149011612,
+                    "postSetting": {
+                        "aoMode": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "bloom": [
+                            0.8500000238418579,
+                            0.20000000298023224,
+                            0.5,
+                            0.0
+                        ],
+                        "ssao": [
+                            1.0,
+                            0.004999999888241291,
+                            1.0,
+                            1.0
+                        ],
+                        "tonemap": [
+                            1.0,
+                            2.200000047683716,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                },
+                "Transform": {
+                    "position": [
+                        7.74365234375,
+                        13.647672653198242,
+                        13.452031135559082
+                    ],
+                    "rotation": [
+                        -17.4799747467041,
+                        332.1603698730469,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "MainCamera"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Perlica_Outfit.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/Endfield/Model/Outfit.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        -90.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "OutFit"
+        }
+    ],
+    "name": "EndfieldTestScene",
+    "version": 1
+}
