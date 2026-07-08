@@ -43,7 +43,8 @@ class EntityManager
     void GatherSceneRenderUnit(RenderContext& context);
     void DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive,
                          std::shared_ptr<Material> materialOverride = nullptr,
-                         RenderUnitFilter filter = RenderUnitFilter::None());
+                         RenderUnitFilter filter = RenderUnitFilter::None(),
+                         const std::string& lightMode = "");
     void DrawIcons();
 
     void DestroyEntity(Entity* entity);

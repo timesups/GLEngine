@@ -1,0 +1,58 @@
+{
+    "name": "M_Perlica_face",
+    "properties": {
+        "_Attribute": {
+            "path": "Content/Engine/textures/grey.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_ClipScale": [
+            0.0,
+            0.0,
+            0.0,
+            0.0
+        ],
+        "_Color": {
+            "path": "Content/Project/Endfield/Texture/Perlica_Face_C.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_ColorBlend": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        ],
+        "_ColorTint": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        ],
+        "_DoubleSided": 1.0,
+        "_Mask": {
+            "path": "Content/Engine/textures/white.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_Normal": {
+            "path": "Content/Project/Endfield/Texture/Perlica_Face_N.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_NormalScale": 1.0,
+        "_NormalViewBlend": 0.0,
+        "_RimStrength": 1.0,
+        "_TextureBias": 0.0,
+        "_UvTransform": [
+            1.0,
+            1.0,
+            0.0,
+            0.0
+        ],
+        "_metallic": 0.0,
+        "_roughness": 0.5
+    },
+    "shader": "Content/Project/Endfield/Shader/EndfieldSkin.glsl",
+    "showInUi": true
+}

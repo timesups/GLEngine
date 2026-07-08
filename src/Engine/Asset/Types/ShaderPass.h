@@ -1,4 +1,5 @@
 #pragma once
+#include "ShaderTags.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <string>
@@ -128,6 +129,9 @@ struct PassOption
     int renderQueue = -1;
     // Pass绘制次数
     int DrawTimes = 1;
+
+    /// Pass Tags（如 LightMode）；键为 CanonicalizeShaderTagKey 后的形式。
+    ShaderTagMap tags;
 };
 
 class ShaderPass
@@ -148,6 +152,7 @@ class ShaderPass
     void SetValue(const std::string& name, const glm::mat4& value) const;
     void SetValue(const std::string& name, const glm::mat3& value) const;
     PassOption& GetOptions();
+    const PassOption& GetOptions() const;
     void SetOptions(PassOption options);
     void SetName(const std::string& name);
     const std::string& GetName();

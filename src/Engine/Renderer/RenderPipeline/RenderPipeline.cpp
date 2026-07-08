@@ -14,6 +14,7 @@
 #include "../../Entity/Components/light/SkyBox.h"
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/RenderUnitFilter.h"
+#include "../../Asset/Types/ShaderTags.h"
 #include "../CubemapBaker.h"
 #include "../FramebufferDesc.h"
 #include "../RenderContext.h"
@@ -154,11 +155,19 @@ void RenderPipeline::DrawShadowMap(RenderContext& context)
                 }
                 continue;
             }
-            // 绘制主光shadowmap
+            // 绘制主光shadowmap：优先使用材质内 ShadowCaster Pass，其余走全局 fallback
             m_buf_shadow.Bind(true, (int)directional->m_ShadowRes, (int)directional->m_ShadowRes);
             Util::ClearScreen(GL_DEPTH_BUFFER_BIT);
-            EntityManager::Get().DrawRenderQueue(0, RenderQueue::OpaqueUpperBound, m_shadowMaterialGloabl,
-                                                 RenderUnitFilter::CastShadow());
+            EntityManager::Get().DrawRenderQueue(
+                0, RenderQueue::OpaqueUpperBound, nullptr,
+                RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
+                                      RenderUnitFilter::HasLightModePass(LightMode::ShadowCaster)),
+                LightMode::ShadowCaster);
+            EntityManager::Get().DrawRenderQueue(
+                0, RenderQueue::OpaqueUpperBound, m_shadowMaterialGloabl,
+                RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
+                                      RenderUnitFilter::LacksLightModePass(LightMode::ShadowCaster)),
+                LightMode::Always);
             m_buf_shadow.UnBind();
             DirectionalLightCount++;
         }
@@ -166,8 +175,16 @@ void RenderPipeline::DrawShadowMap(RenderContext& context)
     // 局部灯光
     m_bufLocShadow.Bind(true);
     Util::ClearScreen(GL_DEPTH_BUFFER_BIT);
-    EntityManager::Get().DrawRenderQueue(0, RenderQueue::OpaqueUpperBound, m_shadowMaterialLocal,
-                                         RenderUnitFilter::CastShadow());
+    EntityManager::Get().DrawRenderQueue(
+        0, RenderQueue::OpaqueUpperBound, nullptr,
+        RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
+                              RenderUnitFilter::HasLightModePass(LightMode::ShadowCaster)),
+        LightMode::ShadowCaster);
+    EntityManager::Get().DrawRenderQueue(
+        0, RenderQueue::OpaqueUpperBound, m_shadowMaterialLocal,
+        RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
+                              RenderUnitFilter::LacksLightModePass(LightMode::ShadowCaster)),
+        LightMode::Always);
     m_bufLocShadow.UnBind();
     glPopDebugGroup();
 }

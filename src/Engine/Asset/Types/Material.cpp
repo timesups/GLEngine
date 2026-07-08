@@ -213,13 +213,16 @@ void Material::unbindShaderTextures()
     }
 }
 
-void Material::Apply(const MaterialApplyData& applyData)
+void Material::Apply(const MaterialApplyData& applyData, const std::string& lightMode)
 {
     if (!applyData.section || !applyData.section->mesh || !m_shader)
         return;
 
     for (auto& pass : m_shader->m_passes)
     {
+        if (!PassMatchesLightMode(*pass, lightMode))
+            continue;
+
         if (!pass->IsReady())
         {
             static bool s_loggedFallback = false;
@@ -257,7 +260,7 @@ void Material::Apply(const MaterialApplyData& applyData)
     }
 }
 
-void Material::ApplyInstanced(const MaterialInstancedApplyData& applyData)
+void Material::ApplyInstanced(const MaterialInstancedApplyData& applyData, const std::string& lightMode)
 {
     if (!applyData.section || !applyData.section->mesh || applyData.instanceCount <= 0 || !m_shader)
         return;
@@ -266,6 +269,9 @@ void Material::ApplyInstanced(const MaterialInstancedApplyData& applyData)
 
     for (auto& pass : m_shader->m_passes)
     {
+        if (!PassMatchesLightMode(*pass, lightMode))
+            continue;
+
         if (!pass->IsReady())
             continue;
 

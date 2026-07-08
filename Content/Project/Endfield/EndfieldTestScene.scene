@@ -42,13 +42,13 @@
                 },
                 "Transform": {
                     "position": [
-                        7.74365234375,
-                        13.647672653198242,
-                        13.452031135559082
+                        2.9645957946777344,
+                        13.245585441589355,
+                        10.8805570602417
                     ],
                     "rotation": [
-                        -17.4799747467041,
-                        332.1603698730469,
+                        -7.759977340698242,
+                        346.5603942871094,
                         0.0
                     ],
                     "scale": [
@@ -90,6 +90,192 @@
                 }
             },
             "name": "OutFit"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Perlica_Leg.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/Endfield/Model/Leg.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        -90.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Leg"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Perlica_eye.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/Endfield/Model/Perlica_eye.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        -90.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Eye"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Perlica_face.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/Endfield/Model/Perlica_face.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        -90.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Face"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Perlica_hair.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/Endfield/Model/Perlica_hair.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        -90.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "hair"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Perlica_Skin.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/Endfield/Model/Perlica_skin.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        -90.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Skin"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Perlica_Skirt.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/Endfield/Model/Perlica_skirt.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        -90.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Skirt"
         }
     ],
     "name": "EndfieldTestScene",

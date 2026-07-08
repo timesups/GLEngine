@@ -31,7 +31,7 @@ GLSLShader
             out vec4 FragColor;
             void main() 
             {
-                vec3 hdrColor = texture(outGBuffer3, uv).rgb;
+                vec3 hdrColor = texture(outGBuffer4, uv).rgb;
                 FragColor = vec4(hdrColor,1.0);
             }
             #endif

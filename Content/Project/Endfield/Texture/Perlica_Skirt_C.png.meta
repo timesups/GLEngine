@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "2e13b38c-b114-444a-abbc-d53aa61be1fe",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/Endfield/Texture/Perlica_Skirt_C.png",
+    "type": "texture"
+}

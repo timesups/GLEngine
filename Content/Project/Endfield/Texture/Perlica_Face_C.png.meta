@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "593497e6-ff91-4310-a10f-85e3c198ade4",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/Endfield/Texture/Perlica_Face_C.png",
+    "type": "texture"
+}

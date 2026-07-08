@@ -1,0 +1,31 @@
+{
+    "name": "M_Perlica_hair",
+    "properties": {
+        "_Attribute": {
+            "path": "Content/Project/Endfield/Texture/Perlica_Hair_A.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_Color": {
+            "path": "Content/Project/Endfield/Texture/Perlica_Hair_C.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_DoubleSided": 1.0,
+        "_Mask": {
+            "path": "Content/Project/Endfield/Texture/Perlica_Hair_M.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_Normal": {
+            "path": "Content/Engine/textures/normal.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_NormalScale": 1.0,
+        "_metallic": 0.0,
+        "_roughness": 0.5
+    },
+    "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
+    "showInUi": true
+}

@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "6751613b-9db9-4f75-8ee2-431aa82d8df3",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/Endfield/Shader/EndfieldSkin.glsl",
+    "type": "shader"
+}

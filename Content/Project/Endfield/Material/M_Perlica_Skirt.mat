@@ -1,0 +1,31 @@
+{
+    "name": "M_Perlica_Skirt",
+    "properties": {
+        "_Attribute": {
+            "path": "Content/Engine/textures/grey.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_Color": {
+            "path": "Content/Project/Endfield/Texture/Perlica_Skirt_C.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_DoubleSided": 1.0,
+        "_Mask": {
+            "path": "Content/Project/Endfield/Texture/Perlica_Skirt_M.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_Normal": {
+            "path": "Content/Project/Endfield/Texture/Perlica_Skirt_N.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_NormalScale": 1.0,
+        "_metallic": 0.0,
+        "_roughness": 0.5
+    },
+    "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
+    "showInUi": true
+}

@@ -1,0 +1,18 @@
+{
+    "dependencies": [
+        "Content/Engine/shaders/DefaultLit.glsl",
+        "Content/Engine/textures/grey.png",
+        "Content/Engine/textures/normal.png",
+        "Content/Engine/textures/white.png",
+        "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
+        "Content/Project/Endfield/Texture/Perlica_Skirt_C.png",
+        "Content/Project/Endfield/Texture/Perlica_Skirt_N.png",
+        "Content/Project/Endfield/Texture/Perlica_Skirt_M.png"
+    ],
+    "guid": "13598b8f-fe89-48e5-b2aa-75d6ffc0692f",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/Endfield/Material/M_Perlica_Skirt.mat",
+    "type": "material"
+}

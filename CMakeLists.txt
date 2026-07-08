@@ -70,6 +70,7 @@ set(GLEngine_SOURCES
     src/Engine/Asset/Types/Mesh.cpp
     src/Engine/Asset/Types/Model.cpp
     src/Engine/Asset/Types/RenderQueue.cpp
+    src/Engine/Asset/Types/ShaderTags.cpp
     src/Engine/Asset/Types/Shader.cpp
     src/Engine/Asset/Types/ComputeShader.cpp
     src/Engine/Asset/Types/Texture/Texture.cpp

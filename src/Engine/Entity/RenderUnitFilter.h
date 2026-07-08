@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <string>
 
 struct RenderUnit;
 
@@ -21,6 +22,8 @@ class RenderUnitFilter
     static RenderUnitFilter CastShadow();
     static RenderUnitFilter DrawCustomDepth();
     static RenderUnitFilter PerObjectRender();
+    static RenderUnitFilter HasLightModePass(const std::string& lightMode);
+    static RenderUnitFilter LacksLightModePass(const std::string& lightMode);
     static RenderUnitFilter And(RenderUnitFilter lhs, RenderUnitFilter rhs);
 
   private:

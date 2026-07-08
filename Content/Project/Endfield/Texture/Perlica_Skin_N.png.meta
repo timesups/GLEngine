@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "8f4eda95-08dd-4edd-9ed0-fd9df99c9a33",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": false
+    },
+    "source": "Content/Project/Endfield/Texture/Perlica_Skin_N.png",
+    "type": "texture"
+}

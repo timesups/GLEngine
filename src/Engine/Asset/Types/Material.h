@@ -8,6 +8,8 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "ShaderPass.h"
+#include "ShaderTags.h"
 #include "Texture/Texture.h"
 
 struct MaterialApplyData
@@ -38,8 +40,8 @@ class Material
     void SyncPropertiesFromShader();
     void ApplyTextureDefaultsFromShader();
     void Update();
-    void Apply(const MaterialApplyData& applyData);
-    void ApplyInstanced(const MaterialInstancedApplyData& applyData);
+    void Apply(const MaterialApplyData& applyData, const std::string& lightMode = "");
+    void ApplyInstanced(const MaterialInstancedApplyData& applyData, const std::string& lightMode = "");
     void SetFloatProperty(const std::string& name, float value);
     void SetIntProperty(const std::string& name, int value);
     void SetBoolProperty(const std::string& name, bool value);

@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "e81aa825-da08-4a27-abd0-2530887d3a99",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/Endfield/Texture/Perlica_Eye_C.png",
+    "type": "texture"
+}

@@ -352,6 +352,10 @@ PassOption& ShaderPass::GetOptions()
 {
     return m_options;
 }
+const PassOption& ShaderPass::GetOptions() const
+{
+    return m_options;
+}
 void ShaderPass::SetOptions(PassOption options)
 {
     m_options = options;

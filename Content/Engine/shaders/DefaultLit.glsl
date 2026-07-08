@@ -12,6 +12,8 @@ GLSLShader
         float _metaMul = 0.0
         
         int _ShadingModel = 1
+
+        float _move = 0.0
     }
     SubShader
     {
@@ -37,11 +39,16 @@ GLSLShader
 
             };
 
+            uniform float _move;
+
             #ifdef VERTEX
             out V2F v2f;
             void main()
             {
-                gl_Position = ObjectToClipPos(aPosition);
+                vec3 localPos = aPosition + vec3(_move);
+
+
+                gl_Position = ObjectToClipPos(localPos);
                 v2f.NormalWS = ObjectToWorldN(aNormal);
 
                 v2f.TangentWS = ObjectToWorldN(aTangent.xyz);
@@ -149,6 +156,34 @@ GLSLShader
                     #endif
                 #endif
 
+            }
+            #endif
+            ENDGLSL
+        }
+
+        Pass
+        { 
+            Tags
+            {
+                LightMode ShadowCaster
+            }
+            cull back
+            GLSLPROGRAM
+            #include "Core.glsl"
+            #include "Lighting.glsl"
+
+            uniform float _move;
+            #ifdef VERTEX
+            void main()
+            {
+                vec3 localPos = aPosition + vec3(_move);
+                gl_Position = _MainLightMatrix * GetModelMatrix() * vec4(localPos,1.0);
+            }
+            #endif
+
+            #ifdef FRAGMENT
+            void main() 
+            {
             }
             #endif
             ENDGLSL

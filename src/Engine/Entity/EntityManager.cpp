@@ -337,7 +337,8 @@ void EntityManager::RenderSkyBoxIfPresent()
 }
 
 void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive,
-                                    std::shared_ptr<Material> materialOverride, RenderUnitFilter filter)
+                                    std::shared_ptr<Material> materialOverride, RenderUnitFilter filter,
+                                    const std::string& lightMode)
 {
     const bool drawSkyBox = !materialOverride && minQueueInclusive >= RenderQueue::Skybox &&
                             minQueueInclusive < RenderQueue::Transparent && maxQueueExclusive > RenderQueue::Skybox &&
@@ -378,7 +379,7 @@ void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive
             data.section = batch.section;
             data.instanceOffset = instanceBuffer.GetBatchOffset(allocId);
             data.instanceCount = instanceBuffer.GetBatchCount(allocId);
-            mat->ApplyInstanced(data);
+            mat->ApplyInstanced(data, lightMode);
         }
         else
         {
@@ -388,7 +389,7 @@ void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive
             data.mNormal = batch.instances[0].mNormal;
             data.boundingBoxMax = glm::vec3(batch.instances[0].boundingBoxMax);
             data.boundingBoxMin = glm::vec3(batch.instances[0].boundingBoxMin);
-            mat->Apply(data);
+            mat->Apply(data, lightMode);
         }
     }
 }

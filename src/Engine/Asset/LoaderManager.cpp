@@ -26,6 +26,7 @@
 #include "Types/RenderQueue.h"
 #include "Types/Shader.h"
 #include "Types/ShaderPass.h"
+#include "Types/ShaderTags.h"
 #include "Types/Texture/IBLImage.h"
 #include "Types/Texture/Texture.h"
 #include "Types/Texture/Texture2D.h"
@@ -592,6 +593,22 @@ static inline std::vector<std::string> TokenizeLowerTrimmed(const std::string& s
         out.push_back(std::move(tok));
     }
     return out;
+}
+
+static std::string ExtractTagValueFromLine(const std::string& line)
+{
+    size_t i = 0;
+    while (i < line.size() && std::isspace(static_cast<unsigned char>(line[i])))
+        ++i;
+    while (i < line.size() && !std::isspace(static_cast<unsigned char>(line[i])))
+        ++i;
+    while (i < line.size() && std::isspace(static_cast<unsigned char>(line[i])))
+        ++i;
+
+    std::string value = line.substr(i);
+    while (!value.empty() && std::isspace(static_cast<unsigned char>(value.back())))
+        value.pop_back();
+    return value;
 }
 
 /// 仅解析 SubShader 之前的 Shader 级 Queue（避免 Pass 内 queue 被误读或覆盖 Pass 设置）。
@@ -1189,6 +1206,7 @@ bool LoaderManager::LoadShaderCodeFromFile(const std::string& path, std::vector<
         std::string line;
         bool realCodeFlag = false;
         bool isInStencilBlock = false;
+        bool isInTagsBlock = false;
         while (std::getline(iss, line))
         {
             if (line.find("GLSLPROGRAM") != std::string::npos)
@@ -1323,6 +1341,11 @@ bool LoaderManager::LoadShaderCodeFromFile(const std::string& path, std::vector<
                 }
                 continue;
             }
+            else if (tokens[0] == "tags")
+            {
+                isInTagsBlock = true;
+                continue;
+            }
             else if (tokens[0] == "drawtime")
             {
                 if (tokens.size() >= 2)
@@ -1388,6 +1411,25 @@ bool LoaderManager::LoadShaderCodeFromFile(const std::string& path, std::vector<
                 {
                     isInStencilBlock = false;
                 }
+            }
+
+            if (isInTagsBlock)
+            {
+                if (tokens[0] == "{")
+                    continue;
+                if (tokens[0] == "}")
+                {
+                    isInTagsBlock = false;
+                    continue;
+                }
+                if (tokens.size() >= 2)
+                {
+                    const std::string key = CanonicalizeShaderTagKey(tokens[0]);
+                    const std::string value = ExtractTagValueFromLine(line);
+                    if (!key.empty() && !value.empty())
+                        option.tags[key] = value;
+                }
+                continue;
             }
 
             if (iss.eof())
