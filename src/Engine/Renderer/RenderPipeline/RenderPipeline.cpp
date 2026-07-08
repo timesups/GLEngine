@@ -25,17 +25,13 @@
 
 bool RenderPipeline::Init(const int width, const int height)
 {
-    if (!OnInit(width, height))
-        return false;
-
-    // 创建各种framebuffer
+    // 公共 framebuffer 先于 OnInit 创建，避免管线专属初始化失败时透明/后处理缓冲未创建
     m_bufTransparent.Create("Draw Transparent", width, height, RenderTargetFormats::SceneColor());
     m_bufOpaqueLight.Create("Draw Opaque Light", width, height, RenderTargetFormats::SceneColor());
     m_buf_CustomDepth.Create("Draw CustomDepth", width, height, RenderTargetFormats::WaterBack());
 
     const TextureDesc bloomColor = RenderTargetFormats::BloomHalf();
 
-    // 初始化Bloom所使用的FrameBuffer
     for (size_t i = 0; i < 5; i++)
     {
         const int divisor = static_cast<int>(glm::pow(2, static_cast<int>(i) + 1));
@@ -59,7 +55,7 @@ bool RenderPipeline::Init(const int width, const int height)
         bufferBloomY.CreateColorOnly(name, bloomW, bloomH, bloomColor);
     }
 
-    m_buf_shadow.CreateDepth("Draw Direction Light Shadow", 512, 512);
+    m_buf_shadow.CreateDepth("Draw Direction Light Shadow", 1024, 1024);
 
     auto desc = RenderTargetFormats::ShadowDepth();
     desc.type = TextureType::TEXTURECUBEARRAY;
@@ -70,7 +66,9 @@ bool RenderPipeline::Init(const int width, const int height)
         return false;
     }
 
-    // 初始化所需要的材质
+    if (!OnInit(width, height))
+        return false;
+
     m_shadowMaterialGloabl = AssetManager::Get().GetAsset<Material>("engine://materials/ShadowGlobal");
     m_shadowMaterialLocal = AssetManager::Get().GetAsset<Material>("engine://materials/ShadowLocal");
 

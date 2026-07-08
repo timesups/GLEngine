@@ -24,6 +24,7 @@
 #include "../Entity/Components/Transform.h"
 #include "../Entity/Entity.h"
 #include "../Entity/EntityManager.h"
+#include "../Renderer/AmbientOcclusion.h"
 #include "../Renderer/RenderContext.h"
 #include "../Renderer/RenderPipeline/RenderPipelineRegistry.h"
 #include "../Scene/SceneSerializer.h"
@@ -2436,9 +2437,13 @@ void Gui::ShowDetail()
 
             if (ImGui::CollapsingHeader("Bloom", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                bool enalbe = setting.bloom_setting.w > 0;
-                if (ImGui::Checkbox("enable", &enalbe))
-                    setting.bloom_setting.w = enalbe ? 1.0 : -1.0;
+                ImGui::PushID("Bloom");
+                bool bloomEnable = setting.bloom_setting.w > 0.0f;
+                if (ImGui::Checkbox("Enable", &bloomEnable))
+                {
+                    setting.bloom_setting.w = bloomEnable ? 1.0f : 0.0f;
+                    SceneSession::Get().MarkDirty();
+                }
                 float threashold = setting.bloom_setting.x;
                 if (ImGui::DragFloat("threadshold", &threashold, 0.1, -1.0, 10.0))
                     setting.bloom_setting.x = threashold;
@@ -2450,21 +2455,34 @@ void Gui::ShowDetail()
                 float intensity = setting.bloom_setting.z;
                 if (ImGui::DragFloat("bloom intensity", &intensity, 0.1, 0.0, 100.0))
                     setting.bloom_setting.z = intensity;
+                ImGui::PopID();
             }
-            if (ImGui::CollapsingHeader("SSAO", ImGuiTreeNodeFlags_DefaultOpen))
+            if (ImGui::CollapsingHeader("Ambient Occlusion", ImGuiTreeNodeFlags_DefaultOpen))
             {
-                DragFloat(setting.sso_setting.x, "ssao radius", 0.1, 0.0, 100.0);
+                ImGui::PushID("AO");
+                int aoMode = static_cast<int>(AmbientOcclusionModeFromFloat(setting.sso_extra.x));
+                if (ImGui::Combo("Method", &aoMode, "SSAO\0HBAO\0"))
+                {
+                    setting.sso_extra.x = AmbientOcclusionModeToFloat(static_cast<AmbientOcclusionMode>(aoMode));
+                    SceneSession::Get().MarkDirty();
+                }
+                if (aoMode == static_cast<int>(AmbientOcclusionMode::HBAO))
+                    ImGui::TextDisabled("HBAO not implemented yet");
+
+                DragFloat(setting.sso_setting.x, "radius", 0.1, 0.0, 100.0);
                 float ssao_bias = setting.sso_setting.y;
-                if (ImGui::DragFloat("ssao bias", &ssao_bias, 0.001, 0.0, 10.0))
+                if (ImGui::DragFloat("bias", &ssao_bias, 0.001, 0.0, 10.0))
                     setting.sso_setting.y = ssao_bias;
 
                 float ssao_pow = setting.sso_setting.z;
-                if (ImGui::DragFloat("ssao pow", &ssao_pow, 0.1, 0.0, 100.0))
+                if (ImGui::DragFloat("pow", &ssao_pow, 0.1, 0.0, 100.0))
                     setting.sso_setting.z = ssao_pow;
 
                 float ssao_ins = setting.sso_setting.w;
-                if (ImGui::DragFloat("ssao intensity", &ssao_ins, 0.1, 0.0, 100.0))
+                if (ImGui::DragFloat("intensity", &ssao_ins, 0.1, 0.0, 100.0))
                     setting.sso_setting.w = ssao_ins;
+                ImGui::TextDisabled("intensity=0 disables AO effect");
+                ImGui::PopID();
             }
         }
     }

@@ -105,6 +105,10 @@ bool Framebuffer::AttachTexture(const FramebufferAttachmentBinding& binding)
     }
 
     const GLuint texId = binding.texture->GetId();
+    while (glGetError() != GL_NO_ERROR)
+    {
+    }
+
     switch (binding.textureTarget)
     {
     case GL_TEXTURE_2D:
@@ -495,6 +499,83 @@ void Framebuffer::BlitTo(const Framebuffer& dst, FramebufferBlitMask mask) const
 
     const GLenum filter = (glMask & (GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT)) != 0 ? GL_NEAREST : GL_LINEAR;
 
+    glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, dst.m_width, dst.m_height, glMask, filter);
+
+    if (blitColor)
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(prevRead));
+        glReadBuffer(static_cast<GLenum>(prevReadBuffer));
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(prevDraw));
+        glDrawBuffer(static_cast<GLenum>(prevDrawBuffer));
+    }
+    else
+    {
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, static_cast<GLuint>(prevRead));
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, static_cast<GLuint>(prevDraw));
+    }
+}
+
+void Framebuffer::BlitColorAttachmentTo(const Framebuffer& dst, int srcColorIndex, int dstColorIndex,
+                                        FramebufferBlitMask mask) const
+{
+    if (mask == FramebufferBlitMask::None)
+    {
+        Log(MODULE, LogLevel::WARNING, "BlitColorAttachmentTo skipped: empty mask ({} -> {})", m_name, dst.m_name);
+        return;
+    }
+    if (m_fbo == 0 || dst.m_fbo == 0)
+    {
+        Log(MODULE, LogLevel::WARNING, "BlitColorAttachmentTo skipped: missing FBO ({} -> {})", m_name, dst.m_name);
+        return;
+    }
+
+    GLbitfield glMask = 0;
+    const bool blitColor = HasBlitFlag(mask, FramebufferBlitMask::Color);
+    if (blitColor)
+    {
+        if (!FindColorAttachment(srcColorIndex) || !dst.FindColorAttachment(dstColorIndex))
+        {
+            Log(MODULE, LogLevel::WARNING, "BlitColorAttachmentTo skipped: color index {} -> {} ({} -> {})", srcColorIndex,
+                dstColorIndex, m_name, dst.m_name);
+            return;
+        }
+        glMask |= GL_COLOR_BUFFER_BIT;
+    }
+    if (HasBlitFlag(mask, FramebufferBlitMask::Depth))
+    {
+        if (!HasDepthAttachment() || !dst.HasDepthAttachment())
+        {
+            Log(MODULE, LogLevel::WARNING, "BlitColorAttachmentTo skipped: depth missing ({} -> {})", m_name, dst.m_name);
+            return;
+        }
+        glMask |= GL_DEPTH_BUFFER_BIT;
+    }
+    if (HasBlitFlag(mask, FramebufferBlitMask::Stencil))
+        glMask |= GL_STENCIL_BUFFER_BIT;
+
+    GLint prevRead = 0;
+    GLint prevDraw = 0;
+    GLint prevReadBuffer = GL_NONE;
+    GLint prevDrawBuffer = GL_NONE;
+    glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prevRead);
+    glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prevDraw);
+
+    if (blitColor)
+    {
+        glGetIntegerv(GL_READ_BUFFER, &prevReadBuffer);
+        glGetIntegerv(GL_DRAW_BUFFER, &prevDrawBuffer);
+    }
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dst.m_fbo);
+
+    if (blitColor)
+    {
+        glReadBuffer(FindColorAttachment(srcColorIndex)->point);
+        glDrawBuffer(dst.FindColorAttachment(dstColorIndex)->point);
+    }
+
+    const GLenum filter = (glMask & (GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT)) != 0 ? GL_NEAREST : GL_LINEAR;
     glBlitFramebuffer(0, 0, m_width, m_height, 0, 0, dst.m_width, dst.m_height, glMask, filter);
 
     if (blitColor)

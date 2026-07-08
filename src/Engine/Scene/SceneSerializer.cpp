@@ -329,6 +329,7 @@ nlohmann::json SerializeCamera(const Camera* camera)
         {"tonemap", Vec4ToJson(camera->postSetting.tonemap_setting)},
         {"bloom", Vec4ToJson(camera->postSetting.bloom_setting)},
         {"ssao", Vec4ToJson(camera->postSetting.sso_setting)},
+        {"aoMode", Vec4ToJson(camera->postSetting.sso_extra)},
     };
     return json;
 }
@@ -370,6 +371,20 @@ void ApplyCamera(Camera* camera, const nlohmann::json& json)
             camera->postSetting.bloom_setting = JsonToVec4(post.at("bloom"), camera->postSetting.bloom_setting);
         if (post.contains("ssao"))
             camera->postSetting.sso_setting = JsonToVec4(post.at("ssao"), camera->postSetting.sso_setting);
+        if (post.contains("aoMode"))
+            camera->postSetting.sso_extra = JsonToVec4(post.at("aoMode"), camera->postSetting.sso_extra);
+        else if (post.contains("ssaoExtra"))
+        {
+            glm::vec4 aoExtra = JsonToVec4(post.at("ssaoExtra"), camera->postSetting.sso_extra);
+            // 旧版 ssaoExtra.x 为 enable 开关 (0/1)，迁移为 AO 算法选择 + intensity
+            if (aoExtra.y == 0.f && aoExtra.z == 0.f && aoExtra.w == 0.f && (aoExtra.x == 0.f || aoExtra.x == 1.f))
+            {
+                if (aoExtra.x == 0.f)
+                    camera->postSetting.sso_setting.w = 0.f;
+                aoExtra.x = 0.f;
+            }
+            camera->postSetting.sso_extra = aoExtra;
+        }
     }
 
     if (json.contains("imaging"))

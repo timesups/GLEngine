@@ -422,6 +422,9 @@ inline bool CheckShaderCompileState(unsigned int ID, SHADERTYPE type)
             case GEOMETRY:
                 Log(MODULE, LogLevel::ERROR, "ERROR::SHADER::GEOMETRY::COMPIATION_FAILED\n{}", infoLog);
                 break;
+            case COMPUTE:
+                Log(MODULE, LogLevel::ERROR, "ERROR::SHADER::COMPUTE::COMPIATION_FAILED\n{}", infoLog);
+                break;
             default:
                 break;
             }

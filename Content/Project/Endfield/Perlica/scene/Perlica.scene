@@ -1,0 +1,85 @@
+{
+    "activeCamera": "MainCamera",
+    "entities": [
+        {
+            "components": {
+                "Camera": {
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "imaging": {
+                        "aperture": 2.799999952316284,
+                        "exposureCompensationEv": 0.0,
+                        "iso": 100.0,
+                        "shutterSpeed": 0.01666666753590107
+                    },
+                    "near": 0.10000000149011612,
+                    "postSetting": {
+                        "bloom": [
+                            0.8500000238418579,
+                            0.20000000298023224,
+                            0.5,
+                            0.0
+                        ],
+                        "ssao": [
+                            1.0,
+                            0.004999999888241291,
+                            1.0,
+                            1.0
+                        ],
+                        "tonemap": [
+                            1.0,
+                            2.200000047683716,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        5.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "MainCamera"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "model": "Content/Project/Endfield/Perlica/Model/Outfit.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Outfit"
+        }
+    ],
+    "name": "Perlica",
+    "version": 1
+}

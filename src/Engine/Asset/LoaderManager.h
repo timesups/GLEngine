@@ -15,6 +15,7 @@ struct aiNode;
 struct aiScene;
 struct aiMesh;
 class TextureCube;
+class ComputeShader;
 struct IBLImage;
 
 struct MaterialFileDesc
@@ -57,6 +58,8 @@ class LoaderManager
     void UpdateAssetFromDisk();
     bool LoadTextureFromFile(const std::string& path, std::shared_ptr<Texture2D>& tex, bool forceReload = false);
     bool LoadShader(const std::string& path, std::shared_ptr<Shader>& shader, bool reload = false);
+    bool LoadComputeShader(const std::string& path, std::shared_ptr<ComputeShader>& shader, bool reload = false);
+
     bool LoadModel(const std::string& path, std::shared_ptr<Model>& model);
     bool LoadIBLMapFromFile(const std::string& path, std::shared_ptr<IBLImage>& ibl, bool forceReload = false);
     bool ParseMaterialFile(const std::string& path, MaterialFileDesc& outDesc);
@@ -77,6 +80,7 @@ class LoaderManager
   private:
     LoaderManager();
     std::map<std::string, FileState<Shader>> m_shaderFiles;
+    std::map<std::string, FileState<ComputeShader>> m_computeShaderFiles;
     std::map<std::string, FileState<Texture2D>> m_TextureFiles;
     std::map<std::string, FileState<IBLImage>> m_iblMaps;
     std::shared_ptr<Shader> currentShader;

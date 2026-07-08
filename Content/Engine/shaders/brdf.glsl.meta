@@ -2,7 +2,7 @@
     "dependencies": [],
     "guid": "4d65a3e6-cb15-401f-a4cf-80d1539e4008",
     "importSettings": {
-        "showInUi": true
+        "showInUi": false
     },
     "source": "Content/Engine/shaders/brdf.glsl",
     "type": "shader"

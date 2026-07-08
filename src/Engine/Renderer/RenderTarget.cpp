@@ -335,6 +335,48 @@ void RenderTarget::UpsampleBufferTo(RenderTarget& mip, RenderTarget& dest, std::
     glPopDebugGroup();
 }
 
+int RenderTarget::BindGBufferMaterialTextures(int offset)
+{
+    for (int i = 0; i < GBufferLayout::MaterialColorCount; ++i)
+        ColorAttachment(GBufferLayout::MaterialColorStart + i).Bind(offset + i);
+
+    int bound = GBufferLayout::MaterialColorCount;
+    if (FindDepthAttachment())
+    {
+        DepthAttachment().Bind(offset + bound);
+        ++bound;
+    }
+    return bound;
+}
+
+void RenderTarget::UnbindGBufferMaterialTextures()
+{
+    for (int i = 0; i < GBufferLayout::MaterialColorCount; ++i)
+        ColorAttachment(GBufferLayout::MaterialColorStart + i).UnBind();
+
+    if (FindDepthAttachment())
+        DepthAttachment().UnBind();
+}
+
+void RenderTarget::ApplyGeometryDrawBuffers()
+{
+    m_framebuffer.SetDrawBuffers({GL_COLOR_ATTACHMENT0 + GBufferLayout::AlbedoAO, GL_COLOR_ATTACHMENT0 + GBufferLayout::NormalXY,
+                                  GL_COLOR_ATTACHMENT0 + GBufferLayout::MRSC, GL_COLOR_ATTACHMENT0 + GBufferLayout::Flag});
+    m_framebuffer.ApplyDrawBuffers();
+}
+
+void RenderTarget::ApplyGBuffer0DrawBuffer()
+{
+    m_framebuffer.SetDrawBuffers({GL_COLOR_ATTACHMENT0 + GBufferLayout::Gbuffer0});
+    m_framebuffer.ApplyDrawBuffers();
+}
+
+void RenderTarget::BlitColorAttachmentTo(RenderTarget& dst, int srcColorIndex, int dstColorIndex,
+                                         FramebufferBlitMask mask) const
+{
+    m_framebuffer.BlitColorAttachmentTo(dst.m_framebuffer, srcColorIndex, dstColorIndex, mask);
+}
+
 int RenderTarget::BindGBufferTexture(int offset)
 {
     const int colorCount = ColorAttachmentCount();
@@ -365,21 +407,49 @@ void RenderTarget::Resize(int width, int height)
     if (width == m_width && height == m_height)
         return;
 
-    m_width = width;
-    m_height = height;
-    m_framebuffer.SetSize(m_width, m_height);
+    if (width <= 0 || height <= 0)
+    {
+        Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': invalid resize {}x{}", m_name, width, height);
+        return;
+    }
+
+    // 须先解除 FBO 附着再改纹理尺寸，否则 glTexImage2D / glFramebufferTexture 可能 GL_INVALID_OPERATION
+    m_framebuffer.ClearAttachments();
 
     for (RenderTargetAttachment& attachment : m_attachments)
     {
         if (attachment.texture)
-            attachment.texture->Resize(m_width, m_height);
+        {
+            attachment.texture->UnBind();
+            if (!attachment.texture->Resize(width, height))
+            {
+                Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': texture resize failed for {}x{}", m_name, width,
+                    height);
+                return;
+            }
+        }
         else if (attachment.renderBuffer)
-            attachment.renderBuffer->Resize(m_width, m_height);
+        {
+            if (!attachment.renderBuffer->Resize(width, height))
+            {
+                Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': renderbuffer resize failed for {}x{}", m_name, width,
+                    height);
+                return;
+            }
+        }
     }
 
+    m_framebuffer.SetSize(width, height);
+
     if (!ReattachAll())
-        Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': failed to reattach after resize to {}x{}", m_name, m_width,
-            m_height);
+    {
+        Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': failed to reattach after resize to {}x{}", m_name, width,
+            height);
+        return;
+    }
+
+    m_width = width;
+    m_height = height;
 }
 
 void RenderTarget::Bind(bool debug, int width, int height)

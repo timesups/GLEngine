@@ -105,6 +105,7 @@ int ChannelsFromPixelFormat(GLenum format)
     case GL_BLUE:
     case GL_ALPHA:
     case GL_DEPTH_COMPONENT:
+    case GL_DEPTH_STENCIL:
         return 1;
     case GL_RG:
         return 2;
@@ -204,6 +205,11 @@ bool InferPixelLayoutFromInternal(GLenum internalFormat, GLenum& pixelFormat, GL
     case GL_DEPTH_COMPONENT32F:
         pixelFormat = GL_DEPTH_COMPONENT;
         pixelType = GL_FLOAT;
+        channels = 1;
+        return true;
+    case GL_DEPTH24_STENCIL8:
+        pixelFormat = GL_DEPTH_STENCIL;
+        pixelType = GL_UNSIGNED_INT_24_8;
         channels = 1;
         return true;
     default:

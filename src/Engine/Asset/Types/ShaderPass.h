@@ -9,6 +9,7 @@ enum SHADERTYPE
     FRAGMENT,
     GEOMETRY,
     PROGRAM,
+    COMPUTE,
 };
 
 enum class CullMode
@@ -165,3 +166,5 @@ class ShaderPass
     std::string m_name;
     bool m_IsReady = false;
 };
+
+inline bool CheckShaderCompileState(unsigned int ID, SHADERTYPE type);

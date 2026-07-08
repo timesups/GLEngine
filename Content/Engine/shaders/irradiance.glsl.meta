@@ -2,7 +2,7 @@
     "dependencies": [],
     "guid": "be1aefbf-4c85-4d2b-9806-c0088dd4d93b",
     "importSettings": {
-        "showInUi": true
+        "showInUi": false
     },
     "source": "Content/Engine/shaders/irradiance.glsl",
     "type": "shader"

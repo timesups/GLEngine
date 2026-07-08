@@ -69,6 +69,8 @@ class Framebuffer
     void ApplyDrawBuffers();
 
     void BlitTo(const Framebuffer& dst, FramebufferBlitMask mask) const;
+    void BlitColorAttachmentTo(const Framebuffer& dst, int srcColorIndex, int dstColorIndex,
+                               FramebufferBlitMask mask) const;
     bool CheckComplete() const;
 
     bool HasColorAttachment(int index = 0) const;

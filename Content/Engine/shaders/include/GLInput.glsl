@@ -82,6 +82,10 @@ layout(std140,binding=2) uniform post_processing_buffer
     float _ssao_bias;
     float _ssao_pow;
     float _ssao_intensity;
+    float _ao_mode;
+    float _ao_pad0;
+    float _ssao_pad1;
+    float _ssao_pad2;
 
 };
 //全局的贴图单元

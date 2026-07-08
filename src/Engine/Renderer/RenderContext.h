@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 
+#include "AmbientOcclusion.h"
+
 class Entity;
 
 class RenderContext
@@ -23,5 +25,6 @@ class RenderContext
     int sceneViewportHeight = 0;
     std::shared_ptr<Entity> currentCamera;
 
-    bool enable_blooom;
+    bool enable_blooom = false;
+    AmbientOcclusionMode aoMode = AmbientOcclusionMode::SSAO;
 };

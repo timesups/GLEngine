@@ -31,7 +31,7 @@ GLSLShader
                 vec3 PositionWS;
                 vec3 CamVectorWS;
                 vec2 uv;
-                #ifdef FORWARDRENDER
+                #if defined(FORWARDRENDER) || defined(DEFERRED_GEOMETRY_FORWARD)
                     vec4 posMainLight;
                 #endif
 
@@ -54,7 +54,7 @@ GLSLShader
                 v2f.uv = aTexcoord0;
 
 
-                #ifdef FORWARDRENDER
+                #if defined(FORWARDRENDER) || defined(DEFERRED_GEOMETRY_FORWARD)
                     v2f.posMainLight = _MainLightMatrix * GetModelMatrix() * vec4(aPosition,1.0);
                 #endif
             }
@@ -86,6 +86,9 @@ GLSLShader
                 layout (location = 1) out vec4  _NormalXY;
                 layout (location = 2) out vec4  _MRSC;
                 layout (location = 3) out vec4  _Flag;
+                #ifdef DEFERRED_GEOMETRY_FORWARD
+                layout (location = 4) out vec4 _Gbuffer0;
+                #endif
             #endif
 
 
@@ -127,10 +130,23 @@ GLSLShader
 
 
                 #ifdef DEFERREDRENDER
-                    _AlbdeoAO = vec4(BaseColor,ao);
-                    _NormalXY = vec4(EncodeNormalOct(NormalWS),0,0);
-                    _MRSC = vec4(metallic, Roughness, 0.0, 0.0);
-                    _Flag = vec4(_ShadingModel/255.0,1,1,1);
+                    #ifdef DEFERRED_GEOMETRY_FORWARD
+                        Surface s;
+                        s.basecolor = BaseColor;
+                        s.normal = NormalWS;
+                        s.position = PositionWS;
+                        s.roughness = saturate(Roughness);
+                        s.metallic = saturate(metallic);
+                        s.posMainLight = v2f.posMainLight;
+                        s.ao = ao;
+                        vec3 CameraVecWS = normalize(v2f.CamVectorWS);
+                        _Gbuffer0 = vec4(CalcAllLight(s, CameraVecWS), 1.0);
+                    #else
+                        _AlbdeoAO = vec4(BaseColor,ao);
+                        _NormalXY = vec4(EncodeNormalOct(NormalWS),0,0);
+                        _MRSC = vec4(metallic, Roughness, 0.0, 0.0);
+                        _Flag = vec4(_ShadingModel/255.0,1,1,1);
+                    #endif
                 #endif
 
             }

@@ -14,6 +14,7 @@ class Texture2D;
 class Material;
 class Model;
 class Shader;
+class ComputeShader;
 class Texture;
 class Mesh;
 struct IBLImage;
@@ -36,6 +37,7 @@ class AssetManager
     bool TryGetAssetMeta(const std::string& sourcePath, AssetMeta& outMeta) const;
 
     std::shared_ptr<Shader> LoadShader(const std::string& path);
+    std::shared_ptr<ComputeShader> LoadComputeShader(const std::string& path, bool forceReload = false);
     std::shared_ptr<Texture2D> LoadTexture(const std::string& path, bool forceReload = false);
     /// 1×1 线性 RGB 贴图（用于标定材质等），path 仅作标识与缓存键
     std::shared_ptr<Texture2D> CreateSolidColorTexture2D(const std::string& path, const glm::vec3& linearRgb);
@@ -75,6 +77,11 @@ class AssetManager
             auto it = m_shaders.find(key);
             return it == m_shaders.end() ? std::shared_ptr<Shader>{} : it->second;
         }
+        else if constexpr (std::is_same_v<T, ComputeShader>)
+        {
+            auto it = m_computeShaders.find(key);
+            return it == m_computeShaders.end() ? std::shared_ptr<ComputeShader>{} : it->second;
+        }
         else if constexpr (std::is_same_v<T, Texture> || std::is_same_v<T, Texture2D>)
         {
             auto it = m_textures.find(key);
@@ -109,6 +116,7 @@ class AssetManager
 
   public:
     std::map<std::string, std::shared_ptr<Shader>> m_shaders;
+    std::map<std::string, std::shared_ptr<ComputeShader>> m_computeShaders;
     std::map<std::string, std::shared_ptr<Texture2D>> m_textures;
     std::map<std::string, std::shared_ptr<Model>> m_models;
     std::map<std::string, std::shared_ptr<Material>> m_materials;

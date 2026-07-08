@@ -5,6 +5,7 @@
 #include "AssetDatabase.h"
 #include "LoaderManager.h"
 
+#include "Types/ComputeShader.h"
 #include "Types/Material.h"
 #include "Types/Mesh.h"
 #include "Types/Model.h"
@@ -216,6 +217,7 @@ void AssetManager::LoadEngineAssets()
     CreateMaterial("engine://materials/ShadowGlobal", LoadShader("engine://shaders/ShadowCasterGlobal.glsl"));
     CreateMaterial("engine://materials/ShadowLocal", LoadShader("engine://shaders/ShadowCasterLocal.glsl"));
     CreateMaterial("engine://materials/CustomDepth", LoadShader("engine://shaders/CustomDepth.glsl"));
+
     // Load Models
     LoadModel("engine://model/cube.fbx");
     LoadModel("engine://model/monkey.fbx");
@@ -293,6 +295,39 @@ std::shared_ptr<Shader> AssetManager::LoadShader(const std::string& path)
     m_shaders[resolvedPath] = shader;
     if (firstRegister)
         LogA(LogLevel::INFO, "Shader registered: '{}' ({})", shader->m_name, resolvedPath);
+    return shader;
+}
+
+std::shared_ptr<ComputeShader> AssetManager::LoadComputeShader(const std::string& path, bool forceReload)
+{
+    const std::string key = NormalizeAssetKey(path);
+    if (key.empty())
+    {
+        LogA(LogLevel::ERROR, "LoadComputeShader: invalid asset ref '{}'", path);
+        return nullptr;
+    }
+
+    AssetDataBase::Get().RefreshMetaFromDisk(key);
+    AssetDataBase::Get().LoadOrCreateMeta(key);
+
+    std::shared_ptr<ComputeShader> shader;
+    if (!LoaderManager::Get().LoadComputeShader(key, shader, forceReload))
+    {
+        LogA(LogLevel::ERROR, "LoadComputeShader failed: {}", key);
+        return nullptr;
+    }
+
+    if (!shader || !shader->IsReady())
+    {
+        LogA(LogLevel::ERROR, "LoadComputeShader: shader not ready: {}", key);
+        return nullptr;
+    }
+
+    shader->m_path = key;
+    const bool firstRegister = (m_computeShaders.find(key) == m_computeShaders.end());
+    m_computeShaders[key] = shader;
+    if (firstRegister)
+        LogA(LogLevel::INFO, "Compute shader registered: '{}' ({})", shader->m_name, key);
     return shader;
 }
 
@@ -546,8 +581,8 @@ bool AssetManager::IsAssetLoadedAtPath(const std::string& sourcePath) const
     if (path.empty())
         return false;
 
-    return m_shaders.contains(path) || m_textures.contains(path) || m_models.contains(path) ||
-           m_iblImages.contains(path) || m_materials.contains(path);
+    return m_shaders.contains(path) || m_computeShaders.contains(path) || m_textures.contains(path) ||
+           m_models.contains(path) || m_iblImages.contains(path) || m_materials.contains(path);
 }
 
 #undef MODULE

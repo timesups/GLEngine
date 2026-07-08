@@ -8,7 +8,8 @@ GLSLShader
     {
         Pass
         { 
-            zwrite off
+            zwrite on
+            ztest off
             GLSLPROGRAM
             #include "Core.glsl"
             #include "Lighting.glsl"
@@ -29,7 +30,7 @@ GLSLShader
             layout (binding=2) uniform sampler2D _MRSCTex;
             layout (binding=3) uniform sampler2D _FlagTex;
             layout (binding=4) uniform sampler2D _DepthTex;
-            layout (binding=5) uniform sampler2D _SSAO;
+            layout (binding=5) uniform sampler2D _AO;
 
             vec3 ComputeFurMainLight(vec3 worldNormal, float furDirZ, float furLayer)
             {
@@ -63,10 +64,9 @@ GLSLShader
                 vec4 Flag = texture(_FlagTex,uv);
 
 
-                float ssao = texture(_SSAO,uv).x; 
-                int shadingModel = int(Flag.x * 255.0) ;
+                float ao = texture(_AO, uv).x;
+                int shadingModel = int(Flag.x * 255.0 + 0.5);
 
-                FragColor = vec4(shadingModel);
                 vec3 NormalWS = (shadingModel == 2)
                     ? DecodeNormalEndfield(NormalXY.xy)
                     : DecodeNormalOct(NormalXY.xy);
@@ -86,7 +86,7 @@ GLSLShader
                     s.position = positionWS;
                     s.metallic = MRSC.x;
                     s.roughness = MRSC.y;
-                    s.ao = AlbdeoAO.a * ssao;
+                    s.ao = AlbdeoAO.a * ao;
                     s.posMainLight = _MainLightMatrix * vec4(s.position, 1.0);
                     vec3 CameraVecWS = normalize(_CameraPosition - s.position);
                     vec3 color = CalcAllLight(s,CameraVecWS);

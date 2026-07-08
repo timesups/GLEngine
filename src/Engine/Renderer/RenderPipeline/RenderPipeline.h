@@ -24,7 +24,7 @@ class RenderPipeline
     void DrawShadowMap(RenderContext& context);
     void DrawCustomDepth(RenderContext& context);
     void PostProcessing(RenderContext& context);
-    void DrawTransparent(RenderContext& context);
+    virtual void DrawTransparent(RenderContext& context);
 
     void BindLightShadowMap();
     void UnbinLightShadowMap();

@@ -19,15 +19,16 @@
 
 #include "../Core/Log.h"
 #include "../Renderer/RenderPipeline/RenderPipelineRegistry.h"
+#include "Types/ComputeShader.h"
 #include "Types/Material.h"
 #include "Types/Mesh.h"
 #include "Types/Model.h"
 #include "Types/RenderQueue.h"
 #include "Types/Shader.h"
 #include "Types/ShaderPass.h"
+#include "Types/Texture/IBLImage.h"
 #include "Types/Texture/Texture.h"
 #include "Types/Texture/Texture2D.h"
-#include "Types/Texture/IBLImage.h"
 #include "Types/Texture/TextureCube.h"
 
 #include "../../../external/stb/stb_image.h"
@@ -55,6 +56,13 @@ int64_t get_mtime(const std::string& filePath)
     struct stat result;
     if (stat(filePath.c_str(), &result) == 0)
         return result.st_mtime;
+
+    if (AssetPaths::IsInitialized())
+    {
+        const std::string absolutePath = AssetPaths::Get().ToAbsolutePath(filePath);
+        if (!absolutePath.empty() && absolutePath != filePath && stat(absolutePath.c_str(), &result) == 0)
+            return result.st_mtime;
+    }
     return -1;
 }
 
@@ -631,58 +639,121 @@ LoaderManager::LoaderManager()
 
 void LoaderManager::UpdateAssetFromDisk()
 {
-    std::vector<std::string> dirtyPaths;
-    dirtyPaths.reserve(m_shaderFiles.size());
+    std::vector<std::string> dirtyShaderPaths;
+    dirtyShaderPaths.reserve(m_shaderFiles.size());
     for (auto& [path, file] : m_shaderFiles)
     {
         if (file.IsNeedReload())
-            dirtyPaths.push_back(path);
+            dirtyShaderPaths.push_back(path);
     }
-    if (dirtyPaths.empty())
+
+    std::vector<std::string> dirtyComputePaths;
+    dirtyComputePaths.reserve(m_computeShaderFiles.size());
+    for (auto& [path, file] : m_computeShaderFiles)
+    {
+        if (file.IsNeedReload())
+            dirtyComputePaths.push_back(path);
+    }
+
+    if (!dirtyShaderPaths.empty())
+    {
+        LogA(LogLevel::INFO, "Shader hot-reload: {} file(s) changed", dirtyShaderPaths.size());
+
+        std::unordered_set<Shader*> seen;
+        std::vector<std::shared_ptr<Shader>> uniqueShaders;
+        for (const std::string& path : dirtyShaderPaths)
+        {
+            auto it = m_shaderFiles.find(path);
+            if (it == m_shaderFiles.end())
+                continue;
+            for (auto& shader : it->second.relativeAsset)
+            {
+                if (!shader)
+                    continue;
+                if (seen.insert(shader.get()).second)
+                    uniqueShaders.push_back(shader);
+            }
+        }
+
+        std::unordered_set<Shader*> failed;
+        for (auto& shader : uniqueShaders)
+        {
+            if (!LoadShader(shader->m_path, shader, true))
+            {
+                failed.insert(shader.get());
+                LogA(LogLevel::ERROR, "Shader reload failed: {} ({})", shader->m_name, shader->m_path);
+            }
+            else
+            {
+                LogA(LogLevel::INFO, "Shader reload OK: {} ({})", shader->m_name, shader->m_path);
+            }
+        }
+
+        for (const std::string& path : dirtyShaderPaths)
+        {
+            auto it = m_shaderFiles.find(path);
+            if (it == m_shaderFiles.end())
+                continue;
+            FileState<Shader>& file = it->second;
+            bool anyFailed = false;
+            for (auto& shader : file.relativeAsset)
+            {
+                if (shader && failed.count(shader.get()))
+                {
+                    anyFailed = true;
+                    break;
+                }
+            }
+            if (!anyFailed)
+                file.UpdateModifyTime();
+        }
+    }
+
+    if (dirtyComputePaths.empty())
         return;
 
-    LogA(LogLevel::INFO, "Shader hot-reload: {} file(s) changed", dirtyPaths.size());
+    LogA(LogLevel::INFO, "Compute shader hot-reload: {} file(s) changed", dirtyComputePaths.size());
 
-    std::unordered_set<Shader*> seen;
-    std::vector<std::shared_ptr<Shader>> uniqueShaders;
-    for (const std::string& path : dirtyPaths)
+    std::unordered_set<ComputeShader*> seenCompute;
+    std::vector<std::shared_ptr<ComputeShader>> uniqueComputeShaders;
+    for (const std::string& path : dirtyComputePaths)
     {
-        auto it = m_shaderFiles.find(path);
-        if (it == m_shaderFiles.end())
+        auto it = m_computeShaderFiles.find(path);
+        if (it == m_computeShaderFiles.end())
             continue;
         for (auto& shader : it->second.relativeAsset)
         {
             if (!shader)
                 continue;
-            if (seen.insert(shader.get()).second)
-                uniqueShaders.push_back(shader);
+            if (seenCompute.insert(shader.get()).second)
+                uniqueComputeShaders.push_back(shader);
         }
     }
 
-    std::unordered_set<Shader*> failed;
-    for (auto& shader : uniqueShaders)
+    std::unordered_set<ComputeShader*> failedCompute;
+    for (auto& shader : uniqueComputeShaders)
     {
-        if (!LoadShader(shader->m_path, shader, true))
+        if (!LoadComputeShader(shader->m_path, shader, true))
         {
-            failed.insert(shader.get());
-            LogA(LogLevel::ERROR, "Shader reload failed: {} ({})", shader->m_name, shader->m_path);
+            failedCompute.insert(shader.get());
+            LogA(LogLevel::ERROR, "Compute shader reload failed: {} ({})", shader->m_name, shader->m_path);
         }
         else
         {
-            LogA(LogLevel::INFO, "Shader reload OK: {} ({})", shader->m_name, shader->m_path);
+            LogA(LogLevel::INFO, "Compute shader reload OK: {} ({})", shader->m_name, shader->m_path);
         }
     }
 
-    for (const std::string& path : dirtyPaths)
+    for (const std::string& path : dirtyComputePaths)
     {
-        auto it = m_shaderFiles.find(path);
-        if (it == m_shaderFiles.end())
+        auto it = m_computeShaderFiles.find(path);
+        if (it == m_computeShaderFiles.end())
             continue;
-        FileState<Shader>& file = it->second;
+        FileState<ComputeShader>& file = it->second;
         bool anyFailed = false;
         for (auto& shader : file.relativeAsset)
         {
-            if (shader && failed.count(shader.get()))
+            if (shader && failedCompute.count(shader.get()))
             {
                 anyFailed = true;
                 break;
@@ -799,13 +870,12 @@ bool LoaderManager::LoadIBLMapFromFile(const std::string& path, std::shared_ptr<
     if (cached != m_iblMaps.end())
     {
         const std::shared_ptr<IBLImage>& existing = cached->second.relativeAsset[0];
-        const bool importMatches = existing && existing->m_srgb == useSrgb && existing->m_generateMips == useGenerateMips &&
-                                   existing->m_irradiancePhiSamples == phiSamples &&
-                                   existing->m_irradianceThetaSamples == thetaSamples &&
-                                   existing->m_irradianceFaceSize == irradianceFaceSize &&
-                                   existing->m_prefilterFaceSize == prefilterFaceSize &&
-                                   existing->m_minPrefilterFaceSize == minPrefilterFaceSize && existing->prefiltered &&
-                                   existing->irradiance;
+        const bool importMatches =
+            existing && existing->m_srgb == useSrgb && existing->m_generateMips == useGenerateMips &&
+            existing->m_irradiancePhiSamples == phiSamples && existing->m_irradianceThetaSamples == thetaSamples &&
+            existing->m_irradianceFaceSize == irradianceFaceSize &&
+            existing->m_prefilterFaceSize == prefilterFaceSize &&
+            existing->m_minPrefilterFaceSize == minPrefilterFaceSize && existing->prefiltered && existing->irradiance;
         if (!forceReload && !cached->second.IsNeedReload() && importMatches)
         {
             ibl = existing;
@@ -972,6 +1042,90 @@ bool LoaderManager::LoadShader(const std::string& path, std::shared_ptr<Shader>&
         it->second.UpdateModifyTime();
 
     currentShader = nullptr;
+    return true;
+}
+
+bool LoaderManager::LoadComputeShader(const std::string& path, std::shared_ptr<ComputeShader>& shader, bool reload)
+{
+    const std::string resolvedPath = AssetDataBase::Get().ResolveAssetRef(path);
+    if (resolvedPath.empty())
+    {
+        LogA(LogLevel::ERROR, "LoadComputeShader: invalid asset ref '{}'", path);
+        return false;
+    }
+    AssetDataBase::Get().LoadOrCreateMeta(resolvedPath);
+
+    const auto cached = m_computeShaderFiles.find(resolvedPath);
+    if (cached != m_computeShaderFiles.end())
+    {
+        if (!reload && cached->second.IsNeedReload())
+            reload = true;
+        if (!reload)
+        {
+            if (cached->second.relativeAsset.empty() || !cached->second.relativeAsset[0])
+            {
+                LogA(LogLevel::WARNING, "Compute shader cache entry has no asset: '{}'", resolvedPath);
+            }
+            else
+            {
+                shader = cached->second.relativeAsset[0];
+                return true;
+            }
+        }
+        if (!cached->second.relativeAsset.empty() && cached->second.relativeAsset[0])
+            shader = cached->second.relativeAsset[0];
+    }
+    else if (!shader)
+    {
+        shader = std::make_shared<ComputeShader>();
+    }
+
+    LogA(LogLevel::INFO, "{}{}", reload ? "Reloading compute shader: " : "Loading compute shader: ", resolvedPath);
+    shader->m_name = Util::GetNameFromPath(resolvedPath);
+    shader->m_path = resolvedPath;
+
+    if (!AssetPaths::IsInitialized())
+        AssetPaths::Init();
+    const std::string sourcePath = AssetDataBase::NormalizeSourcePath(resolvedPath);
+    const std::string ioPath = AssetPaths::Get().ToAbsolutePath(sourcePath);
+
+    std::ifstream ifs(ioPath, std::ios::binary);
+    if (!ifs)
+    {
+        LogA(LogLevel::ERROR, "Failed to open compute shader file: '{}'", resolvedPath);
+        return false;
+    }
+
+    std::string code((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
+    if (code.size() >= 3 && static_cast<unsigned char>(code[0]) == 0xEF &&
+        static_cast<unsigned char>(code[1]) == 0xBB && static_cast<unsigned char>(code[2]) == 0xBF)
+    {
+        code.erase(0, 3);
+    }
+    if (code.empty())
+    {
+        LogA(LogLevel::ERROR, "Compute shader file is empty: '{}'", resolvedPath);
+        return false;
+    }
+
+    if (!shader->LoadFromCode(code.c_str()))
+    {
+        LogA(LogLevel::ERROR, "Failed to load compute shader: '{}'", resolvedPath);
+        return false;
+    }
+
+    if (cached == m_computeShaderFiles.end())
+    {
+        FileState<ComputeShader> file(resolvedPath);
+        file.AddRelativeAsset(shader);
+        m_computeShaderFiles[resolvedPath] = std::move(file);
+    }
+
+    if (cached != m_computeShaderFiles.end())
+        cached->second.UpdateModifyTime();
+    else if (auto it = m_computeShaderFiles.find(resolvedPath); it != m_computeShaderFiles.end())
+        it->second.UpdateModifyTime();
+
     return true;
 }
 

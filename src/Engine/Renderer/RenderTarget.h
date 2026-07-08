@@ -41,11 +41,18 @@ class RenderTarget
                           const std::string& name);
     int BindGBufferTexture(int offset = 0);
     void UnbindGBufferTexture();
+    /// 绑定材质 GBuffer 纹理（跳过 Gbuffer0），返回下一个可用纹理单元
+    int BindGBufferMaterialTextures(int offset = 0);
+    void UnbindGBufferMaterialTextures();
+    void ApplyGeometryDrawBuffers();
+    void ApplyGBuffer0DrawBuffer();
 
     void Resize(int width, int height);
     void Bind(bool debug, int width = 0, int height = 0);
     void UnBind();
     void BlitTo(RenderTarget& dst, FramebufferBlitMask mask) const;
+    void BlitColorAttachmentTo(RenderTarget& dst, int srcColorIndex, int dstColorIndex,
+                               FramebufferBlitMask mask) const;
     bool BindArrayTargetLayer(unsigned int layer, RenderTargetAttachment* attachment);
 
     Texture& ColorAttachment(int index = 0);

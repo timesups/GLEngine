@@ -1,0 +1,12 @@
+{
+    "name": "M_Decal",
+    "properties": {
+        "_baseColor": {
+            "path": "Content/Engine/textures/white.png",
+            "srgb": true,
+            "type": "texture2d"
+        }
+    },
+    "shader": "Content/Engine/shaders/Decal.glsl",
+    "showInUi": true
+}

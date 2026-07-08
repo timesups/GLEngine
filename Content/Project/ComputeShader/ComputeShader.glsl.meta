@@ -1,0 +1,9 @@
+{
+    "dependencies": [],
+    "guid": "7041f901-ea96-43c1-8448-60c77812c64b",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/ComputeShader/ComputeShader.glsl",
+    "type": "shader"
+}

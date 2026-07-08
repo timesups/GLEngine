@@ -1,13 +1,13 @@
 {
     "dependencies": [
-        "Content/Project/Endfield/Perlica/Texture/Perlica_Outfit_C.png",
         "Content/Project/Endfield/Perlica/Shader/Endfield.glsl",
+        "Content/Project/Endfield/Perlica/Texture/Perlica_Outfit_C.png",
         "engine://textures/white.png",
-        "Content/Project/Endfield/Perlica/Texture/Perlica_Outfit_N.png",
         "engine://textures/normal.png",
+        "Content/Project/Endfield/Perlica/Texture/Perlica_Outfit_N.png",
         "engine://textures/grey.png",
-        "Content/Engine/textures/grey.png",
-        "Content/Engine/textures/white.png"
+        "Content/Engine/textures/white.png",
+        "Content/Engine/textures/grey.png"
     ],
     "guid": "fd7ef4cc-a0fc-4dee-9882-d7103091bfba",
     "importSettings": {

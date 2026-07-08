@@ -35,7 +35,9 @@ GLSLShader
                 vec4 color = vec4(1.0,0.0,1.0 ,1.0);
             #ifdef DEFERREDRENDER
                 _AlbdeoAO = color;
-                _Flag = vec4(0.0,1,1,1);
+                _NormalXY = vec4(0.5, 0.5, 0.0, 0.0);
+                _MRSC = vec4(0.0, 0.5, 0.0, 0.0);
+                _Flag = vec4(0.0, 1.0, 1.0, 1.0);
             #endif
 
 

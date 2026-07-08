@@ -8,8 +8,8 @@
 #include "Engine/Core/RenderDocSupport.h"
 #include "Engine/Core/Window.h"
 #include "Engine/Entity/Components/light/Light.h"
-#include "Engine/Entity/Components/MeshRender.h"
 #include "Engine/Entity/Components/light/SkyBox.h"
+#include "Engine/Entity/Components/MeshRender.h"
 #include "Engine/Entity/Components/Transform.h"
 #include "Engine/Entity/EntityManager.h"
 #include "Engine/Renderer/RenderContext.h"
@@ -109,6 +109,8 @@ int main(int argc, char** argv)
         LogA(LogLevel::WARNING, "Scene load failed ({}), falling back to CreateDefaultScene", msg);
         SceneSession::Get().Reset();
     }
+    // 加载资产
+    AssetManager::Get().LoadComputeShader("project://ComputeShader/ComputeShader.glsl");
     EntityManager::Get().Init();
     win->Run(context);
     Config::Get().SaveConfig();

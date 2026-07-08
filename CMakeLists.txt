@@ -71,6 +71,7 @@ set(GLEngine_SOURCES
     src/Engine/Asset/Types/Model.cpp
     src/Engine/Asset/Types/RenderQueue.cpp
     src/Engine/Asset/Types/Shader.cpp
+    src/Engine/Asset/Types/ComputeShader.cpp
     src/Engine/Asset/Types/Texture/Texture.cpp
     src/Engine/Asset/Types/Texture/Texture2D.cpp
     src/Engine/Asset/Types/Texture/TextureCube.cpp
@@ -79,7 +80,6 @@ set(GLEngine_SOURCES
     src/Engine/Asset/Types/ShaderPass.cpp
     src/Engine/Renderer/RenderPipeline/DeferredRender.cpp
     src/Engine/Renderer/RenderPipeline/ForwardRender.cpp
-    src/Engine/Renderer/RenderPipeline/EndfieldPipeline.cpp
     src/Engine/Renderer/RenderPipeline/RenderPipeline.cpp
     src/Engine/Renderer/RenderPipeline/RenderPipelineRegistry.cpp
     external/glad/glad.c

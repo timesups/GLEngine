@@ -2,7 +2,7 @@
     "dependencies": [],
     "guid": "a84ec0db-aeb2-4f0a-884b-71065746c239",
     "importSettings": {
-        "showInUi": true
+        "showInUi": false
     },
     "source": "Content/Engine/shaders/prefilter.glsl",
     "type": "shader"

@@ -1,12 +1,12 @@
 #pragma once
 #include "RenderPipeline.h"
 
+#include "../AmbientOcclusion.h"
 #include <glm/glm.hpp>
 #include <memory>
 #include <vector>
 
 class Shader;
-class Material;
 class Texture;
 
 class DeferredRender : public RenderPipeline
@@ -25,16 +25,23 @@ class DeferredRender : public RenderPipeline
 
   private:
     void DrawGbuffer(RenderContext& context);
-    void DrawSSAO(RenderContext& context);
+    void DrawAmbientOcclusion(const RenderContext& context);
+    void DrawSsao(const RenderContext& context);
+    void DrawHbao(const RenderContext& context);
     void DrawLighting(RenderContext& context);
-    bool InitSSAO(const int width, const int height);
+    void DrawTransparent(RenderContext& context) override;
+    bool InitSsao(const int width, const int height);
+    void UploadSsaoKernel(const Shader& shader) const;
+    bool HasAoResources() const;
 
   private:
     std::shared_ptr<Shader> m_shaderDeferredLighting;
-    RenderTarget m_buf_geo;
-    RenderTarget m_buf_ssao;
-    RenderTarget m_bufSSAOBlur;
-    std::shared_ptr<Material> m_ssaoMaterial;
+    std::shared_ptr<Shader> m_shaderSsao;
+    std::shared_ptr<Shader> m_shaderSsaoBlur;
+    RenderTarget m_Gbuffer;
+    RenderTarget m_buf_ao;
+    RenderTarget m_buf_aoBlur;
     std::vector<glm::vec3> m_ssaoKernel;
     std::unique_ptr<Texture> m_ssao_noise;
+    bool m_ssaoKernelUploaded = false;
 };

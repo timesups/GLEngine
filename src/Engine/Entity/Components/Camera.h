@@ -50,6 +50,11 @@ struct alignas(16) PostProcessSetting
     w : _ssao_intensity
     */
     glm::vec4 sso_setting = glm::vec4(1.0, 0.005, 1.0, 1.0);
+    /*
+    x : AO 算法 (0=SSAO, 1=HBAO)
+    yzw : pad
+    */
+    glm::vec4 sso_extra = glm::vec4(0.0, 0.0, 0.0, 0.0);
 };
 
 struct CameraImagingSettings

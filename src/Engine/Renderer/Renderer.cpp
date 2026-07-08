@@ -5,6 +5,7 @@
 #include "../Core/Log.h"
 #include "../Core/util.h"
 #include "../Entity/Components/Camera.h"
+#include "AmbientOcclusion.h"
 #include "../Entity/EntityManager.h"
 #include "glm/ext/vector_float3.hpp"
 
@@ -25,6 +26,8 @@
 #include "InstanceBuffer.h"
 
 #define MODULE "Renderer"
+
+static_assert(sizeof(PostProcessSetting) == 64, "PostProcessSetting must match post_processing_buffer std140 layout (64 bytes)");
 
 Renderer::Renderer() = default;
 
@@ -54,7 +57,12 @@ void Renderer::Init(const int initialWidth, const int initialHeight)
         LogA(LogLevel::ERROR, "Failed to create render pipeline '{}'", pipelineName);
         return;
     }
-    renderPipeline->Init(initialWidth, initialHeight);
+    if (!renderPipeline->Init(initialWidth, initialHeight))
+    {
+        LogA(LogLevel::ERROR, "Failed to initialize render pipeline '{}'", pipelineName);
+        renderPipeline.reset();
+        return;
+    }
 
     LogA(LogLevel::INFO, "Render pipeline: {}", renderPipeline->GetName());
     LogA(LogLevel::INFO, "Renderer initialized (scene {}x{}, shadow 2048x2048)", initialWidth, initialHeight);
@@ -217,6 +225,7 @@ void Renderer::UpdateCameraData(RenderContext& context)
     cameraBuffer.UploadStruct(camData);
     // 后处理信息传递
     context.enable_blooom = cam->postSetting.bloom_setting.w > 0;
+    context.aoMode = AmbientOcclusionModeFromFloat(cam->postSetting.sso_extra.x);
     PostProcessBuffer.UploadStruct(cam->postSetting);
 }
 

@@ -64,6 +64,14 @@ vec3 ReconstructPositionWS(vec2 uv, float depth)
     viewPos /= viewPos.w;
     return (GL_I_MATRIX_V * viewPos).xyz;
 }
+
+vec3 ReconstructPositionVS(vec2 uv, float depth)
+{
+    vec4 clipPos = vec4(uv * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
+    vec4 viewPos = GL_I_MATRIX_P * clipPos;
+    viewPos /= viewPos.w;
+    return viewPos.xyz;
+}
 vec3 DeriveNormalZ(vec2 xy)
 {
     float x = xy.x;

@@ -193,10 +193,10 @@ GLSLShader
 
 
                 #ifdef DEFERREDRENDER
-                    _AlbdeoAO = vec4(BaseColor,ao);
-                    _NormalXY = vec4(EncodeNormalOct(NormalWS),0,0);
-                    _MRSC = vec4(0.0,Roughness,0.5,0.0);
-                    _Flag = vec4(_ShadingModel/255.0,1,1,1);
+                    _AlbdeoAO = vec4(BaseColor, 1.0);
+                    _NormalXY = vec4(EncodeNormalOct(NormalWS), 0.0, 0.0);
+                    _MRSC = vec4(_metallic, _roughness, 0.5, 0.0);
+                    _Flag = vec4(1.0 / 255.0, 1.0, 1.0, 1.0);
                 #endif
 
             }
