@@ -12,6 +12,7 @@ struct MeshRenderSetting
 {
     bool drawCustomDepth = false;
     bool castShadow = true;
+    bool perObjectRender = false;
 };
 
 class MeshRender : public Component
@@ -53,6 +54,14 @@ class MeshRender : public Component
     void SetCastShadow(bool value)
     {
         m_renderSetting.castShadow = value;
+    }
+    bool GetPerObjectRender() const
+    {
+        return m_renderSetting.perObjectRender;
+    }
+    void SetPerObjectRender(bool value)
+    {
+        m_renderSetting.perObjectRender = value;
     }
 
     std::shared_ptr<Model> m_model;

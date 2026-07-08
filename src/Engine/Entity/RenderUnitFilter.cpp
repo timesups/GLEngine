@@ -30,6 +30,12 @@ RenderUnitFilter RenderUnitFilter::DrawCustomDepth()
                             { return unit.meshRenser && unit.meshRenser->GetDrawCustomDepth(); });
 }
 
+RenderUnitFilter RenderUnitFilter::PerObjectRender()
+{
+    return RenderUnitFilter([](const RenderUnit& unit)
+                            { return unit.meshRenser && unit.meshRenser->GetPerObjectRender(); });
+}
+
 RenderUnitFilter RenderUnitFilter::And(RenderUnitFilter lhs, RenderUnitFilter rhs)
 {
     if (!lhs)

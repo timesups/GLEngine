@@ -20,6 +20,7 @@ class RenderUnitFilter
     static RenderUnitFilter None();
     static RenderUnitFilter CastShadow();
     static RenderUnitFilter DrawCustomDepth();
+    static RenderUnitFilter PerObjectRender();
     static RenderUnitFilter And(RenderUnitFilter lhs, RenderUnitFilter rhs);
 
   private:

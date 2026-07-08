@@ -237,10 +237,11 @@ nlohmann::json SerializeMeshRender(const MeshRender* meshRender)
         json["materials"] = std::move(materials);
 
     const MeshRenderSetting& settings = meshRender->GetRenderSetting();
-    if (settings.drawCustomDepth || !settings.castShadow)
+    if (settings.drawCustomDepth || !settings.castShadow || settings.perObjectRender)
     {
         json["renderSettings"] = {{"drawCustomDepth", settings.drawCustomDepth},
-                                  {"castShadow", settings.castShadow}};
+                                  {"castShadow", settings.castShadow},
+                                  {"perObjectRender", settings.perObjectRender}};
     }
     return json;
 }
@@ -305,6 +306,8 @@ bool ApplyMeshRender(MeshRender* meshRender, const nlohmann::json& json, std::st
             meshRender->SetDrawCustomDepth(settings.at("drawCustomDepth").get<bool>());
         if (settings.contains("castShadow"))
             meshRender->SetCastShadow(settings.at("castShadow").get<bool>());
+        if (settings.contains("perObjectRender"))
+            meshRender->SetPerObjectRender(settings.at("perObjectRender").get<bool>());
     }
 
     return true;

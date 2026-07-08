@@ -26,8 +26,7 @@ bool EndfieldRenderPipeline::OnInit(const int width, const int height)
     texDesc.pixelFormat = GL_RGBA;
     texDesc.pixelType = GL_UNSIGNED_BYTE;
     bufferDesc.AddColorAttachment(texDesc);
-
-    bufferDesc.SetDepthStencilAttachment(RenderTargetFormats::DepthStencilRBO(width, height));
+    bufferDesc.SetDepthStencilAttachment(RenderTargetFormats::DepthStencilTexture());
     m_GBuffer.Build(bufferDesc);
     LoadAsset();
 

@@ -2559,6 +2559,15 @@ void Gui::ShowDetail()
                         SceneSession::Get().MarkDirty();
                     }
 
+                    bool perObjectRender = mr->GetPerObjectRender();
+                    if (ImGui::Checkbox("Per Object Render", &perObjectRender))
+                    {
+                        mr->SetPerObjectRender(perObjectRender);
+                        SceneSession::Get().MarkDirty();
+                    }
+                    if (ImGui::IsItemHovered())
+                        ImGui::SetTooltip("Draw as individual draw calls; use RenderUnitFilter::PerObjectRender() to select these units.");
+
                     ImGui::TreePop();
                 }
             }

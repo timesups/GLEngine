@@ -16,7 +16,16 @@ GLSLShader
     {
         Pass
         {
-            cull off
+            Stencil 
+            {
+                BitMask 0xff
+                AndMask 0xff
+                Func always
+                Ref 0x24
+                fail keep
+                dpfail keep 
+                dppass replace
+            }
             GLSLPROGRAM
             #include "Core.glsl"
 
