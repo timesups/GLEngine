@@ -47,13 +47,19 @@ void EndfieldRenderPipeline::Render(RenderContext& context)
     m_GBuffer.UnBind();
 
     glPopDebugGroup();
-    // Defrred Light
+
+    // Deferred light：渲染到场景视口尺寸的 RT，避免 UI 开启时全屏绘制导致比例错位
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Defrred Light");
+    m_bufTransparent.Bind(false, context.sceneViewportWidth, context.sceneViewportHeight);
+    Util::ClearScreen(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     m_GBuffer.BindAttachments();
     m_defrredLightShader->Use();
     AssetManager::Get().GetScreenMesh()->Draw();
     m_GBuffer.UnBindAttachments();
+    m_bufTransparent.UnBind();
     glPopDebugGroup();
+
+    PostProcessing(context);
 }
 
 void EndfieldRenderPipeline::LoadAsset()
