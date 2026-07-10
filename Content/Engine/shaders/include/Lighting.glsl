@@ -62,4 +62,26 @@ vec3 CalcAllLight(Surface s, vec3 CameraVecWS)
     return color;
 }
 
+
+vec3 CalcDirectLight(Surface s, vec3 CameraVecWS)
+{
+    Light mainLight = GetMainLight(s);
+    //计算主光光照
+    vec3 color = PBR(mainLight, s, CameraVecWS);
+    float shadow = CalcShadow(mainLight, s);
+    color = (1.0 - shadow) * color;
+
+    //逐个计算局部光照
+    for (int i = 0; i < min(_LocalLightCount, MAXLOCALLIGHT); i++)
+    {
+        Light light = GetLocalLight(i, s);
+        vec3 lightColor = PBR(light, s, CameraVecWS);
+        shadow = CalcShadow(light, s);
+        lightColor = (1.0 - shadow) * lightColor;
+        color += lightColor;
+    }
+    return color;
+}
+
+
 #endif

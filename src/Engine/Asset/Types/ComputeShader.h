@@ -7,10 +7,17 @@ class ComputeShader
     ComputeShader();
     ComputeShader(const char* code);
     ~ComputeShader();
+
     void Use();
     bool LoadFromCode(const char* code);
-    bool IsReady() const { return m_isReady; }
-    unsigned int GetProgramId() const { return m_id; }
+    bool IsReady() const
+    {
+        return m_isReady;
+    }
+    unsigned int GetProgramId() const
+    {
+        return m_id;
+    }
     std::string m_name;
     std::string m_path;
 

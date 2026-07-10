@@ -1,0 +1,178 @@
+{
+    "activeCamera": "MainCamera",
+    "entities": [
+        {
+            "components": {
+                "Camera": {
+                    "far": 1000.0,
+                    "fov": 60.0,
+                    "imaging": {
+                        "aperture": 2.799999952316284,
+                        "exposureCompensationEv": 0.0,
+                        "iso": 100.0,
+                        "shutterSpeed": 0.01666666753590107
+                    },
+                    "near": 0.009999999776482582,
+                    "postSetting": {
+                        "aoMode": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "bloom": [
+                            0.8500000238418579,
+                            0.20000000298023224,
+                            0.5,
+                            0.0
+                        ],
+                        "ssao": [
+                            1.0,
+                            0.004999999888241291,
+                            1.0,
+                            1.0
+                        ],
+                        "tonemap": [
+                            1.0,
+                            2.200000047683716,
+                            0.0,
+                            0.0
+                        ]
+                    }
+                },
+                "Transform": {
+                    "position": [
+                        0.09105271846055984,
+                        0.2605045735836029,
+                        0.3524034321308136
+                    ],
+                    "rotation": [
+                        -7.20003080368042,
+                        -13.8002347946167,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "MainCamera"
+        },
+        {
+            "components": {
+                "SkyBox": {
+                    "brightness": 1.0,
+                    "color": [
+                        0.9999995231628418,
+                        0.0,
+                        1.0
+                    ],
+                    "cubemapPreview": 0,
+                    "drawBackground": true,
+                    "ibl": "Content/Project/hdr/glasshouse_interior_1k.hdr",
+                    "iblLightingEnabled": true,
+                    "iblLightingIntensity": 1.0,
+                    "intensity": 1.0
+                }
+            },
+            "name": "Skybox"
+        },
+        {
+            "components": {
+                "Light": {
+                    "bias": 0.0020000000949949026,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "farPlane": 20.0,
+                    "intensity": 80000.0,
+                    "nearPlane": -20.0,
+                    "pcfSample": 1,
+                    "shadowArea": 20.0,
+                    "shadowRes": 1024,
+                    "type": "Directional"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        1.350000023841858,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        -87.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "DirectionalLight"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/materials/M_HuLi_Fur.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/models/HuLi.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "HuLi_Fur"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "model": "Content/Project/models/HuLi.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Body"
+        }
+    ],
+    "name": "MultiPassFur",
+    "version": 1
+}

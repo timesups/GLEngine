@@ -1,0 +1,15 @@
+{
+    "dependencies": [
+        "Content/Engine/hdr/sunny_rose_garden.hdr",
+        "Content/Project/models/HuLi.fbx",
+        "Content/Project/materials/M_HuLi.mat",
+        "Content/Project/materials/M_HuLi_Fur.mat",
+        "Content/Project/hdr/glasshouse_interior_1k.hdr"
+    ],
+    "guid": "f7b08196-a96d-48fc-a9d6-f3b65086892b",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/scenes/MultiPassFur.scene",
+    "type": "scene"
+}

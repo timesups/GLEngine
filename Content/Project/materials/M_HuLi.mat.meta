@@ -1,5 +1,12 @@
-﻿{
-    "dependencies": [],
+{
+    "dependencies": [
+        "Content/Engine/shaders/ShowColor.glsl",
+        "Content/Project/textures/Fur_map.png",
+        "Content/Project/shaders/MultiPassFur.glsl",
+        "Content/Engine/shaders/DefaultLit.glsl",
+        "Content/Project/textures/HuLi_Color.png",
+        "Content/Project/textures/Fur_Direction.png"
+    ],
     "guid": "36ab9aba-d319-4523-a61f-39a78ada4d94",
     "importSettings": {
         "showInUi": true
