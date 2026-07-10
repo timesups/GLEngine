@@ -1,0 +1,15 @@
+{
+    "dependencies": [
+        "Content/Engine/shaders/DefaultLit.glsl",
+        "Content/Engine/textures/white.png",
+        "Content/Engine/textures/normal.png",
+        "Content/Engine/textures/grey.png",
+        "Content/Project/textures/HuLi_Color.png"
+    ],
+    "guid": "ba9e8d95-eaad-49ba-9c16-c3e703a82923",
+    "importSettings": {
+        "showInUi": true
+    },
+    "source": "Content/Project/scenes/M_FurBody.mat",
+    "type": "material"
+}

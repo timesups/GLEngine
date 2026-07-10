@@ -24,8 +24,6 @@
             0.0
         ],
         "_FurStepStrength": 0.800000011920929,
-        "_FurThicknessAdd": 0.0,
-        "_FurThicknessPow": 0.0,
         "_GForce": [
             0.0,
             -0.019999999552965164,
@@ -47,9 +45,6 @@
         "_RimInt": 1.0,
         "_RimIntensity": 0.9599999785423279,
         "_RimStart": 0.20000000298023224,
-        "_SoftEdgeBottom": 1.0,
-        "_SoftEdgeLerp": 0.0,
-        "_SoftEdgeTip": 0.0,
         "_Thinness": 25.0,
         "_ThinnessScale": 1.0,
         "_WindSpeed": 0.0,

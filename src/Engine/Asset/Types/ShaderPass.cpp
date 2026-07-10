@@ -7,8 +7,6 @@
 
 #define MODULE "Shader"
 
-bool CheckShaderCompileState(unsigned int ID, SHADERTYPE type);
-
 namespace
 {
 struct GLStateCache
@@ -395,7 +393,7 @@ void ShaderPass::InvalidateStateCache()
     g_glStateCache.initialized = false;
 }
 
-inline bool CheckShaderCompileState(unsigned int ID, SHADERTYPE type)
+bool CheckShaderCompileState(unsigned int ID, SHADERTYPE type)
 {
     int success;
     char infoLog[512];

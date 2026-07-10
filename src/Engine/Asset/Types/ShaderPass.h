@@ -172,4 +172,4 @@ class ShaderPass
     bool m_IsReady = false;
 };
 
-inline bool CheckShaderCompileState(unsigned int ID, SHADERTYPE type);
+bool CheckShaderCompileState(unsigned int ID, SHADERTYPE type);

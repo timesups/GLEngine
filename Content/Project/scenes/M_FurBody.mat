@@ -1,0 +1,36 @@
+{
+    "name": "M_FurBody",
+    "properties": {
+        "_ShadingModel": 1,
+        "_ao": {
+            "path": "Content/Engine/textures/white.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_baseColor": {
+            "path": "Content/Project/textures/HuLi_Color.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_metaMul": 0.0,
+        "_metallic": {
+            "path": "Content/Engine/textures/grey.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_move": 0.0,
+        "_normal": {
+            "path": "Content/Engine/textures/normal.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_rouMul": 1.0,
+        "_roughness": {
+            "path": "Content/Engine/textures/white.png",
+            "srgb": true,
+            "type": "texture2d"
+        }
+    },
+    "shader": "Content/Engine/shaders/DefaultLit.glsl",
+    "showInUi": true
+}

@@ -36,7 +36,7 @@
         bool _EnablePbrLight = false
     }
     SubShader
-    {w
+    {
         Pass
         {
             DrawTime 15
