@@ -3,7 +3,6 @@
     Properties
     {
         sampler2D _baseColor = "HuLi_Color.png"
-        vec4 _BaseColor0 = vec4(1.0, 1.0, 1.0, 0.0)
         float _RimIntensity = 0.96
         vec4 _RimColor = vec4(1.0, 0.8, 0.6, 1.0)
         float _RimStart = 0.2
@@ -14,9 +13,7 @@
 
         sampler2D _furMap = "Fur_map.png"
         float _Thinness = 25
-        float _ThinnessScale = 1.5
         float _FurLength = 0.05
-        float _FurLengthScale = 0.46
 
 
         sampler2D _FurDirectionMap = "Fur_Direction.png"
@@ -53,7 +50,6 @@
             uniform sampler2D _furMap;
 
             uniform float _FurLength;
-            uniform float _FurLengthScale;
             uniform vec3 _FurOffset;
             uniform float _FurStepStrength;
             uniform float _AdaptiveScale;
@@ -68,9 +64,7 @@
             uniform float _LayerEdgeSmoothnessStrength;
             uniform float _FurAlpha;
             uniform float _Thinness;
-            uniform float _ThinnessScale;
             uniform float _FurClip;
-            uniform vec4 _BaseColor0;
 
 
             uniform bool _EnablePbrLight;
@@ -99,14 +93,13 @@
             }
             #ifdef VERTEX
 
-            vec3 ComputeWindBlendedNormal(vec3 normal, out float normalLen)
+            vec3 ComputeWindBlendedNormal(vec3 normal)
             {
                 float phase = _time * _WindSpeed;
                 float windFactor = (sin(phase) * cos(phase * 0.666666687) + 1.0) * 0.5;
                 vec3 windOffset = windFactor * _LForce;
-                normalLen = length(normal);
                 vec3 nA = normalize(normal + windOffset);
-                return mix(nA, nA * normalLen - nA, _AdaptiveScale);
+                return mix(nA, nA  - nA, _AdaptiveScale);
             }
 
             vec3 ComputeFurMainLight(vec3 worldNormal, float furDirZ, float furLayer)
@@ -149,29 +142,27 @@
             {
                 float furLayer = EffectiveFurLayerScale();
 
-                float normalLen;
-                vec3 growNormal = ComputeWindBlendedNormal(aNormal, normalLen);
+                vec3 growNormal = ComputeWindBlendedNormal(aNormal);
 
-                float baseWeight = 0.0;
 
                 vec2 baseUV = aTexcoord0 * vec2(1,-1);
                 vec4 furDir = textureLod(_FurDirectionMap, baseUV, 0.0);
 
-                float lenScale = clamp(_FurLengthScale * _FurLength, 0.0, 1.0);
+                float lenScale = clamp(_FurLength, 0.0, 1.0);
                 lenScale = mix(lenScale, _FurLength, _AdaptiveScale);
-                float extrude = (1.0 - baseWeight) * lenScale * furLayer * furDir.z;
+                float extrude = lenScale * furLayer * furDir.z;
 
                 float mainAlphaInv = 1.0 - furDir.z;
                 float edgeSmoothX = clamp(mainAlphaInv * (-_LayerEdgeSmoothnessStrength) + 1.2, 0.0, 1.0);
                 float edgeSmoothY = mainAlphaInv * (-_LayerEdgeSmoothnessStrength) + 1.0;
                 extrude *= edgeSmoothX;
 
-                vec3 localPos = aNormal * baseWeight * _FurLength + aPosition;
+                vec3 localPos = aPosition;
                 localPos += growNormal * extrude;
 
                 float gravityScale = exp2(log2(max(furLayer, 1e-5)) * 1.5);
                 vec3 gravityRaw = clamp(gravityScale * _GForce, vec3(-2.0), vec3(2.0));
-                vec3 gravityBlended = mix(gravityRaw, gravityRaw * normalLen - gravityRaw, _AdaptiveScale);
+                vec3 gravityBlended = mix(gravityRaw, gravityRaw - gravityRaw, _AdaptiveScale);
                 localPos += gravityBlended * extrude;
 
                 vec3 worldPos = ObjectToWorldPos(localPos);
@@ -251,24 +242,21 @@
                 return acc;
             }
 
-            float EvalFurAlpha(vec2 furUV, vec3 worldNormal, vec3 viewDir, float mainAlpha, float furLayer)
+            float EvalFurAlpha(vec2 furUV, vec3 worldNormal, vec3 viewDir, float furLayer)
             {
-                float thinness = clamp(_ThinnessScale * _Thinness, 0.1, 100.0);
-                thinness = mix(thinness, _Thinness, _AdaptiveScale);
-                float density = texture(_furMap, furUV * thinness).r;
+                float density = texture(_furMap, furUV * _Thinness).r;
 
                 float layerThreshold = furLayer * furLayer + furLayer * 0.5;
                 float furMask = clamp(density * 2.0 - layerThreshold + _FurClip, 0.0, 1.0);
 
-                if (furMask * mainAlpha - 0.2 < 0.0)
+                if (furMask - 0.2 < 0.0)
                     discard;
-
 
                 float ndotV = dot(worldNormal, viewDir);
                 float thickness = 1.0 - exp2(log2(max(1.0 - abs(ndotV), 1e-5)));
                 furMask += thickness;
 
-                return clamp(furMask * (1-furLayer) * mainAlpha * _FurAlpha, 0.0, 1.0);
+                return clamp(furMask * (1-furLayer) * _FurAlpha, 0.0, 1.0);
             }
 
             in V2F v2f;
@@ -284,8 +272,9 @@
                 vec3 color = v2f.vertexLighting;
                 color *= albedo;
 
-                float alpha = EvalFurAlpha(furUV, v2f.worldNormal, v2f.viewDir, 1.0, furLayer);
+                float alpha = EvalFurAlpha(furUV, v2f.worldNormal, v2f.viewDir, furLayer);
                 alpha *= v2f.layerEdgeSmooth;
+                alpha *= dir.z;
 
                 vec3 rimDelta = v2f.rim.rgb * color - color;
                 color = v2f.rim.aaa * rimDelta + color;

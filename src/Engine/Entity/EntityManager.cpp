@@ -6,6 +6,7 @@
 #include "Components/light/SkyBox.h"
 #include "Components/light/SpotLight.h"
 #include "Components/MeshRender.h"
+#include "Components/Ocean.h"
 #include "Components/Transform.h"
 #include "Entity.h"
 
@@ -74,6 +75,26 @@ std::shared_ptr<Entity> EntityManager::CreateMeshRenderEntity(const std::string&
     if (!model || model->m_meshSections.empty())
         LogA(LogLevel::WARNING, "MeshRenderEntity '{}' has no mesh sections (model load may have failed)", name);
     return CreateMeshRenderEntity(name, std::move(model));
+}
+
+std::shared_ptr<Entity> EntityManager::CreateOceanEntity(const std::string& name, const std::string& modelPath,
+                                                         const std::string& materialPath)
+{
+    auto entity = CreateMeshRenderEntity(name, modelPath);
+    if (!entity)
+        return entity;
+
+    entity->AddComponent<Ocean>();
+    if (!materialPath.empty())
+    {
+        if (auto material = AssetManager::Get().LoadMaterial(materialPath))
+            entity->GetComponent<MeshRender>()->SetMaterial(0, std::move(material));
+        else
+            LogA(LogLevel::WARNING, "CreateOceanEntity '{}': failed to load material '{}'", name, materialPath);
+    }
+
+    LogA(LogLevel::INFO, "CreateOceanEntity '{}'", name);
+    return entity;
 }
 
 std::shared_ptr<Entity> EntityManager::CreateSkyBoxEntity(const std::string& name, std::shared_ptr<IBLImage> ibl)
@@ -184,41 +205,23 @@ void EntityManager::GatherSceneRenderUnit(RenderContext& context)
                 continue;
 
             RenderUnit unit;
-            unit.meshRenser = meshRender;
+            unit.meshRender = meshRender;
             unit.sectionIndex = static_cast<size_t>(i);
             unit.renderQueue = mat->GetRenderQueue();
             renderUnits.push_back(unit);
         }
     }
 
-    glm::vec3 camPos{};
-    glm::vec3 viewForward{};
-    bool hasCamera = false;
+    m_hasSortCamera = false;
     if (context.currentCamera)
     {
         if (Camera* cam = context.currentCamera->GetComponent<Camera>())
         {
-            camPos = cam->GetPosition();
-            viewForward = cam->GetForwardVector();
-            hasCamera = true;
+            m_sortCameraPos = cam->GetPosition();
+            m_sortViewForward = cam->GetForwardVector();
+            m_hasSortCamera = true;
         }
     }
-
-    std::stable_sort(renderUnits.begin(), renderUnits.end(),
-                     [camPos, viewForward, hasCamera](const RenderUnit& a, const RenderUnit& b)
-                     {
-                         if (a.renderQueue != b.renderQueue)
-                             return a.renderQueue < b.renderQueue;
-                         if (hasCamera && a.renderQueue >= RenderQueue::Transparent)
-                         {
-                             const float depthA =
-                                 glm::dot(a.meshRenser->m_bounds.GetCenterPoint() - camPos, viewForward);
-                             const float depthB =
-                                 glm::dot(b.meshRenser->m_bounds.GetCenterPoint() - camPos, viewForward);
-                             return depthA > depthB;
-                         }
-                         return false;
-                     });
 }
 
 void EntityManager::SetCurrentCameraRef(std::shared_ptr<Entity>* cameraRef)
@@ -321,7 +324,37 @@ void EntityManager::Update(float deltaTime)
         e->Update(deltaTime);
 }
 
-void EntityManager::RenderSkyBoxIfPresent()
+void EntityManager::SortRenderUnitsForDraw(std::vector<RenderUnit>& units, DrawSortMode sortMode) const
+{
+    switch (sortMode)
+    {
+    case DrawSortMode::None:
+        return;
+    case DrawSortMode::RenderQueue:
+        std::stable_sort(units.begin(), units.end(),
+                         [](const RenderUnit& a, const RenderUnit& b) { return a.renderQueue < b.renderQueue; });
+        return;
+    case DrawSortMode::RenderQueueThenBackToFront:
+        std::stable_sort(units.begin(), units.end(),
+                         [this](const RenderUnit& a, const RenderUnit& b)
+                         {
+                             if (a.renderQueue != b.renderQueue)
+                                 return a.renderQueue < b.renderQueue;
+                             if (m_hasSortCamera && a.renderQueue >= RenderQueue::Transparent)
+                             {
+                                 const float depthA = glm::dot(a.meshRender->m_bounds.GetCenterPoint() - m_sortCameraPos,
+                                                             m_sortViewForward);
+                                 const float depthB = glm::dot(b.meshRender->m_bounds.GetCenterPoint() - m_sortCameraPos,
+                                                             m_sortViewForward);
+                                 return depthA > depthB;
+                             }
+                             return false;
+                         });
+        return;
+    }
+}
+
+void EntityManager::DrawSkyBox()
 {
     static bool s_loggedNoSkyBox = false;
     if (!skyBox)
@@ -336,33 +369,28 @@ void EntityManager::RenderSkyBoxIfPresent()
     skyBox->Render();
 }
 
-void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive,
-                                    std::shared_ptr<Material> materialOverride, RenderUnitFilter filter,
-                                    const std::string& lightMode)
+void EntityManager::DrawRenderQueue(const DrawSetting& setting)
 {
-    const bool drawSkyBox = !materialOverride && minQueueInclusive >= RenderQueue::Skybox &&
-                            minQueueInclusive < RenderQueue::Transparent && maxQueueExclusive > RenderQueue::Skybox &&
-                            maxQueueExclusive <= RenderQueue::Transparent;
-    if (drawSkyBox)
-        RenderSkyBoxIfPresent();
+    Material* overridePtr = setting.GetMaterialOverride();
+    const bool allowInstancing = setting.filter.AllowsInstancing();
 
-    Material* overridePtr = materialOverride.get();
-    const bool allowInstancing = minQueueInclusive < RenderQueue::Transparent;
+    std::vector<RenderUnit> units = renderUnits;
+    SortRenderUnitsForDraw(units, setting.sortMode);
 
     auto resolveMaterial = [&](const RenderUnit& unit) -> Material*
-    { return unit.meshRenser->GetMaterial(static_cast<int>(unit.sectionIndex)).get(); };
+    { return unit.meshRender->GetMaterial(static_cast<int>(unit.sectionIndex)).get(); };
 
     auto resolveTransform = [&](const RenderUnit& unit) -> GPUInstanceData
     {
-        Transform* transform = unit.meshRenser->GetEntity()->GetComponent<Transform>();
+        Transform* transform = unit.meshRender->GetEntity()->GetComponent<Transform>();
         const glm::mat4 model = transform ? transform->GetModelMatrix() : glm::mat4(1.0f);
         const glm::mat4 normal = transform ? transform->GetNormalMatrix() : glm::mat4(1.0f);
-        return MakeGPUInstanceData(model, normal, unit.meshRenser->m_bounds.GetMaxPoint(),
-                                 unit.meshRenser->m_bounds.GetMinPoint());
+        return MakeGPUInstanceData(model, normal, unit.meshRender->m_bounds.GetMaxPoint(),
+                                   unit.meshRender->m_bounds.GetMinPoint());
     };
 
-    std::vector<DrawBatch> batches = BuildDrawBatches(renderUnits, minQueueInclusive, maxQueueExclusive, overridePtr,
-                                                      resolveMaterial, resolveTransform, filter);
+    std::vector<DrawBatch> batches =
+        BuildDrawBatches(units, overridePtr, resolveMaterial, resolveTransform, setting.filter);
 
     InstanceBuffer& instanceBuffer = InstanceBuffer::Get();
 
@@ -372,6 +400,12 @@ void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive
         if (!mat || !batch.section || batch.instances.empty())
             continue;
 
+        if (batch.sourceEntity)
+        {
+            if (Ocean* ocean = batch.sourceEntity->GetComponent<Ocean>())
+                ocean->BindUniformBuffer();
+        }
+
         if (allowInstancing && static_cast<int>(batch.instances.size()) >= kMinInstancesToBatch)
         {
             const int allocId = instanceBuffer.Allocate(batch.instances);
@@ -379,7 +413,7 @@ void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive
             data.section = batch.section;
             data.instanceOffset = instanceBuffer.GetBatchOffset(allocId);
             data.instanceCount = instanceBuffer.GetBatchCount(allocId);
-            mat->ApplyInstanced(data, lightMode);
+            mat->ApplyInstanced(data, setting.passTags);
         }
         else
         {
@@ -389,7 +423,7 @@ void EntityManager::DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive
             data.mNormal = batch.instances[0].mNormal;
             data.boundingBoxMax = glm::vec3(batch.instances[0].boundingBoxMax);
             data.boundingBoxMin = glm::vec3(batch.instances[0].boundingBoxMin);
-            mat->Apply(data, lightMode);
+            mat->Apply(data, setting.passTags);
         }
     }
 }

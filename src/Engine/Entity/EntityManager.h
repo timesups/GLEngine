@@ -1,11 +1,14 @@
 #pragma once
 #include "../Asset/Types/RenderQueue.h"
+#include "DrawSetting.h"
 #include "Entity.h"
 
 #include <functional>
 #include <memory>
 #include <string>
 #include <vector>
+
+#include <glm/glm.hpp>
 
 class RenderContext;
 class Material;
@@ -17,8 +20,8 @@ enum class LightType;
 
 struct RenderUnit
 {
-    MeshRender* meshRenser;
-    size_t sectionIndex;
+    MeshRender* meshRender = nullptr;
+    size_t sectionIndex = 0;
     int renderQueue = RenderQueue::Geometry;
 };
 
@@ -36,15 +39,15 @@ class EntityManager
     std::shared_ptr<Entity> CreateCameraEntity(const std::string& name);
     std::shared_ptr<Entity> CreateMeshRenderEntity(const std::string& name, std::shared_ptr<Model> model);
     std::shared_ptr<Entity> CreateMeshRenderEntity(const std::string& name, const std::string& modelPath);
+    std::shared_ptr<Entity> CreateOceanEntity(const std::string& name, const std::string& modelPath,
+                                              const std::string& materialPath);
     std::shared_ptr<Entity> CreateSkyBoxEntity(const std::string& name, std::shared_ptr<IBLImage> ibl);
     std::shared_ptr<Entity> CreateLight(const std::string& name, LightType type);
     std::vector<std::string> GetAllEntityNames();
 
     void GatherSceneRenderUnit(RenderContext& context);
-    void DrawRenderQueue(int minQueueInclusive, int maxQueueExclusive,
-                         std::shared_ptr<Material> materialOverride = nullptr,
-                         RenderUnitFilter filter = RenderUnitFilter::None(),
-                         const std::string& lightMode = "");
+    void DrawRenderQueue(const DrawSetting& setting = DrawSetting::Default());
+    void DrawSkyBox();
     void DrawIcons();
 
     void DestroyEntity(Entity* entity);
@@ -64,9 +67,12 @@ class EntityManager
     std::vector<RenderUnit> renderUnits;
 
   private:
-    void RenderSkyBoxIfPresent();
     void CleanupEntityReferences(const std::shared_ptr<Entity>& entity);
+    void SortRenderUnitsForDraw(std::vector<RenderUnit>& units, DrawSortMode sortMode) const;
     EntityManager();
     std::vector<std::shared_ptr<Entity>> m_entities;
     std::shared_ptr<Entity>* m_currentCameraRef = nullptr;
+    glm::vec3 m_sortCameraPos{};
+    glm::vec3 m_sortViewForward{0.f, 0.f, -1.f};
+    bool m_hasSortCamera = false;
 };

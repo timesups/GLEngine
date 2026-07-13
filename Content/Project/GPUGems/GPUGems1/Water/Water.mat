@@ -1,6 +1,16 @@
 {
     "name": "Water",
-    "properties": {},
+    "properties": {
+        "_A1": 3.4200000762939453,
+        "_D1": [
+            -1.409999966621399,
+            -0.49000000953674316
+        ],
+        "_L1": 800.0,
+        "_Q1": 0.7099999785423279,
+        "_S1": 21.420000076293945,
+        "_gravity": 9.800000190734863
+    },
     "shader": "Content/Project/GPUGems/GPUGems1/Water/Water.glsl",
     "showInUi": true
 }

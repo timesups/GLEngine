@@ -1,15 +1,13 @@
 #include "EndfieldRenderPipeline.h"
 #include "../../Asset/AssetManager.h"
 #include "../../Asset/Types/Mesh.h"
-#include "../../Asset/Types/RenderQueue.h"
 #include "../../Asset/Types/Shader.h"
-#include "../../Asset/Types/ShaderTags.h"
 #include "../../Core/util.h"
+#include "../../Entity/DrawSetting.h"
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/RenderUnitFilter.h"
 #include "../RenderContext.h"
 #include "RenderPipelineRegistry.h"
-
 #define MODULE "Endfield Pipeline"
 
 bool EndfieldRenderPipeline::OnInit(const int width, const int height)
@@ -42,8 +40,7 @@ void EndfieldRenderPipeline::Render(RenderContext& context)
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Draw G Buffer");
     m_GBuffer.Bind(false, context.sceneViewportWidth, context.sceneViewportHeight);
     Util::ClearScreen();
-    EntityManager::Get().DrawRenderQueue(0, RenderQueue::OpaqueUpperBound, nullptr, RenderUnitFilter::None(),
-                                         LightMode::EndfieldGBuffer);
+    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Opaque()));
     m_GBuffer.UnBind();
 
     glPopDebugGroup();

@@ -4,7 +4,6 @@
 #include "../../Core/Log.h"
 #include "RenderPipeline.h"
 
-#include <cctype>
 #include <unordered_map>
 
 #define MODULE "RenderPipelineRegistry"
@@ -26,20 +25,6 @@ std::vector<std::string>& RegistrationOrder()
 {
     static std::vector<std::string> order;
     return order;
-}
-
-std::string SanitizePipelineMacroName(const std::string& name)
-{
-    std::string sanitized;
-    sanitized.reserve(name.size());
-    for (char c : name)
-    {
-        if (std::isalnum(static_cast<unsigned char>(c)) || c == '_')
-            sanitized.push_back(c);
-    }
-    if (sanitized.empty())
-        sanitized = "Unknown";
-    return sanitized;
 }
 } // namespace
 
@@ -91,20 +76,6 @@ std::string RenderPipelineRegistry::ResolveName(const std::string& requested)
         LogA(LogLevel::WARNING, "Render pipeline '{}' is not registered, fallback to '{}'", requested, fallback);
     }
     return fallback;
-}
-
-std::string RenderPipelineRegistry::BuildShaderDefines(const std::string& pipelineName)
-{
-    const std::string resolved = ResolveName(pipelineName);
-    std::string defines = "#define GLE_PIPELINE_" + SanitizePipelineMacroName(resolved) + "\n";
-
-    // 兼容现有 shader 中的 FORWARDRENDER / DEFERREDRENDER 分支（仅内置两条管线）
-    if (resolved == "Forward")
-        defines += "#define FORWARDRENDER\n";
-    else if (resolved == "Deferred")
-        defines += "#define DEFERREDRENDER\n";
-
-    return defines;
 }
 
 std::unique_ptr<RenderPipeline> RenderPipelineRegistry::Create(const std::string& name)

@@ -2,7 +2,9 @@
 
 #include <variant>
 
+#include "../../Core/Config.h"
 #include "../../Core/Log.h"
+#include "../../Entity/DrawSetting.h"
 #include "../../Renderer/InstanceBuffer.h"
 #include "../AssetManager.h"
 #include "Mesh.h"
@@ -213,14 +215,17 @@ void Material::unbindShaderTextures()
     }
 }
 
-void Material::Apply(const MaterialApplyData& applyData, const std::string& lightMode)
+void Material::Apply(const MaterialApplyData& applyData, const ShaderPassDrawTags& passTags)
 {
     if (!applyData.section || !applyData.section->mesh || !m_shader)
         return;
 
+    const std::string activeRenderPipeline =
+        passTags.renderPipeline.empty() ? Config::Get().renderPipeline : passTags.renderPipeline;
+
     for (auto& pass : m_shader->m_passes)
     {
-        if (!PassMatchesLightMode(*pass, lightMode))
+        if (!PassMatchesDrawTags(*pass, passTags.lightMode, activeRenderPipeline))
             continue;
 
         if (!pass->IsReady())
@@ -260,16 +265,19 @@ void Material::Apply(const MaterialApplyData& applyData, const std::string& ligh
     }
 }
 
-void Material::ApplyInstanced(const MaterialInstancedApplyData& applyData, const std::string& lightMode)
+void Material::ApplyInstanced(const MaterialInstancedApplyData& applyData, const ShaderPassDrawTags& passTags)
 {
     if (!applyData.section || !applyData.section->mesh || applyData.instanceCount <= 0 || !m_shader)
         return;
+
+    const std::string activeRenderPipeline =
+        passTags.renderPipeline.empty() ? Config::Get().renderPipeline : passTags.renderPipeline;
 
     InstanceBuffer::Get().Bind();
 
     for (auto& pass : m_shader->m_passes)
     {
-        if (!PassMatchesLightMode(*pass, lightMode))
+        if (!PassMatchesDrawTags(*pass, passTags.lightMode, activeRenderPipeline))
             continue;
 
         if (!pass->IsReady())

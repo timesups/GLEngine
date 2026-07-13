@@ -109,6 +109,7 @@ class Gui
     int m_createEntityType = 0;
     bool m_createEntityAddTransform = true;
     int m_createEntityModelIdx = 0;
+    int m_createEntityMaterialIdx = 0;
     int m_createEntityCubemapIdx = 0;
     std::string m_createEntityStatus;
     char m_materialCreateName[128] = "NewMaterial";

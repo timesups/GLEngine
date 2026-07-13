@@ -18,7 +18,6 @@
 #include <nlohmann/json.hpp>
 
 #include "../Core/Log.h"
-#include "../Renderer/RenderPipeline/RenderPipelineRegistry.h"
 #include "Types/ComputeShader.h"
 #include "Types/Material.h"
 #include "Types/Mesh.h"
@@ -1440,7 +1439,6 @@ bool LoaderManager::LoadShaderCodeFromFile(const std::string& path, std::vector<
         shaderHeader += config.GetShaderVersionDefines();
         shaderHeader += "#define MAXLOCALLIGHT " + std::to_string(Config::MaxLocalLight) + "\n";
         shaderHeader += "#define MAXLOCALLIGHTVERTEX " + std::to_string(Config::MaxLocalLight * 18) + "\n";
-        shaderHeader += RenderPipelineRegistry::BuildShaderDefines(config.renderPipeline);
         code.VertexShader = shaderHeader + "#define VERTEX\n" + realPassCode;
         code.FragmentShader = shaderHeader + "#define FRAGMENT\n" + realPassCode;
         if (passCode.find("#ifdef GEOMETRY") != static_cast<size_t>(-1))

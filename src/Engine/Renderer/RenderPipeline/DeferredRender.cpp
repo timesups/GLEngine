@@ -5,7 +5,9 @@
 #include "../../Asset/Types/Texture/Texture2D.h"
 #include "../../Core/Log.h"
 #include "../../Core/util.h"
+#include "../../Entity/DrawSetting.h"
 #include "../../Entity/EntityManager.h"
+#include "../../Entity/RenderUnitFilter.h"
 #include "../FramebufferDesc.h"
 #include "../RenderContext.h"
 #include "RenderPipelineRegistry.h"
@@ -117,7 +119,7 @@ void DeferredRender::DrawGbuffer(RenderContext& context)
     m_Gbuffer.Bind(true, context.sceneViewportWidth, context.sceneViewportHeight);
     m_Gbuffer.ApplyGeometryDrawBuffers();
     Util::ClearScreen();
-    EntityManager::Get().DrawRenderQueue(0, RenderQueue::OpaqueUpperBound);
+    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Opaque()));
     m_Gbuffer.UnBind();
 }
 
@@ -218,7 +220,7 @@ void DeferredRender::DrawLighting(RenderContext& context)
 
     m_Gbuffer.BlitTo(m_bufOpaqueLight, FramebufferBlitMask::Depth);
 
-    EntityManager::Get().DrawRenderQueue(RenderQueue::Skybox, RenderQueue::Transparent);
+    EntityManager::Get().DrawSkyBox();
     m_bufOpaqueLight.UnBind();
 
     m_bufOpaqueLight.BlitColorAttachmentTo(m_Gbuffer, 0, GBufferLayout::Gbuffer0,
@@ -234,7 +236,7 @@ void DeferredRender::DrawTransparent(RenderContext& context)
     BindIBLTextures();
     m_buf_CustomDepth.ColorAttachment().Bind(10);
     m_Gbuffer.ColorAttachment(GBufferLayout::Gbuffer0).Bind(11);
-    EntityManager::Get().DrawRenderQueue(RenderQueue::Transparent, std::numeric_limits<int>::max());
+    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Transparent()));
     m_buf_CustomDepth.ColorAttachment().UnBind();
     m_Gbuffer.ColorAttachment(GBufferLayout::Gbuffer0).UnBind();
     m_bufTransparent.UnBind();

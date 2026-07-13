@@ -20,6 +20,7 @@
 #include "../Entity/Components/light/PointLight.h"
 #include "../Entity/Components/light/SpotLight.h"
 #include "../Entity/Components/MeshRender.h"
+#include "../Entity/Components/Ocean.h"
 #include "../Entity/Components/light/SkyBox.h"
 #include "../Entity/Components/Transform.h"
 #include "../Entity/Entity.h"
@@ -2574,6 +2575,71 @@ void Gui::ShowDetail()
         }
     }
 
+    if (Ocean* ocean = ent->GetComponent<Ocean>())
+    {
+        if (ImGui::CollapsingHeader("Ocean", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            Ocean::GerstnerParams params = ocean->GetParams();
+            bool changed = false;
+
+            changed |= ImGui::DragFloat("Amplitude (_A1)", &params.amplitude, 0.05f, 0.f, 100.f);
+            changed |= ImGui::DragFloat("Wavelength (_L1)", &params.wavelength, 1.f, 1.f, 5000.f);
+            changed |= ImGui::DragFloat("Speed (_S1)", &params.speed, 0.1f, 0.f, 200.f);
+            changed |= ImGui::DragFloat("Steepness (_Q1)", &params.steepness, 0.01f, 0.f, 1.f);
+            changed |= ImGui::DragFloat2("Direction (_D1)", &params.direction.x, 0.01f, -1.f, 1.f);
+            changed |= ImGui::DragFloat("Gravity", &params.gravity, 0.1f, 0.1f, 30.f);
+
+            int waveCount = ocean->GetWaveCount();
+            if (ImGui::InputInt("Wave Count", &waveCount))
+            {
+                ocean->SetWaveCount(waveCount);
+                changed = true;
+            }
+
+            int waveSeed = static_cast<int>(ocean->GetWaveSeed());
+            if (ImGui::InputInt("Wave Seed", &waveSeed))
+            {
+                ocean->SetWaveSeed(static_cast<std::uint32_t>(std::max(waveSeed, 1)));
+                changed = true;
+            }
+
+            int materialSlot = ocean->GetMaterialSlot();
+            if (ImGui::InputInt("Material Slot", &materialSlot))
+            {
+                ocean->SetMaterialSlot(materialSlot);
+                changed = true;
+            }
+
+            bool autoConfigure = ocean->GetAutoConfigureMeshRender();
+            if (ImGui::Checkbox("Auto Configure MeshRender", &autoConfigure))
+            {
+                ocean->SetAutoConfigureMeshRender(autoConfigure);
+                changed = true;
+            }
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("Enable draw custom depth, per-object render, and other ocean-friendly MeshRender defaults.");
+
+            if (changed)
+            {
+                ocean->SetParams(params);
+                ocean->SyncMaterialProperties();
+                SceneSession::Get().MarkDirty();
+            }
+
+            if (ImGui::Button("Regenerate Waves"))
+            {
+                ocean->RegenerateWaves();
+                SceneSession::Get().MarkDirty();
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Apply Mesh Defaults"))
+            {
+                ocean->ApplyDefaultMeshRenderSettings();
+                SceneSession::Get().MarkDirty();
+            }
+        }
+    }
+
     if (Light* light = ent->GetComponent<Light>())
     {
         if (dynamic_cast<SkyBox*>(light))
@@ -3216,10 +3282,10 @@ void Gui::ShowCreate()
     }
 
     static const char* kEntityTypes[] = {
-        "Empty", "Camera", "Mesh Render", "Directional Light", "Point Light", "Spot Light", "Skybox",
+        "Empty", "Camera", "Mesh Render", "Directional Light", "Point Light", "Spot Light", "Skybox", "Ocean",
     };
     static const char* kDefaultEntityNames[] = {
-        "Entity", "Camera", "MeshRender", "DirectionalLight", "PointLight", "SpotLight", "Skybox",
+        "Entity", "Camera", "MeshRender", "DirectionalLight", "PointLight", "SpotLight", "Skybox", "Ocean",
     };
     ImGui::Combo("Type", &m_createEntityType, kEntityTypes, IM_ARRAYSIZE(kEntityTypes));
 
@@ -3246,6 +3312,42 @@ void Gui::ShowCreate()
             if (m_createEntityModelIdx < 0 || m_createEntityModelIdx >= static_cast<int>(modelItems.size()))
                 m_createEntityModelIdx = 0;
             DrawAssetPathCombo("Model", &m_createEntityModelIdx, modelItems);
+        }
+    }
+    else if (m_createEntityType == 7)
+    {
+        std::vector<std::string> modelKeys;
+        AssetManager::CollectUiVisibleKeys(models, modelKeys, true);
+        modelItems.SetKeys(std::move(modelKeys));
+
+        const auto& materials = AssetManager::Get().m_materials;
+        std::vector<std::string> materialKeys;
+        AssetManager::CollectUiVisibleKeys(materials, materialKeys, true);
+        AssetPickerItems materialItems;
+        materialItems.SetKeys(std::move(materialKeys));
+
+        if (modelItems.size() == 0)
+        {
+            ImGui::TextColored(ImVec4(1.f, 0.4f, 0.4f, 1.f), "No models loaded. Use Asset Browser first.");
+            canCreate = false;
+        }
+        else
+        {
+            if (m_createEntityModelIdx < 0 || m_createEntityModelIdx >= static_cast<int>(modelItems.size()))
+                m_createEntityModelIdx = 0;
+            DrawAssetPathCombo("Model", &m_createEntityModelIdx, modelItems);
+        }
+
+        if (materialItems.size() == 0)
+        {
+            ImGui::TextColored(ImVec4(1.f, 0.4f, 0.4f, 1.f), "No materials loaded. Use Asset Browser first.");
+            canCreate = false;
+        }
+        else
+        {
+            if (m_createEntityMaterialIdx < 0 || m_createEntityMaterialIdx >= static_cast<int>(materialItems.size()))
+                m_createEntityMaterialIdx = 0;
+            DrawAssetPathCombo("Material", &m_createEntityMaterialIdx, materialItems);
         }
     }
     else if (m_createEntityType == 6)
@@ -3329,6 +3431,27 @@ void Gui::ShowCreate()
             else
                 m_createEntityStatus = "Failed: IBL not found.";
             break;
+        case 7:
+        {
+            const auto& modelsMap = AssetManager::Get().m_models;
+            const auto& materialsMap = AssetManager::Get().m_materials;
+            std::vector<std::string> modelKeys;
+            std::vector<std::string> materialKeys;
+            AssetManager::CollectUiVisibleKeys(modelsMap, modelKeys, true);
+            AssetManager::CollectUiVisibleKeys(materialsMap, materialKeys, true);
+            if (modelKeys.empty() || materialKeys.empty())
+            {
+                m_createEntityStatus = "Failed: model or material not available.";
+                break;
+            }
+            const std::string& modelPath = modelKeys[static_cast<size_t>(std::clamp(
+                m_createEntityModelIdx, 0, static_cast<int>(modelKeys.size()) - 1))];
+            const std::string& materialPath = materialKeys[static_cast<size_t>(std::clamp(
+                m_createEntityMaterialIdx, 0, static_cast<int>(materialKeys.size()) - 1))];
+            created = em.CreateOceanEntity(name, modelPath, materialPath);
+            m_createEntityStatus = created ? "Created ocean: " + created->m_name : "Failed to create ocean.";
+            break;
+        }
         default:
             m_createEntityStatus = "Unknown entity type.";
             break;

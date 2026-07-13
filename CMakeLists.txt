@@ -40,6 +40,7 @@ set(GLEngine_SOURCES
     src/Engine/Core/Window.cpp
     src/Engine/Entity/Entity.cpp
     src/Engine/Entity/EntityManager.cpp
+    src/Engine/Entity/DrawSetting.cpp
     src/Engine/Entity/RenderUnitFilter.cpp
     src/Engine/Scene/SceneSession.cpp
     src/Engine/Scene/SceneSerializer.cpp
@@ -51,6 +52,7 @@ set(GLEngine_SOURCES
     src/Engine/Entity/Components/light/PointLight.cpp
     src/Engine/Entity/Components/light/SpotLight.cpp
     src/Engine/Entity/Components/MeshRender.cpp
+    src/Engine/Entity/Components/Ocean.cpp
     src/Engine/Entity/Components/light/SkyBox.cpp
     src/Engine/Entity/Components/Transform.cpp
     src/Engine/Asset/AssetManager.cpp

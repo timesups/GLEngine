@@ -1,6 +1,7 @@
 #include "RenderUnitFilter.h"
 
 #include "../Asset/Types/Material.h"
+#include "../Asset/Types/RenderQueue.h"
 #include "../Asset/Types/ShaderTags.h"
 #include "Components/MeshRender.h"
 #include "EntityManager.h"
@@ -10,9 +11,30 @@ RenderUnitFilter::RenderUnitFilter(std::function<bool(const RenderUnit&)> predic
 {
 }
 
-bool RenderUnitFilter::Accepts(const RenderUnit& unit) const
+bool RenderUnitFilter::IsIdentity() const
+{
+    return !m_predicate && m_minQueueInclusive == 0 &&
+           m_maxQueueExclusive == std::numeric_limits<int>::max();
+}
+
+bool RenderUnitFilter::AcceptsQueue(const RenderUnit& unit) const
+{
+    return unit.renderQueue >= m_minQueueInclusive && unit.renderQueue < m_maxQueueExclusive;
+}
+
+bool RenderUnitFilter::AcceptsPredicate(const RenderUnit& unit) const
 {
     return !m_predicate || m_predicate(unit);
+}
+
+bool RenderUnitFilter::Accepts(const RenderUnit& unit) const
+{
+    return AcceptsQueue(unit) && AcceptsPredicate(unit);
+}
+
+bool RenderUnitFilter::AllowsInstancing() const
+{
+    return m_minQueueInclusive < RenderQueue::Transparent;
 }
 
 RenderUnitFilter RenderUnitFilter::None()
@@ -20,32 +42,50 @@ RenderUnitFilter RenderUnitFilter::None()
     return {};
 }
 
+RenderUnitFilter RenderUnitFilter::Queue(int minQueueInclusive, int maxQueueExclusive)
+{
+    RenderUnitFilter filter;
+    filter.m_minQueueInclusive = minQueueInclusive;
+    filter.m_maxQueueExclusive = maxQueueExclusive;
+    return filter;
+}
+
+RenderUnitFilter RenderUnitFilter::Opaque()
+{
+    return Queue(0, RenderQueue::OpaqueUpperBound);
+}
+
+RenderUnitFilter RenderUnitFilter::Transparent()
+{
+    return Queue(RenderQueue::Transparent, std::numeric_limits<int>::max());
+}
+
 RenderUnitFilter RenderUnitFilter::CastShadow()
 {
     return RenderUnitFilter([](const RenderUnit& unit)
-                            { return unit.meshRenser && unit.meshRenser->GetCastShadow(); });
+                            { return unit.meshRender && unit.meshRender->GetCastShadow(); });
 }
 
 RenderUnitFilter RenderUnitFilter::DrawCustomDepth()
 {
     return RenderUnitFilter([](const RenderUnit& unit)
-                            { return unit.meshRenser && unit.meshRenser->GetDrawCustomDepth(); });
+                            { return unit.meshRender && unit.meshRender->GetDrawCustomDepth(); });
 }
 
 RenderUnitFilter RenderUnitFilter::PerObjectRender()
 {
     return RenderUnitFilter([](const RenderUnit& unit)
-                            { return unit.meshRenser && unit.meshRenser->GetPerObjectRender(); });
+                            { return unit.meshRender && unit.meshRender->GetPerObjectRender(); });
 }
 
 RenderUnitFilter RenderUnitFilter::HasLightModePass(const std::string& lightMode)
 {
     return RenderUnitFilter([lightMode](const RenderUnit& unit)
                             {
-                                if (!unit.meshRenser)
+                                if (!unit.meshRender)
                                     return false;
                                 Material* mat =
-                                    unit.meshRenser->GetMaterial(static_cast<int>(unit.sectionIndex)).get();
+                                    unit.meshRender->GetMaterial(static_cast<int>(unit.sectionIndex)).get();
                                 if (!mat)
                                     return false;
                                 const std::shared_ptr<Shader> shader = mat->GetShader();
@@ -57,10 +97,10 @@ RenderUnitFilter RenderUnitFilter::LacksLightModePass(const std::string& lightMo
 {
     return RenderUnitFilter([lightMode](const RenderUnit& unit)
                             {
-                                if (!unit.meshRenser)
+                                if (!unit.meshRender)
                                     return false;
                                 Material* mat =
-                                    unit.meshRenser->GetMaterial(static_cast<int>(unit.sectionIndex)).get();
+                                    unit.meshRender->GetMaterial(static_cast<int>(unit.sectionIndex)).get();
                                 if (!mat)
                                     return true;
                                 const std::shared_ptr<Shader> shader = mat->GetShader();
@@ -68,13 +108,47 @@ RenderUnitFilter RenderUnitFilter::LacksLightModePass(const std::string& lightMo
                             });
 }
 
+RenderUnitFilter RenderUnitFilter::HasRenderPipelinePass(const std::string& renderPipeline)
+{
+    return RenderUnitFilter([renderPipeline](const RenderUnit& unit)
+                            {
+                                if (!unit.meshRender)
+                                    return false;
+                                Material* mat =
+                                    unit.meshRender->GetMaterial(static_cast<int>(unit.sectionIndex)).get();
+                                if (!mat)
+                                    return false;
+                                const std::shared_ptr<Shader> shader = mat->GetShader();
+                                return shader && ShaderHasRenderPipelinePass(*shader, renderPipeline);
+                            });
+}
+
+RenderUnitFilter RenderUnitFilter::LacksRenderPipelinePass(const std::string& renderPipeline)
+{
+    return RenderUnitFilter([renderPipeline](const RenderUnit& unit)
+                            {
+                                if (!unit.meshRender)
+                                    return false;
+                                Material* mat =
+                                    unit.meshRender->GetMaterial(static_cast<int>(unit.sectionIndex)).get();
+                                if (!mat)
+                                    return true;
+                                const std::shared_ptr<Shader> shader = mat->GetShader();
+                                return !shader || !ShaderHasRenderPipelinePass(*shader, renderPipeline);
+                            });
+}
+
 RenderUnitFilter RenderUnitFilter::And(RenderUnitFilter lhs, RenderUnitFilter rhs)
 {
-    if (!lhs)
+    if (lhs.IsIdentity())
         return rhs;
-    if (!rhs)
+    if (rhs.IsIdentity())
         return lhs;
 
-    return RenderUnitFilter([l = std::move(lhs), r = std::move(rhs)](const RenderUnit& unit)
-                            { return l.Accepts(unit) && r.Accepts(unit); });
+    RenderUnitFilter result;
+    result.m_minQueueInclusive = std::max(lhs.m_minQueueInclusive, rhs.m_minQueueInclusive);
+    result.m_maxQueueExclusive = std::min(lhs.m_maxQueueExclusive, rhs.m_maxQueueExclusive);
+    result.m_predicate = [l = std::move(lhs), r = std::move(rhs)](const RenderUnit& unit)
+    { return l.AcceptsPredicate(unit) && r.AcceptsPredicate(unit); };
+    return result;
 }

@@ -4,12 +4,13 @@
 #include "../Asset/Types/Mesh.h"
 #include "../Asset/Types/Model.h"
 #include "../Entity/Components/MeshRender.h"
+#include "../Entity/Components/Ocean.h"
+#include "../Entity/Entity.h"
 #include "../Entity/EntityManager.h"
 
 #include <unordered_map>
 
-std::vector<DrawBatch> BuildDrawBatches(const std::vector<RenderUnit>& renderUnits, int minQueueInclusive,
-                                        int maxQueueExclusive, Material* materialOverride,
+std::vector<DrawBatch> BuildDrawBatches(const std::vector<RenderUnit>& renderUnits, Material* materialOverride,
                                         std::function<Material*(const RenderUnit&)> resolveMaterial,
                                         std::function<GPUInstanceData(const RenderUnit&)> resolveTransform,
                                         RenderUnitFilter filter)
@@ -22,14 +23,11 @@ std::vector<DrawBatch> BuildDrawBatches(const std::vector<RenderUnit>& renderUni
         if (!filter.Accepts(unit))
             continue;
 
-        if (unit.renderQueue < minQueueInclusive || unit.renderQueue >= maxQueueExclusive)
-            continue;
-
         Material* mat = materialOverride ? materialOverride : resolveMaterial(unit);
         if (!mat)
             continue;
 
-        MeshRender* meshRender = unit.meshRenser;
+        MeshRender* meshRender = unit.meshRender;
         if (!meshRender || !meshRender->m_model)
             continue;
         if (unit.sectionIndex >= meshRender->m_model->m_meshSections.size())
@@ -39,13 +37,21 @@ std::vector<DrawBatch> BuildDrawBatches(const std::vector<RenderUnit>& renderUni
         if (!section.mesh)
             continue;
 
-        BatchKey key{section.mesh.get(), mat, unit.sectionIndex};
+        Entity* splitEntity = nullptr;
+        if (Entity* entity = meshRender->GetEntity())
+        {
+            if (meshRender->GetPerObjectRender() || entity->HasComponent<Ocean>())
+                splitEntity = entity;
+        }
+
+        BatchKey key{section.mesh.get(), mat, unit.sectionIndex, splitEntity};
 
         DrawBatch& batch = map[key];
         if (!batch.section)
         {
             batch.key = key;
             batch.section = &section;
+            batch.sourceEntity = splitEntity;
         }
         batch.instances.push_back(resolveTransform(unit));
     }

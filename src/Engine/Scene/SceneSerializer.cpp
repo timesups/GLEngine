@@ -23,6 +23,7 @@
 #include "../Entity/Components/light/Light.h"
 #include "../Entity/Components/light/LocalLight.h"
 #include "../Entity/Components/MeshRender.h"
+#include "../Entity/Components/Ocean.h"
 #include "../Entity/Components/light/SkyBox.h"
 #include "../Entity/Components/Transform.h"
 #include "../Entity/Entity.h"
@@ -50,6 +51,13 @@ glm::vec3 JsonToVec3(const nlohmann::json& json, const glm::vec3& fallback = glm
     if (!json.is_array() || json.size() < 3)
         return fallback;
     return glm::vec3(json[0].get<float>(), json[1].get<float>(), json[2].get<float>());
+}
+
+glm::vec2 JsonToVec2(const nlohmann::json& json, const glm::vec2& fallback = glm::vec2(0.f))
+{
+    if (!json.is_array() || json.size() < 2)
+        return fallback;
+    return glm::vec2(json[0].get<float>(), json[1].get<float>());
 }
 
 glm::vec4 JsonToVec4(const nlohmann::json& json, const glm::vec4& fallback = glm::vec4(0.f))
@@ -313,6 +321,63 @@ bool ApplyMeshRender(MeshRender* meshRender, const nlohmann::json& json, std::st
     return true;
 }
 
+nlohmann::json SerializeOcean(const Ocean* ocean)
+{
+    nlohmann::json json;
+    if (!ocean)
+        return json;
+
+    const Ocean::GerstnerParams& params = ocean->GetParams();
+    json["materialSlot"] = ocean->GetMaterialSlot();
+    json["amplitude"] = params.amplitude;
+    json["wavelength"] = params.wavelength;
+    json["speed"] = params.speed;
+    json["steepness"] = params.steepness;
+    json["direction"] = {params.direction.x, params.direction.y};
+    json["gravity"] = params.gravity;
+    json["waveCount"] = ocean->GetWaveCount();
+    json["waveSeed"] = ocean->GetWaveSeed();
+    json["autoConfigureMeshRender"] = ocean->GetAutoConfigureMeshRender();
+    return json;
+}
+
+bool ApplyOcean(Ocean* ocean, const nlohmann::json& json)
+{
+    if (!ocean || !json.is_object())
+        return false;
+
+    if (json.contains("materialSlot"))
+        ocean->SetMaterialSlot(json.at("materialSlot").get<int>());
+
+    Ocean::GerstnerParams params = ocean->GetParams();
+    if (json.contains("amplitude"))
+        params.amplitude = json.at("amplitude").get<float>();
+    if (json.contains("wavelength"))
+        params.wavelength = json.at("wavelength").get<float>();
+    if (json.contains("speed"))
+        params.speed = json.at("speed").get<float>();
+    if (json.contains("steepness"))
+        params.steepness = json.at("steepness").get<float>();
+    if (json.contains("direction"))
+        params.direction = JsonToVec2(json.at("direction"), params.direction);
+    if (json.contains("gravity"))
+        params.gravity = json.at("gravity").get<float>();
+
+    ocean->SetParams(params);
+
+    if (json.contains("waveCount"))
+        ocean->SetWaveCount(json.at("waveCount").get<int>());
+    if (json.contains("waveSeed"))
+        ocean->SetWaveSeed(json.at("waveSeed").get<std::uint32_t>());
+
+    if (json.contains("autoConfigureMeshRender"))
+        ocean->SetAutoConfigureMeshRender(json.at("autoConfigureMeshRender").get<bool>());
+
+    ocean->ApplyDefaultMeshRenderSettings();
+    ocean->SyncMaterialProperties();
+    return true;
+}
+
 nlohmann::json SerializeCamera(const Camera* camera)
 {
     nlohmann::json json;
@@ -523,7 +588,7 @@ void ApplySkyBox(SkyBox* skyBox, const nlohmann::json& json)
 bool EntityHasSerializableComponents(const std::shared_ptr<Entity>& entity)
 {
     return entity->HasComponent<MeshRender>() || entity->HasComponent<Camera>() || entity->HasComponent<Light>() ||
-           entity->HasComponent<SkyBox>();
+           entity->HasComponent<SkyBox>() || entity->HasComponent<Ocean>();
 }
 
 nlohmann::json SerializeEntity(const std::shared_ptr<Entity>& entity)
@@ -540,6 +605,8 @@ nlohmann::json SerializeEntity(const std::shared_ptr<Entity>& entity)
         if (!meshJson.empty())
             components["MeshRender"] = std::move(meshJson);
     }
+    if (const Ocean* ocean = entity->GetComponent<Ocean>())
+        components["Ocean"] = SerializeOcean(ocean);
     if (const Camera* camera = entity->GetComponent<Camera>())
         components["Camera"] = SerializeCamera(camera);
     if (SkyBox* skyBox = entity->GetComponent<SkyBox>())
@@ -642,6 +709,18 @@ bool DeserializeEntity(const nlohmann::json& json, std::string& outMessage)
 
         if (!ApplyMeshRender(meshRender, components.at("MeshRender"), outMessage))
             return false;
+
+        if (components.contains("Ocean"))
+        {
+            Ocean* ocean = entity->GetComponent<Ocean>();
+            if (!ocean)
+                ocean = entity->AddComponent<Ocean>();
+            if (!components.at("Ocean").is_object() || !ApplyOcean(ocean, components.at("Ocean")))
+            {
+                outMessage = "Entity '" + name + "' has invalid Ocean data.";
+                return false;
+            }
+        }
     }
     else
     {

@@ -19,6 +19,8 @@ std::string CanonicalizeShaderTagKey(const std::string& keyLower)
 {
     if (keyLower == "lightmode")
         return "LightMode";
+    if (keyLower == "renderpipeline")
+        return "RenderPipeline";
     if (keyLower == "queue")
         return "Queue";
     if (keyLower == "rendertype")
@@ -76,4 +78,55 @@ bool PassMatchesLightMode(const ShaderPass& pass, const std::string& lightMode)
         return false;
 
     return ShaderTagEqualsIgnoreCase(*passLightMode, lightMode);
+}
+
+std::string GetEffectivePassRenderPipelineTag(const ShaderPass& pass)
+{
+    if (const std::string* tag = FindShaderTag(pass.GetOptions().tags, "RenderPipeline"))
+        return *tag;
+    return PipelineTag::kDefault;
+}
+
+bool ShouldFilterPassByRenderPipeline(const std::string& lightMode)
+{
+    return lightMode.empty() || ShaderTagEqualsIgnoreCase(lightMode, LightMode::Always);
+}
+
+bool ShaderHasRenderPipelinePass(const Shader& shader, const std::string& renderPipeline)
+{
+    for (const auto& pass : shader.m_passes)
+    {
+        if (!pass)
+            continue;
+        if (PassMatchesRenderPipeline(*pass, renderPipeline))
+            return true;
+    }
+    return false;
+}
+
+bool PassMatchesRenderPipeline(const ShaderPass& pass, const std::string& renderPipeline)
+{
+    if (renderPipeline.empty())
+        return true;
+
+    const std::string* passPipeline = FindShaderTag(pass.GetOptions().tags, "RenderPipeline");
+    if (!passPipeline)
+    {
+        // 未标注管线的 Pass 默认归属 Forward。
+        return ShaderTagEqualsIgnoreCase(renderPipeline, PipelineTag::Forward) ||
+               ShaderTagEqualsIgnoreCase(renderPipeline, PipelineTag::Deferred);
+    }
+
+    return ShaderTagEqualsIgnoreCase(*passPipeline, renderPipeline);
+}
+
+bool PassMatchesDrawTags(const ShaderPass& pass, const std::string& lightMode, const std::string& renderPipeline)
+{
+    if (!PassMatchesLightMode(pass, lightMode))
+        return false;
+
+    if (!ShouldFilterPassByRenderPipeline(lightMode))
+        return true;
+
+    return PassMatchesRenderPipeline(pass, renderPipeline);
 }

@@ -11,6 +11,7 @@
 class Mesh;
 class Material;
 struct MeshSection;
+class Entity;
 
 struct RenderUnit;
 
@@ -41,10 +42,13 @@ struct BatchKey
     Mesh* mesh = nullptr;
     Material* material = nullptr;
     size_t sectionIndex = 0;
+    /// 非空时按实体拆分批次（Ocean UBO / PerObjectRender）。
+    Entity* splitEntity = nullptr;
 
     bool operator==(const BatchKey& other) const
     {
-        return mesh == other.mesh && material == other.material && sectionIndex == other.sectionIndex;
+        return mesh == other.mesh && material == other.material && sectionIndex == other.sectionIndex &&
+               splitEntity == other.splitEntity;
     }
 };
 
@@ -55,6 +59,7 @@ struct BatchKeyHash
         size_t h = std::hash<void*>{}(key.mesh);
         h ^= std::hash<void*>{}(key.material) + 0x9e3779b9 + (h << 6) + (h >> 2);
         h ^= std::hash<size_t>{}(key.sectionIndex) + 0x9e3779b9 + (h << 6) + (h >> 2);
+        h ^= std::hash<void*>{}(key.splitEntity) + 0x9e3779b9 + (h << 6) + (h >> 2);
         return h;
     }
 };
@@ -63,11 +68,11 @@ struct DrawBatch
 {
     BatchKey key;
     MeshSection* section = nullptr;
+    Entity* sourceEntity = nullptr;
     std::vector<GPUInstanceData> instances;
 };
 
-std::vector<DrawBatch> BuildDrawBatches(const std::vector<RenderUnit>& renderUnits, int minQueueInclusive,
-                                        int maxQueueExclusive, Material* materialOverride,
+std::vector<DrawBatch> BuildDrawBatches(const std::vector<RenderUnit>& renderUnits, Material* materialOverride,
                                         std::function<Material*(const RenderUnit&)> resolveMaterial,
                                         std::function<GPUInstanceData(const RenderUnit&)> resolveTransform,
                                         RenderUnitFilter filter = RenderUnitFilter::None());

@@ -20,8 +20,6 @@ class RenderPipelineRegistry
     static std::string GetDefaultName();
     /// 名称有效则原样返回，否则回退到默认管线并写日志。
     static std::string ResolveName(const std::string& requested);
-    /// 注入 `#define GLE_PIPELINE_<Name>` 及现有 shader 兼容宏。
-    static std::string BuildShaderDefines(const std::string& pipelineName);
     static std::unique_ptr<RenderPipeline> Create(const std::string& name);
 };
 

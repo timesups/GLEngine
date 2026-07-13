@@ -1,11 +1,11 @@
 #include "ForwardRender.h"
 #include "RenderPipelineRegistry.h"
 
-#include "../../Asset/Types/RenderQueue.h"
 #include "../../Core/util.h"
+#include "../../Entity/DrawSetting.h"
 #include "../../Entity/EntityManager.h"
+#include "../../Entity/RenderUnitFilter.h"
 #include "../RenderContext.h"
-
 #define MODULE "Forward Render"
 
 void ForwardRender::Render(RenderContext& context)
@@ -19,8 +19,8 @@ void ForwardRender::Render(RenderContext& context)
 
     BindLightShadowMap();
     BindIBLTextures();
-    EntityManager::Get().DrawRenderQueue(0, RenderQueue::OpaqueUpperBound);
-    EntityManager::Get().DrawRenderQueue(RenderQueue::Skybox, RenderQueue::Transparent);
+    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Opaque()));
+    EntityManager::Get().DrawSkyBox();
     UnbinLightShadowMap();
     m_bufOpaqueLight.UnBind();
 
