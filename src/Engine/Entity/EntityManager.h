@@ -46,7 +46,8 @@ class EntityManager
     std::vector<std::string> GetAllEntityNames();
 
     void GatherSceneRenderUnit(RenderContext& context);
-    void DrawRenderQueue(const DrawSetting& setting = DrawSetting::Default());
+    void DrawRenderQueue(const DrawSetting& setting = {},
+                         const RenderUnitFilter& filter = RenderUnitFilter::None());
     void DrawSkyBox();
     void DrawIcons();
 

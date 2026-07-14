@@ -2,6 +2,7 @@
 
 #include "../../Core/Log.h"
 #include "RenderQueue.h"
+#include "ShaderTags.h"
 
 #define MODULE "Shader"
 
@@ -37,6 +38,33 @@ void Shader::CompileShaderFromCode(const std::vector<PassCode>& codes, const std
     }
     m_properties = std::move(merged);
     m_propertyOrder = propertyOrder;
+    RebuildTaggedPassMap();
+}
+
+void Shader::RebuildTaggedPassMap()
+{
+    m_taggedPasses.clear();
+    for (const auto& passPtr : m_passes)
+    {
+        if (!passPtr)
+            continue;
+
+        for (const auto& [key, value] : passPtr->GetOptions().tags)
+        {
+            if (key.empty() || value.empty())
+                continue;
+
+            const std::string tag = MakeShaderTag(key, value);
+            const std::string tagKey = NormalizeShaderTag(tag);
+            const auto existing = m_taggedPasses.find(tagKey);
+            if (existing != m_taggedPasses.end() && existing->second != passPtr.get())
+            {
+                LogA(LogLevel::WARNING, "Shader '{}' duplicate tag '{}' on multiple passes; using latest",
+                     m_path.empty() ? m_name : m_path, tag);
+            }
+            m_taggedPasses[tagKey] = passPtr.get();
+        }
+    }
 }
 
 void Shader::Use(const int index)

@@ -215,88 +215,106 @@ void Material::unbindShaderTextures()
     }
 }
 
-void Material::Apply(const MaterialApplyData& applyData, const ShaderPassDrawTags& passTags)
+void Material::Apply(const MaterialApplyData& applyData, const std::vector<std::string>& shaderTags,
+                     bool requireMatchingPass)
 {
     if (!applyData.section || !applyData.section->mesh || !m_shader)
         return;
 
-    const std::string activeRenderPipeline =
-        passTags.renderPipeline.empty() ? Config::Get().renderPipeline : passTags.renderPipeline;
-
-    for (auto& pass : m_shader->m_passes)
+    ShaderPass* pass = FindShaderPassForTags(*m_shader, shaderTags);
+    if (!pass)
     {
-        if (!PassMatchesDrawTags(*pass, passTags.lightMode, activeRenderPipeline))
-            continue;
-
-        if (!pass->IsReady())
+        // 无匹配 ShaderTag 的 Pass：跳过绘制；材质覆盖时回退到第一个可用 Pass。
+        if (requireMatchingPass)
+            return;
+        for (auto& p : m_shader->m_passes)
         {
-            static bool s_loggedFallback = false;
-            if (!s_loggedFallback)
+            if (p)
             {
-                LogA(LogLevel::WARNING, "Material '{}' shader pass not ready, using ErrorShader fallback", m_name);
-                s_loggedFallback = true;
+                pass = p.get();
+                break;
             }
-            auto errorShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/ErrorShader.glsl");
-            errorShader->m_passes[0]->use();
-            errorShader->m_passes[0]->SetValue("_UseInstancing", 0);
-            errorShader->m_passes[0]->SetValue("GL_MATRIX_M", applyData.mModel);
-            errorShader->m_passes[0]->SetValue("GL_MATRIX_N", applyData.mNormal);
-            errorShader->m_passes[0]->SetState();
-            applyData.section->mesh->Draw(GL_TRIANGLES);
         }
-        else
-        {
-            pass->use();
-            pass->SetValue("_UseInstancing", 0);
-            pass->SetValue("GL_MATRIX_M", applyData.mModel);
-            pass->SetValue("GL_MATRIX_N", applyData.mNormal);
-            pass->SetValue("_BoundingBoxMax", applyData.boundingBoxMax);
-            pass->SetValue("_BoundingBoxMin", applyData.boundingBoxMin);
-            applyShaderProperties(*pass);
-            pass->SetState();
-            pass->SetValue("_DrawCount", pass->GetOptions().DrawTimes);
-            for (int i = 0; i < pass->GetOptions().DrawTimes; i++)
-            {
-                pass->SetValue("_PassIndex", i);
-                applyData.section->mesh->Draw((GLenum)pass->GetOptions().mode);
-            }
-            unbindShaderTextures();
-        }
+        if (!pass)
+            return;
     }
+
+    if (!pass->IsReady())
+    {
+        static bool s_loggedFallback = false;
+        if (!s_loggedFallback)
+        {
+            LogA(LogLevel::WARNING, "Material '{}' shader pass not ready, using ErrorShader fallback", m_name);
+            s_loggedFallback = true;
+        }
+        auto errorShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/ErrorShader.glsl");
+        errorShader->m_passes[0]->use();
+        errorShader->m_passes[0]->SetValue("_UseInstancing", 0);
+        errorShader->m_passes[0]->SetValue("GL_MATRIX_M", applyData.mModel);
+        errorShader->m_passes[0]->SetValue("GL_MATRIX_N", applyData.mNormal);
+        errorShader->m_passes[0]->SetState();
+        applyData.section->mesh->Draw(GL_TRIANGLES);
+        return;
+    }
+
+    pass->use();
+    pass->SetValue("_UseInstancing", 0);
+    pass->SetValue("GL_MATRIX_M", applyData.mModel);
+    pass->SetValue("GL_MATRIX_N", applyData.mNormal);
+    pass->SetValue("_BoundingBoxMax", applyData.boundingBoxMax);
+    pass->SetValue("_BoundingBoxMin", applyData.boundingBoxMin);
+    applyShaderProperties(*pass);
+    pass->SetState();
+    pass->SetValue("_DrawCount", pass->GetOptions().DrawTimes);
+    for (int i = 0; i < pass->GetOptions().DrawTimes; i++)
+    {
+        pass->SetValue("_PassIndex", i);
+        applyData.section->mesh->Draw((GLenum)pass->GetOptions().mode);
+    }
+    unbindShaderTextures();
 }
 
-void Material::ApplyInstanced(const MaterialInstancedApplyData& applyData, const ShaderPassDrawTags& passTags)
+void Material::ApplyInstanced(const MaterialInstancedApplyData& applyData, const std::vector<std::string>& shaderTags,
+                              bool requireMatchingPass)
 {
     if (!applyData.section || !applyData.section->mesh || applyData.instanceCount <= 0 || !m_shader)
         return;
 
-    const std::string activeRenderPipeline =
-        passTags.renderPipeline.empty() ? Config::Get().renderPipeline : passTags.renderPipeline;
+    ShaderPass* pass = FindShaderPassForTags(*m_shader, shaderTags);
+    if (!pass)
+    {
+        if (requireMatchingPass)
+            return;
+        for (auto& p : m_shader->m_passes)
+        {
+            if (p)
+            {
+                pass = p.get();
+                break;
+            }
+        }
+        if (!pass)
+            return;
+    }
+
+    if (!pass->IsReady())
+        return;
 
     InstanceBuffer::Get().Bind();
 
-    for (auto& pass : m_shader->m_passes)
+    pass->use();
+    pass->SetValue("_UseInstancing", 1);
+    pass->SetValue("_InstanceOffset", applyData.instanceOffset);
+    pass->SetValue("_InstanceCount", applyData.instanceCount);
+    applyShaderProperties(*pass);
+    pass->SetState();
+    pass->SetValue("_DrawCount", pass->GetOptions().DrawTimes);
+    for (int i = 0; i < pass->GetOptions().DrawTimes; i++)
     {
-        if (!PassMatchesDrawTags(*pass, passTags.lightMode, activeRenderPipeline))
-            continue;
-
-        if (!pass->IsReady())
-            continue;
-
-        pass->use();
-        pass->SetValue("_UseInstancing", 1);
-        pass->SetValue("_InstanceOffset", applyData.instanceOffset);
-        pass->SetValue("_InstanceCount", applyData.instanceCount);
-        applyShaderProperties(*pass);
-        pass->SetState();
-        pass->SetValue("_DrawCount", pass->GetOptions().DrawTimes);
-        for (int i = 0; i < pass->GetOptions().DrawTimes; i++)
-        {
-            pass->SetValue("_PassIndex", i);
-            applyData.section->mesh->DrawInstanced((GLenum)pass->GetOptions().mode, applyData.instanceCount);
-        }
-        unbindShaderTextures();
+        pass->SetValue("_PassIndex", i);
+        applyData.section->mesh->DrawInstanced((GLenum)pass->GetOptions().mode, applyData.instanceCount);
     }
+    unbindShaderTextures();
 }
 
 void Material::SetFloatProperty(const std::string& name, float value)

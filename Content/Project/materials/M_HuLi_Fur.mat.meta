@@ -1,7 +1,7 @@
 {
     "dependencies": [
-        "Content/Project/textures/Fur_map.png",
         "Content/Project/shaders/MultiPassFur.glsl",
+        "Content/Project/textures/Fur_map.png",
         "Content/Project/textures/Fur_Direction.png",
         "Content/Project/textures/HuLi_Color.png",
         "Content/Project/textures/floor/flooring_albedo.png"

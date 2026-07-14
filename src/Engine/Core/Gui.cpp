@@ -2553,6 +2553,15 @@ void Gui::ShowDetail()
                     if (ImGui::IsItemHovered())
                         ImGui::SetTooltip("Write oct-encoded normal + depth to the custom depth buffer (e.g. water refraction).");
 
+                    bool drawOutline = mr->GetDrawOutline();
+                    if (ImGui::Checkbox("Draw Outline", &drawOutline))
+                    {
+                        mr->SetDrawOutline(drawOutline);
+                        SceneSession::Get().MarkDirty();
+                    }
+                    if (ImGui::IsItemHovered())
+                        ImGui::SetTooltip("Mark for outline pass; select with RenderUnitFilter::DrawOutline().");
+
                     bool castShadow = mr->GetCastShadow();
                     if (ImGui::Checkbox("Cast Shadow", &castShadow))
                     {

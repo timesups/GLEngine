@@ -4,7 +4,6 @@
 #include "../../Asset/Types/Material.h"
 #include "../../Asset/Types/Mesh.h"
 #include "../../Asset/Types/Shader.h"
-#include "../../Asset/Types/ShaderTags.h"
 #include "../../Asset/Types/Texture/IBLImage.h"
 #include "../../Asset/Types/Texture/Texture2D.h"
 #include "../../Asset/Types/Texture/TextureCube.h"
@@ -22,7 +21,6 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <string>
-
 
 #define MODULE "Render Pipeline"
 
@@ -160,23 +158,27 @@ void RenderPipeline::DrawShadowMap(RenderContext& context)
             // 绘制主光shadowmap：优先使用材质内 ShadowCaster Pass，其余走全局 fallback
             m_buf_shadow.Bind(true, (int)directional->m_ShadowRes, (int)directional->m_ShadowRes);
             Util::ClearScreen(GL_DEPTH_BUFFER_BIT);
-            EntityManager::Get().DrawRenderQueue(
-                DrawSetting{}
-                    .WithFilter(RenderUnitFilter::And(
-                        RenderUnitFilter::Opaque(),
-                        RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
-                                              RenderUnitFilter::HasLightModePass(LightMode::ShadowCaster))))
-                    .WithPassTags(ShaderPassDrawTags::WithLightMode(LightMode::ShadowCaster))
-                    .WithSortMode(DrawSortMode::RenderQueue));
-            EntityManager::Get().DrawRenderQueue(
-                DrawSetting{}
-                    .WithMaterialOverride(m_shadowMaterialGloabl)
-                    .WithFilter(RenderUnitFilter::And(
-                        RenderUnitFilter::Opaque(),
-                        RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
-                                              RenderUnitFilter::LacksLightModePass(LightMode::ShadowCaster))))
-                    .WithPassTags(ShaderPassDrawTags::WithLightMode(LightMode::Always))
-                    .WithSortMode(DrawSortMode::RenderQueue));
+            {
+                DrawSetting setting;
+                setting.shaderTags = {"LightMode:ShadowCaster"};
+                setting.sortMode = DrawSortMode::RenderQueue;
+                EntityManager::Get().DrawRenderQueue(
+                    setting, RenderUnitFilter::And(RenderUnitFilter::Opaque(),
+                                                   RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
+                                                                         RenderUnitFilter::HasShaderTag(
+                                                                             "LightMode:ShadowCaster"))));
+            }
+            {
+                DrawSetting setting;
+                setting.materialOverride = m_shadowMaterialGloabl;
+                setting.shaderTags = {"LightMode:Always"};
+                setting.sortMode = DrawSortMode::RenderQueue;
+                EntityManager::Get().DrawRenderQueue(
+                    setting, RenderUnitFilter::And(RenderUnitFilter::Opaque(),
+                                                   RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
+                                                                         RenderUnitFilter::LacksShaderTag(
+                                                                             "LightMode:ShadowCaster"))));
+            }
             m_buf_shadow.UnBind();
             DirectionalLightCount++;
         }
@@ -184,23 +186,27 @@ void RenderPipeline::DrawShadowMap(RenderContext& context)
     // 局部灯光
     m_bufLocShadow.Bind(true);
     Util::ClearScreen(GL_DEPTH_BUFFER_BIT);
-    EntityManager::Get().DrawRenderQueue(
-        DrawSetting{}
-            .WithFilter(RenderUnitFilter::And(
-                RenderUnitFilter::Opaque(),
-                RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
-                                      RenderUnitFilter::HasLightModePass(LightMode::ShadowCaster))))
-            .WithPassTags(ShaderPassDrawTags::WithLightMode(LightMode::ShadowCaster))
-            .WithSortMode(DrawSortMode::RenderQueue));
-    EntityManager::Get().DrawRenderQueue(
-        DrawSetting{}
-            .WithMaterialOverride(m_shadowMaterialLocal)
-            .WithFilter(RenderUnitFilter::And(
-                RenderUnitFilter::Opaque(),
-                RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
-                                      RenderUnitFilter::LacksLightModePass(LightMode::ShadowCaster))))
-            .WithPassTags(ShaderPassDrawTags::WithLightMode(LightMode::Always))
-            .WithSortMode(DrawSortMode::RenderQueue));
+    {
+        DrawSetting setting;
+        setting.shaderTags = {"LightMode:ShadowCaster"};
+        setting.sortMode = DrawSortMode::RenderQueue;
+        EntityManager::Get().DrawRenderQueue(
+            setting, RenderUnitFilter::And(RenderUnitFilter::Opaque(),
+                                           RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
+                                                                 RenderUnitFilter::HasShaderTag(
+                                                                     "LightMode:ShadowCaster"))));
+    }
+    {
+        DrawSetting setting;
+        setting.materialOverride = m_shadowMaterialLocal;
+        setting.shaderTags = {"LightMode:Always"};
+        setting.sortMode = DrawSortMode::RenderQueue;
+        EntityManager::Get().DrawRenderQueue(
+            setting, RenderUnitFilter::And(RenderUnitFilter::Opaque(),
+                                           RenderUnitFilter::And(RenderUnitFilter::CastShadow(),
+                                                                 RenderUnitFilter::LacksShaderTag(
+                                                                     "LightMode:ShadowCaster"))));
+    }
     m_bufLocShadow.UnBind();
     glPopDebugGroup();
 }
@@ -210,12 +216,18 @@ void RenderPipeline::DrawCustomDepth(RenderContext& context)
     m_buf_CustomDepth.Bind(true, context.sceneViewportWidth, context.sceneViewportHeight);
     Util::ClearScreen();
     auto mat = AssetManager::Get().GetAsset<Material>("engine://materials/CustomDepth");
-    EntityManager::Get().DrawRenderQueue(
-        DrawSetting{}.WithMaterialOverride(mat).WithFilter(
-            RenderUnitFilter::And(RenderUnitFilter::Opaque(), RenderUnitFilter::DrawCustomDepth())));
-    EntityManager::Get().DrawRenderQueue(
-        DrawSetting{}.WithMaterialOverride(mat).WithFilter(
-            RenderUnitFilter::And(RenderUnitFilter::Transparent(), RenderUnitFilter::DrawCustomDepth())));
+    {
+        DrawSetting setting;
+        setting.materialOverride = mat;
+        EntityManager::Get().DrawRenderQueue(
+            setting, RenderUnitFilter::And(RenderUnitFilter::Opaque(), RenderUnitFilter::DrawCustomDepth()));
+    }
+    {
+        DrawSetting setting;
+        setting.materialOverride = mat;
+        EntityManager::Get().DrawRenderQueue(
+            setting, RenderUnitFilter::And(RenderUnitFilter::Transparent(), RenderUnitFilter::DrawCustomDepth()));
+    }
     m_buf_CustomDepth.UnBind();
 }
 
@@ -334,7 +346,7 @@ void RenderPipeline::DrawTransparent(RenderContext& context)
     BindIBLTextures();
     m_buf_CustomDepth.ColorAttachment().Bind(10);
     m_bufOpaqueLight.ColorAttachment().Bind(11);
-    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Transparent()));
+    EntityManager::Get().DrawRenderQueue(DrawSetting{}, RenderUnitFilter::Transparent());
     m_buf_CustomDepth.ColorAttachment().UnBind();
     m_bufOpaqueLight.ColorAttachment().UnBind();
     m_bufTransparent.UnBind();

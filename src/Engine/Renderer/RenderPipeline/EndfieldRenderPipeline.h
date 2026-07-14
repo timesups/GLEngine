@@ -23,4 +23,6 @@ class EndfieldRenderPipeline : public RenderPipeline
     std::shared_ptr<Shader> m_defrredLightShader;
 
     RenderTarget m_GBuffer;
+    RenderTarget m_defrredLight;
+    RenderTarget m_Shadow;
 };

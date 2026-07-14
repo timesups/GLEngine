@@ -119,7 +119,9 @@ bool EnsureBrdfBakeContext(int size)
     context.framebuffer.SetSize(size, size);
     if (!context.depthBuffer)
         context.depthBuffer = std::make_shared<RenderBuffer>();
-    const RenderBufferDesc depthDesc = RenderTargetFormats::DepthRBO(size, size);
+    RenderBufferDesc depthDesc = RenderTargetFormats::DepthRBO();
+    depthDesc.width = size;
+    depthDesc.height = size;
     if (!context.depthBuffer->Create(depthDesc))
         return false;
     context.framebuffer.ClearAttachments();
@@ -162,7 +164,9 @@ bool EnsureBakeContext(int faceSize)
     context.faceSize = faceSize;
     if (!context.depthBuffer)
         context.depthBuffer = std::make_shared<RenderBuffer>();
-    const RenderBufferDesc depthDesc = RenderTargetFormats::DepthRBO(faceSize, faceSize);
+    RenderBufferDesc depthDesc = RenderTargetFormats::DepthRBO();
+    depthDesc.width = faceSize;
+    depthDesc.height = faceSize;
     if (!context.depthBuffer->Create(depthDesc))
         return false;
     context.framebuffer.ClearAttachments();

@@ -19,7 +19,7 @@ void ForwardRender::Render(RenderContext& context)
 
     BindLightShadowMap();
     BindIBLTextures();
-    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Opaque()));
+    EntityManager::Get().DrawRenderQueue(DrawSetting{}, RenderUnitFilter::Opaque());
     EntityManager::Get().DrawSkyBox();
     UnbinLightShadowMap();
     m_bufOpaqueLight.UnBind();

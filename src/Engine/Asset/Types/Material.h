@@ -41,9 +41,10 @@ class Material
     void SyncPropertiesFromShader();
     void ApplyTextureDefaultsFromShader();
     void Update();
-    void Apply(const MaterialApplyData& applyData, const ShaderPassDrawTags& passTags = ShaderPassDrawTags::Default());
-    void ApplyInstanced(const MaterialInstancedApplyData& applyData,
-                        const ShaderPassDrawTags& passTags = ShaderPassDrawTags::Default());
+    void Apply(const MaterialApplyData& applyData, const std::vector<std::string>& shaderTags = {},
+               bool requireMatchingPass = true);
+    void ApplyInstanced(const MaterialInstancedApplyData& applyData, const std::vector<std::string>& shaderTags = {},
+                        bool requireMatchingPass = true);
     void SetFloatProperty(const std::string& name, float value);
     void SetIntProperty(const std::string& name, int value);
     void SetBoolProperty(const std::string& name, bool value);

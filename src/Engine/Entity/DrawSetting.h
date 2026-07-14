@@ -1,9 +1,8 @@
 #pragma once
 
-#include "RenderUnitFilter.h"
-
 #include <memory>
 #include <string>
+#include <vector>
 
 class Material;
 
@@ -18,35 +17,12 @@ enum class DrawSortMode
     RenderQueueThenBackToFront,
 };
 
-/// Shader Pass 绘制标签（LightMode / RenderPipeline）。
-struct ShaderPassDrawTags
+/// 一次 DrawRenderQueue 调用的绘制设置（Shader Tag、材质覆盖、排序等）。
+/// 对象筛选由独立的 RenderUnitFilter 负责，二者不要混用。
+/// Shader Tag 为纯文本 "Key:Value"（如 "LightMode:Deferred"），大小写不敏感。
+struct DrawSetting
 {
-    std::string lightMode;
-    /// 为空时使用 Config::renderPipeline。
-    std::string renderPipeline;
-
-    static ShaderPassDrawTags Default();
-    static ShaderPassDrawTags WithLightMode(const std::string& lightMode);
-};
-
-/// 一次 DrawRenderQueue 调用的绘制参数。
-class DrawSetting
-{
-  public:
     std::shared_ptr<Material> materialOverride;
-    ShaderPassDrawTags passTags;
+    std::vector<std::string> shaderTags;
     DrawSortMode sortMode = DrawSortMode::RenderQueueThenBackToFront;
-    RenderUnitFilter filter = RenderUnitFilter::None();
-
-    static DrawSetting Default();
-
-    DrawSetting& WithMaterialOverride(std::shared_ptr<Material> material);
-    DrawSetting& WithFilter(RenderUnitFilter unitFilter);
-    DrawSetting& WithPassTags(ShaderPassDrawTags tags);
-    DrawSetting& WithLightMode(const std::string& lightMode);
-    DrawSetting& WithRenderPipeline(const std::string& renderPipeline);
-    DrawSetting& WithSortMode(DrawSortMode mode);
-
-    Material* GetMaterialOverride() const;
-    std::string ResolveRenderPipeline() const;
 };

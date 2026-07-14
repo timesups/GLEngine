@@ -1,5 +1,6 @@
 #include "ShaderTags.h"
 
+#include "../../Core/Config.h"
 #include "Shader.h"
 #include "ShaderPass.h"
 
@@ -13,28 +14,52 @@ std::string ToLowerCopy(std::string value)
         c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
     return value;
 }
+
+bool DrawTagsContainKey(const std::vector<std::string>& drawTags, const std::string& key)
+{
+    for (const std::string& tag : drawTags)
+    {
+        std::string tagKey;
+        std::string tagValue;
+        if (ParseShaderTag(tag, tagKey, tagValue) && ShaderTagEqualsIgnoreCase(tagKey, key))
+            return true;
+    }
+    return false;
+}
+
+bool PassValueMatchesDrawTag(const ShaderPass& pass, const std::string& key, const std::string& value)
+{
+    const std::string* passValue = FindShaderTag(pass.GetOptions().tags, key);
+    if (!passValue)
+        return false;
+    return ShaderTagEqualsIgnoreCase(*passValue, value);
+}
 } // namespace
 
-std::string CanonicalizeShaderTagKey(const std::string& keyLower)
+std::string MakeShaderTag(const std::string& key, const std::string& value)
 {
-    if (keyLower == "lightmode")
-        return "LightMode";
-    if (keyLower == "renderpipeline")
-        return "RenderPipeline";
-    if (keyLower == "queue")
-        return "Queue";
-    if (keyLower == "rendertype")
-        return "RenderType";
-    if (keyLower.empty())
-        return keyLower;
-    std::string key = keyLower;
-    key[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(key[0])));
-    return key;
+    return key + ":" + value;
+}
+
+bool ParseShaderTag(const std::string& tag, std::string& outKey, std::string& outValue)
+{
+    const size_t sep = tag.find(':');
+    if (sep == std::string::npos)
+        return false;
+
+    outKey = tag.substr(0, sep);
+    outValue = tag.substr(sep + 1);
+    return !outKey.empty() && !outValue.empty();
 }
 
 bool ShaderTagEqualsIgnoreCase(const std::string& a, const std::string& b)
 {
     return ToLowerCopy(a) == ToLowerCopy(b);
+}
+
+std::string NormalizeShaderTag(const std::string& tag)
+{
+    return ToLowerCopy(tag);
 }
 
 const std::string* FindShaderTag(const ShaderTagMap& tags, const std::string& key)
@@ -52,81 +77,72 @@ const std::string* FindShaderTag(const ShaderTagMap& tags, const std::string& ke
     return nullptr;
 }
 
-bool ShaderHasLightModePass(const Shader& shader, const std::string& lightMode)
+std::string DefaultLightModeForActivePipeline()
 {
-    for (const auto& pass : shader.m_passes)
+    const std::string& pipeline = Config::Get().renderPipeline;
+    if (ShaderTagEqualsIgnoreCase(pipeline, "Forward"))
+        return "Forward";
+    return "Deferred";
+}
+
+std::vector<std::string> BuildEffectiveShaderTags(const std::vector<std::string>& drawTags)
+{
+    std::vector<std::string> effective = drawTags;
+    if (!DrawTagsContainKey(effective, "LightMode"))
+        effective.push_back(MakeShaderTag("LightMode", DefaultLightModeForActivePipeline()));
+    return effective;
+}
+
+bool PassMatchesShaderTags(const ShaderPass& pass, const std::vector<std::string>& drawTags)
+{
+    if (drawTags.empty())
+        return FindShaderTag(pass.GetOptions().tags, "LightMode") == nullptr;
+
+    for (const std::string& tag : drawTags)
     {
-        if (!pass)
+        std::string key;
+        std::string value;
+        if (!ParseShaderTag(tag, key, value))
             continue;
-        const std::string* passLightMode = FindShaderTag(pass->GetOptions().tags, "LightMode");
-        if (passLightMode && ShaderTagEqualsIgnoreCase(*passLightMode, lightMode))
-            return true;
-    }
-    return false;
-}
 
-bool PassMatchesLightMode(const ShaderPass& pass, const std::string& lightMode)
-{
-    const std::string* passLightMode = FindShaderTag(pass.GetOptions().tags, "LightMode");
-    const bool defaultDraw =
-        lightMode.empty() || ShaderTagEqualsIgnoreCase(lightMode, LightMode::Always);
-
-    if (defaultDraw)
-        return passLightMode == nullptr;
-
-    if (!passLightMode)
-        return false;
-
-    return ShaderTagEqualsIgnoreCase(*passLightMode, lightMode);
-}
-
-std::string GetEffectivePassRenderPipelineTag(const ShaderPass& pass)
-{
-    if (const std::string* tag = FindShaderTag(pass.GetOptions().tags, "RenderPipeline"))
-        return *tag;
-    return PipelineTag::kDefault;
-}
-
-bool ShouldFilterPassByRenderPipeline(const std::string& lightMode)
-{
-    return lightMode.empty() || ShaderTagEqualsIgnoreCase(lightMode, LightMode::Always);
-}
-
-bool ShaderHasRenderPipelinePass(const Shader& shader, const std::string& renderPipeline)
-{
-    for (const auto& pass : shader.m_passes)
-    {
-        if (!pass)
+        // LightMode:Always（或空）匹配没有 LightMode Tag 的 Pass
+        if (ShaderTagEqualsIgnoreCase(key, "LightMode") &&
+            (ShaderTagEqualsIgnoreCase(value, "Always") || value.empty()))
+        {
+            if (FindShaderTag(pass.GetOptions().tags, "LightMode") != nullptr)
+                return false;
             continue;
-        if (PassMatchesRenderPipeline(*pass, renderPipeline))
-            return true;
+        }
+
+        if (!PassValueMatchesDrawTag(pass, key, value))
+            return false;
     }
-    return false;
+    return true;
 }
 
-bool PassMatchesRenderPipeline(const ShaderPass& pass, const std::string& renderPipeline)
+ShaderPass* FindShaderPassForTags(Shader& shader, const std::vector<std::string>& drawTags)
 {
-    if (renderPipeline.empty())
-        return true;
+    const std::vector<std::string> effectiveTags = BuildEffectiveShaderTags(drawTags);
 
-    const std::string* passPipeline = FindShaderTag(pass.GetOptions().tags, "RenderPipeline");
-    if (!passPipeline)
+    if (effectiveTags.size() == 1)
     {
-        // 未标注管线的 Pass 默认归属 Forward。
-        return ShaderTagEqualsIgnoreCase(renderPipeline, PipelineTag::Forward) ||
-               ShaderTagEqualsIgnoreCase(renderPipeline, PipelineTag::Deferred);
+        const auto indexed = shader.m_taggedPasses.find(NormalizeShaderTag(effectiveTags.front()));
+        if (indexed != shader.m_taggedPasses.end() && indexed->second &&
+            PassMatchesShaderTags(*indexed->second, effectiveTags))
+            return indexed->second;
     }
 
-    return ShaderTagEqualsIgnoreCase(*passPipeline, renderPipeline);
+    for (const auto& passPtr : shader.m_passes)
+    {
+        if (!passPtr)
+            continue;
+        if (PassMatchesShaderTags(*passPtr, effectiveTags))
+            return passPtr.get();
+    }
+    return nullptr;
 }
 
-bool PassMatchesDrawTags(const ShaderPass& pass, const std::string& lightMode, const std::string& renderPipeline)
+bool ShaderHasShaderTag(const Shader& shader, const std::string& tag)
 {
-    if (!PassMatchesLightMode(pass, lightMode))
-        return false;
-
-    if (!ShouldFilterPassByRenderPipeline(lightMode))
-        return true;
-
-    return PassMatchesRenderPipeline(pass, renderPipeline);
+    return shader.m_taggedPasses.find(NormalizeShaderTag(tag)) != shader.m_taggedPasses.end();
 }

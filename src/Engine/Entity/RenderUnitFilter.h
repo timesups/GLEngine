@@ -6,7 +6,8 @@
 
 struct RenderUnit;
 
-/// 按 RenderQueue 范围与 MeshRender / Shader 等条件筛选 RenderUnit。
+/// 从 RenderUnit 列表中筛选本次要绘制的对象（队列范围、投射阴影、Pass 能力等）。
+/// 与 DrawSetting 独立：本类只负责“画谁”，不负责 LightMode 等绘制设置。
 class RenderUnitFilter
 {
   public:
@@ -22,11 +23,11 @@ class RenderUnitFilter
     static RenderUnitFilter Transparent();
     static RenderUnitFilter CastShadow();
     static RenderUnitFilter DrawCustomDepth();
+    static RenderUnitFilter DrawOutline();
     static RenderUnitFilter PerObjectRender();
-    static RenderUnitFilter HasLightModePass(const std::string& lightMode);
-    static RenderUnitFilter LacksLightModePass(const std::string& lightMode);
-    static RenderUnitFilter HasRenderPipelinePass(const std::string& renderPipeline);
-    static RenderUnitFilter LacksRenderPipelinePass(const std::string& renderPipeline);
+    /// 是否有匹配指定纯文本 Shader Tag 的 Pass（如 "LightMode:ShadowCaster"，大小写不敏感）。
+    static RenderUnitFilter HasShaderTag(const std::string& tag);
+    static RenderUnitFilter LacksShaderTag(const std::string& tag);
     static RenderUnitFilter And(RenderUnitFilter lhs, RenderUnitFilter rhs);
 
   private:

@@ -25,7 +25,7 @@ GLSLShader
         {
             Tags
             {
-                RenderPipeline Endfield
+                LightMode Deferred
             }
             Stencil
             {

@@ -72,15 +72,21 @@ RenderUnitFilter RenderUnitFilter::DrawCustomDepth()
                             { return unit.meshRender && unit.meshRender->GetDrawCustomDepth(); });
 }
 
+RenderUnitFilter RenderUnitFilter::DrawOutline()
+{
+    return RenderUnitFilter([](const RenderUnit& unit)
+                            { return unit.meshRender && unit.meshRender->GetDrawOutline(); });
+}
+
 RenderUnitFilter RenderUnitFilter::PerObjectRender()
 {
     return RenderUnitFilter([](const RenderUnit& unit)
                             { return unit.meshRender && unit.meshRender->GetPerObjectRender(); });
 }
 
-RenderUnitFilter RenderUnitFilter::HasLightModePass(const std::string& lightMode)
+RenderUnitFilter RenderUnitFilter::HasShaderTag(const std::string& tag)
 {
-    return RenderUnitFilter([lightMode](const RenderUnit& unit)
+    return RenderUnitFilter([tag](const RenderUnit& unit)
                             {
                                 if (!unit.meshRender)
                                     return false;
@@ -89,13 +95,13 @@ RenderUnitFilter RenderUnitFilter::HasLightModePass(const std::string& lightMode
                                 if (!mat)
                                     return false;
                                 const std::shared_ptr<Shader> shader = mat->GetShader();
-                                return shader && ShaderHasLightModePass(*shader, lightMode);
+                                return shader && ShaderHasShaderTag(*shader, tag);
                             });
 }
 
-RenderUnitFilter RenderUnitFilter::LacksLightModePass(const std::string& lightMode)
+RenderUnitFilter RenderUnitFilter::LacksShaderTag(const std::string& tag)
 {
-    return RenderUnitFilter([lightMode](const RenderUnit& unit)
+    return RenderUnitFilter([tag](const RenderUnit& unit)
                             {
                                 if (!unit.meshRender)
                                     return false;
@@ -104,37 +110,7 @@ RenderUnitFilter RenderUnitFilter::LacksLightModePass(const std::string& lightMo
                                 if (!mat)
                                     return true;
                                 const std::shared_ptr<Shader> shader = mat->GetShader();
-                                return !shader || !ShaderHasLightModePass(*shader, lightMode);
-                            });
-}
-
-RenderUnitFilter RenderUnitFilter::HasRenderPipelinePass(const std::string& renderPipeline)
-{
-    return RenderUnitFilter([renderPipeline](const RenderUnit& unit)
-                            {
-                                if (!unit.meshRender)
-                                    return false;
-                                Material* mat =
-                                    unit.meshRender->GetMaterial(static_cast<int>(unit.sectionIndex)).get();
-                                if (!mat)
-                                    return false;
-                                const std::shared_ptr<Shader> shader = mat->GetShader();
-                                return shader && ShaderHasRenderPipelinePass(*shader, renderPipeline);
-                            });
-}
-
-RenderUnitFilter RenderUnitFilter::LacksRenderPipelinePass(const std::string& renderPipeline)
-{
-    return RenderUnitFilter([renderPipeline](const RenderUnit& unit)
-                            {
-                                if (!unit.meshRender)
-                                    return false;
-                                Material* mat =
-                                    unit.meshRender->GetMaterial(static_cast<int>(unit.sectionIndex)).get();
-                                if (!mat)
-                                    return true;
-                                const std::shared_ptr<Shader> shader = mat->GetShader();
-                                return !shader || !ShaderHasRenderPipelinePass(*shader, renderPipeline);
+                                return !shader || !ShaderHasShaderTag(*shader, tag);
                             });
 }
 

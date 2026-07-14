@@ -37,6 +37,12 @@ class RenderTarget
     void UnBindAttachments();
 
     bool AddAttachment(RenderTargetAttachment& attachment, TextureType type);
+    /// 将已有纹理追加为颜色附件，返回是否成功。
+    bool AddColorAttachment(std::shared_ptr<Texture> texture);
+    /// 将已有纹理设为深度 / depth-stencil 附件（替换已有深度相关附件）。
+    bool SetDepthAttachment(std::shared_ptr<Texture> texture, bool depthStencil = false);
+    /// 取得颜色附件纹理的 shared_ptr（便于共享到其他 RenderTarget）。
+    std::shared_ptr<Texture> GetColorAttachmentTexture(int index = 0) const;
 
     void DrawBufferTo(RenderTarget& dec, std::shared_ptr<Shader> shader, const std::string& name);
     void UpsampleBufferTo(RenderTarget& mip, RenderTarget& dest, std::shared_ptr<Shader> shader,

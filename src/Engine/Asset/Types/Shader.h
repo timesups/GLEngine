@@ -48,6 +48,7 @@ class Shader
     void CompileShaderFromCode(const std::vector<PassCode>& codes, const std::vector<PassOption>& options,
                                const std::unordered_map<std::string, MaterialProperty>& property,
                                const std::vector<std::string>& propertyOrder, int explicitRenderQueue = -1);
+    void RebuildTaggedPassMap();
     void Use(const int index = 0);
 
     void SetValue(const std::string& name, const glm::vec3& value) const;
@@ -66,6 +67,8 @@ class Shader
     /// 与 shader Properties 块中声明顺序一致
     std::vector<std::string> m_propertyOrder;
     std::vector<std::unique_ptr<ShaderPass>> m_passes;
+    /// "Key:Value" -> Pass；加载/编译后由 RebuildTaggedPassMap 构建。
+    std::unordered_map<std::string, ShaderPass*> m_taggedPasses;
     std::string m_name;
     std::string m_path;
     int renderQueue = RenderQueue::Geometry;

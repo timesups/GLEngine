@@ -369,10 +369,10 @@ void EntityManager::DrawSkyBox()
     skyBox->Render();
 }
 
-void EntityManager::DrawRenderQueue(const DrawSetting& setting)
+void EntityManager::DrawRenderQueue(const DrawSetting& setting, const RenderUnitFilter& filter)
 {
-    Material* overridePtr = setting.GetMaterialOverride();
-    const bool allowInstancing = setting.filter.AllowsInstancing();
+    Material* overridePtr = setting.materialOverride.get();
+    const bool allowInstancing = filter.AllowsInstancing();
 
     std::vector<RenderUnit> units = renderUnits;
     SortRenderUnitsForDraw(units, setting.sortMode);
@@ -390,7 +390,7 @@ void EntityManager::DrawRenderQueue(const DrawSetting& setting)
     };
 
     std::vector<DrawBatch> batches =
-        BuildDrawBatches(units, overridePtr, resolveMaterial, resolveTransform, setting.filter);
+        BuildDrawBatches(units, overridePtr, resolveMaterial, resolveTransform, filter);
 
     InstanceBuffer& instanceBuffer = InstanceBuffer::Get();
 
@@ -399,6 +399,9 @@ void EntityManager::DrawRenderQueue(const DrawSetting& setting)
         Material* mat = batch.key.material;
         if (!mat || !batch.section || batch.instances.empty())
             continue;
+
+        // 有材质覆盖时允许无 Tag 匹配也绘制；否则找不到对应 Pass 就跳过。
+        const bool requireMatchingPass = (overridePtr == nullptr);
 
         if (batch.sourceEntity)
         {
@@ -413,7 +416,7 @@ void EntityManager::DrawRenderQueue(const DrawSetting& setting)
             data.section = batch.section;
             data.instanceOffset = instanceBuffer.GetBatchOffset(allocId);
             data.instanceCount = instanceBuffer.GetBatchCount(allocId);
-            mat->ApplyInstanced(data, setting.passTags);
+            mat->ApplyInstanced(data, setting.shaderTags, requireMatchingPass);
         }
         else
         {
@@ -423,7 +426,7 @@ void EntityManager::DrawRenderQueue(const DrawSetting& setting)
             data.mNormal = batch.instances[0].mNormal;
             data.boundingBoxMax = glm::vec3(batch.instances[0].boundingBoxMax);
             data.boundingBoxMin = glm::vec3(batch.instances[0].boundingBoxMin);
-            mat->Apply(data, setting.passTags);
+            mat->Apply(data, setting.shaderTags, requireMatchingPass);
         }
     }
 }

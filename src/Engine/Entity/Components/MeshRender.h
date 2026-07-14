@@ -11,6 +11,7 @@ class Material;
 struct MeshRenderSetting
 {
     bool drawCustomDepth = false;
+    bool drawOutline = false;
     bool castShadow = true;
     bool perObjectRender = false;
 };
@@ -46,6 +47,14 @@ class MeshRender : public Component
     void SetDrawCustomDepth(bool value)
     {
         m_renderSetting.drawCustomDepth = value;
+    }
+    bool GetDrawOutline() const
+    {
+        return m_renderSetting.drawOutline;
+    }
+    void SetDrawOutline(bool value)
+    {
+        m_renderSetting.drawOutline = value;
     }
     bool GetCastShadow() const
     {

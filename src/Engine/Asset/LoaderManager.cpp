@@ -1423,10 +1423,13 @@ bool LoaderManager::LoadShaderCodeFromFile(const std::string& path, std::vector<
                 }
                 if (tokens.size() >= 2)
                 {
-                    const std::string key = CanonicalizeShaderTagKey(tokens[0]);
+                    const std::string& key = tokens[0];
                     const std::string value = ExtractTagValueFromLine(line);
                     if (!key.empty() && !value.empty())
+                    {
                         option.tags[key] = value;
+                        option.tagTexts.push_back(MakeShaderTag(key, value));
+                    }
                 }
                 continue;
             }

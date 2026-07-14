@@ -29,34 +29,56 @@ bool EndfieldRenderPipeline::OnInit(const int width, const int height)
     bufferDesc.AddColorAttachment(texDesc);
     bufferDesc.SetDepthStencilAttachment(RenderTargetFormats::DepthStencilTexture());
     m_GBuffer.Build(bufferDesc);
-    LoadAsset();
 
+    FramebufferDesc defrredLightDesc;
+    defrredLightDesc.width = width;
+    defrredLightDesc.height = height;
+    defrredLightDesc.name = "Defrred Light";
+    defrredLightDesc.SetDepthStencilAttachment(RenderTargetFormats::DepthStencilRBO());
+    m_defrredLight.Build(defrredLightDesc);
+    m_defrredLight.AddColorAttachment(m_GBuffer.GetColorAttachmentTexture(0));
+
+    FramebufferDesc shadowMapDesc;
+    shadowMapDesc.width = width;
+    shadowMapDesc.height = height;
+    shadowMapDesc.name = "Shadow Map";
+    shadowMapDesc.AddColorAttachment(texDesc);
+
+    LoadAsset();
     return true;
 }
 
 void EndfieldRenderPipeline::Render(RenderContext& context)
 {
+    // Draw Main Light Shadow Depth
+    DrawShadowMap(context);
     // Draw Gbuffer
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Draw G Buffer");
     m_GBuffer.Bind(false, context.sceneViewportWidth, context.sceneViewportHeight);
     Util::ClearScreen();
-    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Opaque()));
+    DrawSetting gbufferSetting;
+    gbufferSetting.shaderTags = {"LightMode:Deferred"};
+    EntityManager::Get().DrawRenderQueue(gbufferSetting, RenderUnitFilter::Opaque());
+    gbufferSetting.shaderTags[0] = "LightMode:outline";
+    EntityManager::Get().DrawRenderQueue(
+        gbufferSetting, RenderUnitFilter::And(RenderUnitFilter::Opaque(), RenderUnitFilter::DrawOutline()));
     m_GBuffer.UnBind();
 
     glPopDebugGroup();
 
     // Deferred light：渲染到场景视口尺寸的 RT，避免 UI 开启时全屏绘制导致比例错位
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Defrred Light");
-    m_bufTransparent.Bind(false, context.sceneViewportWidth, context.sceneViewportHeight);
+    glViewport(context.sceneViewportX, context.sceneViewportY, context.sceneViewportWidth, context.sceneViewportHeight);
     Util::ClearScreen(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    m_GBuffer.BindAttachments();
+    unsigned int nextIndex = m_GBuffer.BindAttachments();
+    m_GBuffer.DepthAttachment().Bind(nextIndex);
     m_defrredLightShader->Use();
     AssetManager::Get().GetScreenMesh()->Draw();
     m_GBuffer.UnBindAttachments();
-    m_bufTransparent.UnBind();
+    m_GBuffer.DepthAttachment().UnBind();
     glPopDebugGroup();
 
-    PostProcessing(context);
+    // PostProcessing(context);
 }
 
 void EndfieldRenderPipeline::LoadAsset()

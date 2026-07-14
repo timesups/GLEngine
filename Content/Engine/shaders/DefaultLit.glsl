@@ -21,7 +21,7 @@ GLSLShader
         {
             Tags
             {
-                RenderPipeline Forward
+                LightMode Forward
             }
             cull back
             GLSLPROGRAM
@@ -108,7 +108,7 @@ GLSLShader
         {
             Tags
             {
-                RenderPipeline Deferred
+                LightMode Deferred
             }
             cull back
             GLSLPROGRAM

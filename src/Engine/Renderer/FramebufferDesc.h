@@ -62,9 +62,9 @@ TextureDesc DepthStencilTexture();
 TextureDesc WaterBack();
 TextureDesc BloomHalf();
 
-RenderBufferDesc DepthRBO(int width, int height);
-RenderBufferDesc DepthStencilRBO(int width, int height);
-RenderBufferDesc StencilRBO(int width, int height);
+RenderBufferDesc DepthRBO();
+RenderBufferDesc DepthStencilRBO();
+RenderBufferDesc StencilRBO();
 
 FramebufferDesc SceneColorDepth(const std::string& name, int width, int height, const TextureDesc& colorDesc);
 FramebufferDesc SceneColorDepthStencil(const std::string& name, int width, int height, const TextureDesc& colorDesc);

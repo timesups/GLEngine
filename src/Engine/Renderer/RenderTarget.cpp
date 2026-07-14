@@ -249,6 +249,124 @@ bool RenderTarget::AddAttachment(RenderTargetAttachment& attachment, TextureType
     return false;
 }
 
+namespace
+{
+GLenum TextureTargetFromInstance(const Texture& texture)
+{
+    if (dynamic_cast<const TextureCubeArray*>(&texture))
+        return GL_TEXTURE_CUBE_MAP_ARRAY;
+    if (dynamic_cast<const TextureCube*>(&texture))
+        return GL_TEXTURE_CUBE_MAP;
+    if (dynamic_cast<const Texture2DArray*>(&texture))
+        return GL_TEXTURE_2D_ARRAY;
+    return GL_TEXTURE_2D;
+}
+} // namespace
+
+bool RenderTarget::AddColorAttachment(std::shared_ptr<Texture> texture)
+{
+    if (!texture || texture->GetId() == 0)
+    {
+        Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': AddColorAttachment got invalid texture", m_name);
+        return false;
+    }
+
+    if (m_width <= 0 || m_height <= 0)
+    {
+        m_width = texture->GetWidth();
+        m_height = texture->GetHeight();
+        m_framebuffer.SetSize(m_width, m_height);
+    }
+
+    RenderTargetAttachment attachment;
+    attachment.texture = std::move(texture);
+    attachment.binding.point = GL_COLOR_ATTACHMENT0 + static_cast<GLenum>(ColorAttachmentCount());
+    attachment.binding.source = AttachmentSource::Texture;
+    attachment.binding.texture = attachment.texture;
+    attachment.binding.textureTarget = TextureTargetFromInstance(*attachment.texture);
+    attachment.binding.cubeFace = -1;
+    attachment.binding.layer = 0;
+    attachment.binding.mipLevel = 0;
+
+    if (!m_framebuffer.Attach(attachment.binding))
+        return false;
+
+    m_attachments.push_back(std::move(attachment));
+    m_framebuffer.Bind(false);
+    m_framebuffer.ApplyDrawBuffers();
+    const bool ok = m_framebuffer.CheckComplete();
+    m_framebuffer.Unbind();
+    if (!ok)
+    {
+        Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': AddColorAttachment incomplete framebuffer", m_name);
+        return false;
+    }
+    return true;
+}
+
+bool RenderTarget::SetDepthAttachment(std::shared_ptr<Texture> texture, bool depthStencil)
+{
+    if (!texture || texture->GetId() == 0)
+    {
+        Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': SetDepthAttachment got invalid texture", m_name);
+        return false;
+    }
+
+    if (m_width <= 0 || m_height <= 0)
+    {
+        m_width = texture->GetWidth();
+        m_height = texture->GetHeight();
+        m_framebuffer.SetSize(m_width, m_height);
+    }
+
+    const GLenum point = depthStencil ? GL_DEPTH_STENCIL_ATTACHMENT : GL_DEPTH_ATTACHMENT;
+
+    // 移除已有深度 / depth-stencil 附件
+    for (auto it = m_attachments.begin(); it != m_attachments.end();)
+    {
+        if (it->binding.point == GL_DEPTH_ATTACHMENT || it->binding.point == GL_DEPTH_STENCIL_ATTACHMENT ||
+            (depthStencil && it->binding.point == GL_STENCIL_ATTACHMENT))
+        {
+            m_framebuffer.Detach(it->binding.point);
+            it = m_attachments.erase(it);
+        }
+        else
+            ++it;
+    }
+
+    RenderTargetAttachment attachment;
+    attachment.texture = std::move(texture);
+    attachment.binding.point = point;
+    attachment.binding.source = AttachmentSource::Texture;
+    attachment.binding.texture = attachment.texture;
+    attachment.binding.textureTarget = TextureTargetFromInstance(*attachment.texture);
+    attachment.binding.cubeFace = -1;
+    attachment.binding.layer = 0;
+    attachment.binding.mipLevel = 0;
+
+    if (!m_framebuffer.Attach(attachment.binding))
+        return false;
+
+    m_attachments.push_back(std::move(attachment));
+    m_framebuffer.Bind(false);
+    m_framebuffer.ApplyDrawBuffers();
+    const bool ok = m_framebuffer.CheckComplete();
+    m_framebuffer.Unbind();
+    if (!ok)
+    {
+        Log(MODULE, LogLevel::ERROR, "RenderTarget '{}': SetDepthAttachment incomplete framebuffer", m_name);
+        return false;
+    }
+    return true;
+}
+
+std::shared_ptr<Texture> RenderTarget::GetColorAttachmentTexture(int index) const
+{
+    if (const RenderTargetAttachment* attachment = FindColorAttachment(index))
+        return attachment->texture;
+    return {};
+}
+
 RenderTargetAttachment* RenderTarget::FindColorAttachment(int index)
 {
     int colorIndex = 0;

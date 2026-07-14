@@ -130,8 +130,9 @@ struct PassOption
     // Pass绘制次数
     int DrawTimes = 1;
 
-    /// Pass Tags（如 LightMode、RenderPipeline）；键为 CanonicalizeShaderTagKey 后的形式。
+    /// Pass Tags（LightMode 等）；键值对与文本 "Key:Value" 列表。
     ShaderTagMap tags;
+    std::vector<std::string> tagTexts;
 };
 
 class ShaderPass

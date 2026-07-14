@@ -12,6 +12,14 @@ TextureDesc WithSize(int width, int height, const TextureDesc& desc)
     return out;
 }
 
+RenderBufferDesc WithSize(int width, int height, const RenderBufferDesc& desc)
+{
+    RenderBufferDesc out = desc;
+    out.width = width;
+    out.height = height;
+    return out;
+}
+
 void RemoveAttachmentPoint(std::vector<FramebufferAttachmentDesc>& attachments, GLenum point)
 {
     attachments.erase(
@@ -86,7 +94,7 @@ void FramebufferDesc::SetDepthStencilAttachment(const RenderBufferDesc& renderBu
     FramebufferAttachmentDesc depthStencil;
     depthStencil.attachmentPoint = GL_DEPTH_STENCIL_ATTACHMENT;
     depthStencil.storage = AttachmentStorage::RenderBuffer;
-    depthStencil.renderBuffer = renderBuffer;
+    depthStencil.renderBuffer = WithSize(width, height, renderBuffer);
     attachments.push_back(depthStencil);
 }
 
@@ -109,7 +117,7 @@ void FramebufferDesc::SetStencilAttachment(const RenderBufferDesc& renderBuffer)
     FramebufferAttachmentDesc stencil;
     stencil.attachmentPoint = GL_STENCIL_ATTACHMENT;
     stencil.storage = AttachmentStorage::RenderBuffer;
-    stencil.renderBuffer = renderBuffer;
+    stencil.renderBuffer = WithSize(width, height, renderBuffer);
     attachments.push_back(stencil);
 }
 
@@ -190,29 +198,23 @@ FramebufferDesc GBuffer(const std::string& name, int width, int height)
     return desc;
 }
 
-RenderBufferDesc DepthRBO(int width, int height)
+RenderBufferDesc DepthRBO()
 {
     RenderBufferDesc desc;
-    desc.width = width;
-    desc.height = height;
     desc.internalFormat = GL_DEPTH_COMPONENT32F;
     return desc;
 }
 
-RenderBufferDesc DepthStencilRBO(int width, int height)
+RenderBufferDesc DepthStencilRBO()
 {
     RenderBufferDesc desc;
-    desc.width = width;
-    desc.height = height;
     desc.internalFormat = GL_DEPTH24_STENCIL8;
     return desc;
 }
 
-RenderBufferDesc StencilRBO(int width, int height)
+RenderBufferDesc StencilRBO()
 {
     RenderBufferDesc desc;
-    desc.width = width;
-    desc.height = height;
     desc.internalFormat = GL_STENCIL_INDEX8;
     return desc;
 }
@@ -224,7 +226,7 @@ FramebufferDesc SceneColorDepthStencil(const std::string& name, int width, int h
     desc.width = width;
     desc.height = height;
     desc.AddColorAttachment(colorDesc);
-    desc.SetDepthStencilAttachment(DepthStencilRBO(width, height));
+    desc.SetDepthStencilAttachment(DepthStencilRBO());
     return desc;
 }
 } // namespace RenderTargetFormats

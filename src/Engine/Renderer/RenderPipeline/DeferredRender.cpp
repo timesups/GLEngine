@@ -119,7 +119,7 @@ void DeferredRender::DrawGbuffer(RenderContext& context)
     m_Gbuffer.Bind(true, context.sceneViewportWidth, context.sceneViewportHeight);
     m_Gbuffer.ApplyGeometryDrawBuffers();
     Util::ClearScreen();
-    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Opaque()));
+    EntityManager::Get().DrawRenderQueue(DrawSetting{}, RenderUnitFilter::Opaque());
     m_Gbuffer.UnBind();
 }
 
@@ -236,7 +236,7 @@ void DeferredRender::DrawTransparent(RenderContext& context)
     BindIBLTextures();
     m_buf_CustomDepth.ColorAttachment().Bind(10);
     m_Gbuffer.ColorAttachment(GBufferLayout::Gbuffer0).Bind(11);
-    EntityManager::Get().DrawRenderQueue(DrawSetting{}.WithFilter(RenderUnitFilter::Transparent()));
+    EntityManager::Get().DrawRenderQueue(DrawSetting{}, RenderUnitFilter::Transparent());
     m_buf_CustomDepth.ColorAttachment().UnBind();
     m_Gbuffer.ColorAttachment(GBufferLayout::Gbuffer0).UnBind();
     m_bufTransparent.UnBind();

@@ -11,6 +11,10 @@ GLSLShader
         float _roughness = 0.5
         float _metallic = 0.0
         float _DoubleSided = 1.0
+
+
+        float _OutLineWidth = 0.01
+        vec3 _OutLineColor = (0,0,0)
     }
     SubShader
     {
@@ -18,7 +22,7 @@ GLSLShader
         {
             Tags
             {
-                RenderPipeline Endfield
+                LightMode Deferred
             }
             Stencil 
             {
@@ -91,6 +95,11 @@ GLSLShader
             }
             void main()
             {
+                vec4 mask = texture(_Mask,v_uv);
+                if (mask.x < 0.3)
+                    discard;
+
+
                 vec3 N = normalize(v_normalWS);
                 vec3 T = normalize(v_tangentWS.xyz);
                 vec3 B = cross(N, T) * v_tangentWS.w;
@@ -109,7 +118,66 @@ GLSLShader
                 outGBuffer1 = vec4(0.0, 0.0, 1.0, 0.4);
                 outGBuffer2 = packMaterialAttributes(v_uv);
                 outGBuffer3 = vec4(normalEnc, 0.0, 0.0);
-                outGBuffer4 = vec4(baseColor, 1.0);
+                outGBuffer4 = vec4(baseColor,1.0);
+            }
+            #endif
+            ENDGLSL
+        }
+
+        Pass
+        {
+            Tags
+            {
+                LightMode Outline
+            }
+            Stencil 
+            {
+                BitMask 0xff
+                AndMask 0xff
+                Func notequal
+                Ref 0x24
+                fail keep
+                dpfail keep 
+                dppass keep
+            }
+            cull front
+            GLSLPROGRAM
+            #include "Core.glsl"
+            #include "EndfieldLibrary.glsl"
+
+            uniform float _OutLineWidth;
+            #ifdef VERTEX
+            layout(location = 2) out vec3 v_normalWS;
+            layout(location = 3) out vec4 v_tangentWS;
+            void main()
+            {
+                uint packedNormal = floatBitsToUint(aNormal.x);
+                bool isPacked = (packedNormal & 0x40000000u) > 0u;
+                vec3 N;
+                vec4 T;
+                if (isPacked)
+                    unpackNormalTangent(packedNormal, N, T);
+                else
+                {
+                    N = aNormal;
+                    T = aTangent;
+                }
+                vec3 localPos = aPosition;
+                localPos += N * _OutLineWidth;
+                vec3 worldPos = ObjectToWorldPos(localPos);
+                gl_Position = WorldToClipPos(worldPos);
+
+            }
+            #endif
+
+            #ifdef FRAGMENT
+            uniform vec3 _OutLineColor;
+
+            layout(location = 4) out vec4 outGBuffer4;
+
+            void main()
+            {
+                outGBuffer4 = vec4(_OutLineColor,1.0);
             }
             #endif
             ENDGLSL

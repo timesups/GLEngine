@@ -42,13 +42,13 @@
                 },
                 "Transform": {
                     "position": [
-                        2.9645957946777344,
-                        13.245585441589355,
-                        10.8805570602417
+                        1.5414602756500244,
+                        13.315616607666016,
+                        7.615505218505859
                     ],
                     "rotation": [
-                        -7.759977340698242,
-                        346.5603942871094,
+                        6.040048122406006,
+                        342.9601745605469,
                         0.0
                     ],
                     "scale": [
@@ -69,7 +69,13 @@
                             "slot": 0
                         }
                     ],
-                    "model": "Content/Project/Endfield/Model/Outfit.fbx"
+                    "model": "Content/Project/Endfield/Model/Outfit.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": false,
+                        "drawOutline": true,
+                        "perObjectRender": false
+                    }
                 },
                 "Transform": {
                     "position": [
@@ -193,7 +199,13 @@
                             "slot": 0
                         }
                     ],
-                    "model": "Content/Project/Endfield/Model/Perlica_hair.fbx"
+                    "model": "Content/Project/Endfield/Model/Perlica_hair.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": false,
+                        "drawOutline": true,
+                        "perObjectRender": false
+                    }
                 },
                 "Transform": {
                     "position": [
@@ -276,6 +288,43 @@
                 }
             },
             "name": "Skirt"
+        },
+        {
+            "components": {
+                "Light": {
+                    "bias": 0.0020000000949949026,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "farPlane": 20.0,
+                    "intensity": 100000.0,
+                    "nearPlane": -20.0,
+                    "pcfSample": 1,
+                    "shadowArea": 20.0,
+                    "shadowRes": 1024,
+                    "type": "Directional"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "DirectionalLight"
         }
     ],
     "name": "EndfieldTestScene",
