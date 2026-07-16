@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "d85c72fd-7b3d-4b1d-a2c2-ee7ea2afb347",
+    "importSettings": {
+        "generateMips": false,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/Endfield/Lut/lut_basecolor.png",
+    "type": "texture"
+}

@@ -11,7 +11,6 @@ GLSLShader
             Cull off
             GLSLPROGRAM
             #include "/include/Core.glsl"
-            #include "/include/Lighting.glsl"
             #ifdef VERTEX
             out vec2 uv;
             void main()
@@ -30,26 +29,27 @@ GLSLShader
             layout (binding=3) uniform sampler2D outGBuffer3;//normalEnc
             layout (binding=4) uniform sampler2D outGBuffer4;//albedo
             layout (binding=5) uniform sampler2D outGBuffer5;//depth
+            layout (binding=6) uniform sampler2D shadowMap;//depth
             out vec4 FragColor;
 
 
             void main() 
             {
-
-                vec4 hdrColor = texture(outGBuffer3, uv);
-
                 float depth = texture(outGBuffer5,uv).r;
-                vec2 normalEnc = texture(outGBuffer3,uv).xy;
-                vec3 albedo = texture(outGBuffer4,uv).rgb;
-
                 if (depth >= 1.0)
                     discard;
+                vec4 hdrColor = texture(outGBuffer0, uv);
+                float mainLightShadow = texture(shadowMap,uv).x;
+
+                vec2 normalEnc = texture(outGBuffer3,uv).xy;
+                vec3 albedo = texture(outGBuffer4,uv).rgb;
                 vec3 positionWS = ReconstructPositionWS(uv,depth);
-                vec3 normalWS = DecodeNormalOct(normalEnc);
+                vec3 normalWS = DecodeNormalEndfield(normalEnc);
+
+                
 
 
-
-                FragColor = vec4(vec3(albedo.xyz),1.0);
+                FragColor = vec4(vec3(albedo),1.0);
             }
             #endif
             ENDGLSL

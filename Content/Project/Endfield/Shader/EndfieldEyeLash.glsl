@@ -6,7 +6,6 @@ GLSLShader
         sampler2D _Normal = "normal"
         sampler2D _Mask = "white"
         sampler2D _Attribute = "grey"
-        sampler2D _basecolorLUT = "white"
 
         float _NormalScale = 1.0
         float _roughness = 0.5
@@ -18,7 +17,6 @@ GLSLShader
 
         int _shadingModel = 0
         bool _IsCharacter
-
     }
     SubShader
     {
@@ -33,7 +31,7 @@ GLSLShader
                 BitMask 0xff
                 AndMask 0xff
                 Func always
-                Ref 0x24
+                Ref 0x34
                 fail keep
                 dpfail keep 
                 dppass replace
@@ -44,6 +42,7 @@ GLSLShader
             #include "EndfieldDefrredPass.glsl"
             ENDGLSL
         }
+
 
         Pass
         {
@@ -63,28 +62,9 @@ GLSLShader
             }
             ztest lequal
             GLSLPROGRAM
+            #include "Core.glsl"
+            #include "EndfieldLibrary.glsl"
             #include "EndfieldForwardPass.glsl"
-            ENDGLSL
-        }
-
-        Pass
-        {
-            Tags
-            {
-                LightMode Outline
-            }
-            Stencil 
-            {
-                BitMask 0xff
-                AndMask 0xff
-                Func greater
-                Ref 0x24
-                fail keep
-                dpfail keep 
-                dppass keep
-            }
-            GLSLPROGRAM
-            #include "EndfieldOutLinePass.glsl"
             ENDGLSL
         }
     }

@@ -1,5 +1,5 @@
 {
-    "name": "M_Perlica_face",
+    "name": "M_Perlica_EyeLash",
     "properties": {
         "_Attribute": {
             "path": "Content/Engine/textures/grey.png",
@@ -12,33 +12,28 @@
             "type": "texture2d"
         },
         "_DoubleSided": 1.0,
-        "_IsCharacter": false,
+        "_IsCharacter": true,
         "_Mask": {
             "path": "Content/Engine/textures/white.png",
             "srgb": true,
             "type": "texture2d"
         },
         "_Normal": {
-            "path": "Content/Project/Endfield/Texture/Perlica_Face_N.png",
+            "path": "Content/Engine/textures/normal.png",
             "srgb": true,
             "type": "texture2d"
         },
         "_NormalScale": 1.0,
         "_OutLineColor": [
-            0.0,
-            0.0,
-            0.0
+            1.0,
+            1.0,
+            1.0
         ],
-        "_OutLineWidth": 0.009999999776482582,
-        "_basecolorLUT": {
-            "path": "Content/Engine/textures/white.png",
-            "srgb": true,
-            "type": "texture2d"
-        },
+        "_OutLineWidth": 0.5400000214576721,
         "_metallic": 0.0,
         "_roughness": 0.0,
-        "_shadingModel": 0
+        "_shadingModel": 3
     },
-    "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
+    "shader": "Content/Project/Endfield/Shader/EndfieldEyeLash.glsl",
     "showInUi": true
 }

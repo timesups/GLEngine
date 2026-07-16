@@ -12,6 +12,7 @@
             "type": "texture2d"
         },
         "_DoubleSided": 1.0,
+        "_IsCharacter": true,
         "_Mask": {
             "path": "Content/Engine/textures/white.png",
             "srgb": true,
@@ -23,8 +24,15 @@
             "type": "texture2d"
         },
         "_NormalScale": 1.0,
-        "_metallic": 0.0,
-        "_roughness": 0.5
+        "_OutLineColor": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "_OutLineWidth": 0.009999999776482582,
+        "_metallic": 0.25200000405311584,
+        "_roughness": 0.0,
+        "_shadingModel": 0
     },
     "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
     "showInUi": true

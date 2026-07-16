@@ -1,0 +1,12 @@
+{
+    "dependencies": [
+        "Content/Project/Endfield/Material/M_Perlica_EyeLash.mat"
+    ],
+    "guid": "b9f79438-e819-4d4a-8bb6-fdbcf0fc085b",
+    "importSettings": {
+        "defaultMaterial": "Content/Project/Endfield/Material/M_Perlica_EyeLash.mat",
+        "showInUi": true
+    },
+    "source": "Content/Project/Endfield/Model/Perlica_eyeLash.fbx",
+    "type": "model"
+}

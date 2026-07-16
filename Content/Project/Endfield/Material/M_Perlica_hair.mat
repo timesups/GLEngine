@@ -12,6 +12,7 @@
             "type": "texture2d"
         },
         "_DoubleSided": 1.0,
+        "_IsCharacter": true,
         "_Mask": {
             "path": "Content/Project/Endfield/Texture/Perlica_Hair_M.png",
             "srgb": true,
@@ -23,8 +24,20 @@
             "type": "texture2d"
         },
         "_NormalScale": 1.0,
+        "_OutLineColor": [
+            0.0,
+            0.0,
+            0.0
+        ],
+        "_OutLineWidth": 0.019999999552965164,
+        "_basecolorLUT": {
+            "path": "Content/Engine/textures/white.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
         "_metallic": 0.0,
-        "_roughness": 0.5
+        "_roughness": 0.0,
+        "_shadingModel": 4
     },
     "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
     "showInUi": true

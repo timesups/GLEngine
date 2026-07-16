@@ -1,5 +1,6 @@
 #ifndef LIGHTING_INCLUDE
 #define LIGHTING_INCLUDE
+#include "LightInput.glsl"
 #include "BRDF.glsl"
 #include "Shadow.glsl"
 

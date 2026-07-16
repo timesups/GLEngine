@@ -42,13 +42,13 @@
                 },
                 "Transform": {
                     "position": [
-                        1.5414602756500244,
-                        13.315616607666016,
-                        7.615505218505859
+                        1.5903507471084595,
+                        12.335918426513672,
+                        10.196097373962402
                     ],
                     "rotation": [
-                        6.040048122406006,
-                        342.9601745605469,
+                        -7.039906978607178,
+                        -366.7196044921875,
                         0.0
                     ],
                     "scale": [
@@ -74,7 +74,7 @@
                         "castShadow": true,
                         "drawCustomDepth": false,
                         "drawOutline": true,
-                        "perObjectRender": false
+                        "perObjectRender": true
                     }
                 },
                 "Transform": {
@@ -106,7 +106,13 @@
                             "slot": 0
                         }
                     ],
-                    "model": "Content/Project/Endfield/Model/Leg.fbx"
+                    "model": "Content/Project/Endfield/Model/Leg.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": false,
+                        "drawOutline": false,
+                        "perObjectRender": true
+                    }
                 },
                 "Transform": {
                     "position": [
@@ -137,7 +143,13 @@
                             "slot": 0
                         }
                     ],
-                    "model": "Content/Project/Endfield/Model/Perlica_eye.fbx"
+                    "model": "Content/Project/Endfield/Model/Perlica_eye.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": false,
+                        "drawOutline": false,
+                        "perObjectRender": true
+                    }
                 },
                 "Transform": {
                     "position": [
@@ -168,7 +180,13 @@
                             "slot": 0
                         }
                     ],
-                    "model": "Content/Project/Endfield/Model/Perlica_face.fbx"
+                    "model": "Content/Project/Endfield/Model/Perlica_face.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": false,
+                        "drawOutline": false,
+                        "perObjectRender": true
+                    }
                 },
                 "Transform": {
                     "position": [
@@ -204,7 +222,7 @@
                         "castShadow": true,
                         "drawCustomDepth": false,
                         "drawOutline": true,
-                        "perObjectRender": false
+                        "perObjectRender": true
                     }
                 },
                 "Transform": {
@@ -236,7 +254,13 @@
                             "slot": 0
                         }
                     ],
-                    "model": "Content/Project/Endfield/Model/Perlica_skin.fbx"
+                    "model": "Content/Project/Endfield/Model/Perlica_skin.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": false,
+                        "drawOutline": false,
+                        "perObjectRender": true
+                    }
                 },
                 "Transform": {
                     "position": [
@@ -267,7 +291,13 @@
                             "slot": 0
                         }
                     ],
-                    "model": "Content/Project/Endfield/Model/Perlica_skirt.fbx"
+                    "model": "Content/Project/Endfield/Model/Perlica_skirt.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": false,
+                        "drawOutline": false,
+                        "perObjectRender": true
+                    }
                 },
                 "Transform": {
                     "position": [
@@ -301,10 +331,47 @@
                     "farPlane": 20.0,
                     "intensity": 100000.0,
                     "nearPlane": -20.0,
-                    "pcfSample": 1,
+                    "pcfSample": 4,
                     "shadowArea": 20.0,
-                    "shadowRes": 1024,
+                    "shadowRes": 2048,
                     "type": "Directional"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        183.0,
+                        523.5,
+                        31.5
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "DirectionalLight"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Perlica_EyeLash.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/Endfield/Model/Perlica_eyeLash.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": false,
+                        "drawOutline": false,
+                        "perObjectRender": true
+                    }
                 },
                 "Transform": {
                     "position": [
@@ -319,12 +386,93 @@
                     ],
                     "scale": [
                         1.0,
-                        1.0,
-                        1.0
+                        -1.0,
+                        -1.0
                     ]
                 }
             },
-            "name": "DirectionalLight"
+            "name": "EyeLash"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Endfield_Ground.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Engine/model/plane.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        24.809999465942383,
+                        10.34000015258789,
+                        26.809999465942383
+                    ]
+                }
+            },
+            "name": "Ground"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Endfield_Ground.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Engine/model/plane.fbx"
+                },
+                "Transform": {
+                    "position": [
+                        0.15000000596046448,
+                        14.300000190734863,
+                        -13.0
+                    ],
+                    "rotation": [
+                        90.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        50.0,
+                        1.0,
+                        50.0
+                    ]
+                }
+            },
+            "name": "Wall"
+        },
+        {
+            "components": {
+                "SkyBox": {
+                    "brightness": 1.0,
+                    "color": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "cubemapPreview": 0,
+                    "drawBackground": true,
+                    "ibl": "Content/Engine/hdr/sunny_rose_garden.hdr",
+                    "iblLightingEnabled": true,
+                    "iblLightingIntensity": 1.0,
+                    "intensity": 1.0
+                }
+            },
+            "name": "Skybox"
         }
     ],
     "name": "EndfieldTestScene",

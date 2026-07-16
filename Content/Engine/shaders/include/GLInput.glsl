@@ -88,12 +88,6 @@ layout(std140,binding=2) uniform post_processing_buffer
     float _ssao_pad2;
 
 };
-//全局的贴图单元
-layout (binding=15) uniform samplerCube _irradianceMap;
-layout (binding=14) uniform sampler2D _MainLightDepth;
-layout (binding=13) uniform samplerCubeArray  _LocalLightDepth;
-layout (binding=12) uniform samplerCube _prefiltered;
-layout (binding=16) uniform sampler2D _brdfLUT;
 
 // GPU Instancing：与 C++ GPUInstanceData 布局一致
 struct InstanceData

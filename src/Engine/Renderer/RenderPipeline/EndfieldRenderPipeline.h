@@ -21,6 +21,7 @@ class EndfieldRenderPipeline : public RenderPipeline
   private:
     void LoadAsset();
     std::shared_ptr<Shader> m_defrredLightShader;
+    std::shared_ptr<Shader> m_shadowShader;
 
     RenderTarget m_GBuffer;
     RenderTarget m_defrredLight;

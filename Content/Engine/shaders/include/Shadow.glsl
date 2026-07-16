@@ -5,6 +5,7 @@
 
 
 
+
 float CalcShadow(Light light,Surface s)
 {
 
