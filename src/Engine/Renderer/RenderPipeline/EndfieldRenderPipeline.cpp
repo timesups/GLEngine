@@ -6,6 +6,7 @@
 #include "../../Entity/DrawSetting.h"
 #include "../../Entity/EntityManager.h"
 #include "../../Entity/RenderUnitFilter.h"
+#include "../FramebufferBinding.h"
 #include "../RenderContext.h"
 #include "RenderPipelineRegistry.h"
 #define MODULE "Endfield Pipeline"
@@ -83,6 +84,9 @@ void EndfieldRenderPipeline::Render(RenderContext& context)
     // lighting
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Draw Derred Lighting");
     m_GBuffer.Bind(false, context.sceneViewportWidth, context.sceneViewportHeight);
+    // Forward Pass 只写 RT0（最终色），限制 draw buffers 以免污染几何阶段填好的 RT1~4
+    m_GBuffer.GetFramebuffer().SetDrawBuffers({GL_COLOR_ATTACHMENT0});
+    m_GBuffer.GetFramebuffer().ApplyDrawBuffers();
     m_Shadow.GetColorAttachmentTexture(0)->Bind(6);
     BindIBLTextures();
     DrawSetting lightingSetting;
@@ -91,13 +95,16 @@ void EndfieldRenderPipeline::Render(RenderContext& context)
         RenderUnitFilter::And(RenderUnitFilter::Opaque(), RenderUnitFilter::PerObjectRender());
     EntityManager::Get().DrawRenderQueue(lightingSetting, forwardFilter);
     m_Shadow.GetColorAttachmentTexture(0)->UnBind();
+    // 恢复全部 draw buffers，供下一帧几何阶段写 RT0~4
+    m_GBuffer.GetFramebuffer().SetDrawBuffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
+                                              GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4});
     m_GBuffer.UnBind();
     glPopDebugGroup();
 
     // Deferred light：渲染到场景视口尺寸的 RT，避免 UI 开启时全屏绘制导致比例错位
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Post Process");
     glViewport(context.sceneViewportX, context.sceneViewportY, context.sceneViewportWidth, context.sceneViewportHeight);
-    Util::ClearScreen(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    Util::ClearScreen();
     nextIndex = m_GBuffer.BindAttachments();
     m_Shadow.GetColorAttachmentTexture(0)->Bind(nextIndex);
     m_defrredLightShader->Use();

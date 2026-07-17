@@ -8,6 +8,10 @@ GLSLShader
         sampler2D _Attribute = "grey"
         sampler2D _basecolorLUT = "white"
 
+        sampler2D _facesdf = "black"
+        sampler2D _sdfcontrol = "black"
+
+
         float _NormalScale = 1.0
         float _roughness = 0.5
         float _metallic = 0.0

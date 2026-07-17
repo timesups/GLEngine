@@ -31,13 +31,23 @@
         ],
         "_OutLineWidth": 0.009999999776482582,
         "_basecolorLUT": {
-            "path": "Content/Engine/textures/white.png",
+            "path": "Content/Project/Endfield/Lut/lut_basecolor.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_facesdf": {
+            "path": "Content/Project/Endfield/scene/face_sdf.png",
             "srgb": true,
             "type": "texture2d"
         },
         "_metallic": 0.0,
         "_roughness": 0.0,
-        "_shadingModel": 0
+        "_sdfcontrol": {
+            "path": "Content/Project/Endfield/scene/face_attr_tex.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_shadingModel": 6
     },
     "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
     "showInUi": true

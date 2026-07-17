@@ -2,6 +2,7 @@
 #define ENDFIELD_FORWARD_PASS_INCLUDE
 #include "Core.glsl"
 #include "EndfieldLibrary.glsl"
+#include "LightInput.glsl"
 
 struct V2f
 {
@@ -52,6 +53,8 @@ uniform sampler2D _Color;
 uniform sampler2D _Normal;
 uniform sampler2D _Mask;
 uniform sampler2D _Attribute;
+uniform sampler2D _sdfcontrol;
+uniform sampler2D _facesdf;
 
 uniform sampler2D _basecolorLUT;
 
@@ -61,7 +64,7 @@ uniform float _roughness;
 uniform float _metallic;
 uniform float _DoubleSided;
 
-uniform int _shadingModel; // 0:衣服, 1:皮肤, 3:eye, 4:hair, 5:scene
+uniform int _shadingModel; // 0:衣服, 1:皮肤, 3:eye, 4:hair, 5:scene,6:face
 
 uniform bool _IsCharacter;
 
@@ -69,7 +72,15 @@ layout(binding = 6) uniform sampler2D shadowMap;
 
 layout(location = 0) out vec4 outGBuffer0;
 
+float D_GGX(float NdotH, float a2) {
+    float d = (NdotH * a2 - NdotH) * NdotH + 1.0;
+    return a2 / max(d * d, 1e-7);
+}
 
+vec3 F_Schlick(vec3 F0, float VoH) {
+    float f = pow(1.0 - VoH, 5.0);
+    return F0 + (1.0 - F0) * f;
+}
 
 vec3 sampleColorLUT(vec3 linearRgb) {
     float z = linearRgb.z * 31.0;
@@ -82,7 +93,62 @@ vec3 sampleColorLUT(vec3 linearRgb) {
     return mix(a, b, vec3(z - z0));
 }
 
+float V_SmithGGX(float NdotV, float NdotL, float a) {
+    float gv = NdotL * (NdotV * (1.0 - a) + a);
+    float gl = NdotV * (NdotL * (1.0 - a) + a);
+    return 0.5 / max(gv + gl, 1e-5);
+}
 
+vec3 iblDiffuse(vec3 N, vec3 albedo, float metallic, vec3 F, float ao) {
+    vec3 kD = (1.0 - F) * (1.0 - metallic);
+    vec3 irradiance = texture(_irradianceMap, N).xyz * _IBLLightingIntensity;
+    return kD * albedo * irradiance * ao;
+}
+
+vec3 F_SchlickRoughness(vec3 F0, float NdotV, float roughness) {
+    float f = pow(1.0 - NdotV, 5.0);
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * f;
+}
+
+vec3 iblSpecular(vec3 N, vec3 V, vec3 F0, float roughness, float ao) {
+    float NdotV = max(dot(N, V), 0.0);
+    vec3 R = reflect(-V, N);
+    float mip = clamp(roughness, 0.0, 1.0) * _MaxReflectionLOD;
+    vec3 prefiltered = textureLod(_prefiltered, R, mip).rgb;
+    vec2 brdf = texture(_brdfLUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+    vec3 F = F_SchlickRoughness(F0, NdotV, roughness);
+    return prefiltered * (F * brdf.x + brdf.y) * ao;
+}
+
+
+
+vec4 sampleFaceSDF(vec2 uv, mat3 worldFromTangent, vec3 L) {
+    vec3 Lts = transpose(worldFromTangent) * L;
+    Lts = normalize(vec3(Lts.x, 0.0001, Lts.z));
+    float flip = Lts.x > 0.0 ? 1.0 : 0.0;
+    vec2 sdfUV = vec2(mix(1.0 - uv.x, uv.x, flip), uv.y);
+
+    vec4 sdf = texture(_facesdf, sdfUV);
+    float dirX = mix(1.0 - sdf.z * 2.0, sdf.z * 2.0 - 1.0, flip);
+    float dirZ = 1.0 - abs(dirX);
+    vec3 featureTS = normalize(vec3(dirX, 0.0001, dirZ));
+    vec3 featureWS = normalize(worldFromTangent * featureTS);
+    return vec4(featureWS, sdf.w);
+}
+
+// 半兰伯特 wrap 漫反射（无专用 scalar LUT，用 half-lambert 近似）
+float faceWrapDiffuse(vec3 N, vec3 L, float strength) {
+    float u = clamp(dot(N, L), -1.0, 1.0) * 0.5 + 0.5;
+    return mix(max(dot(N, L), 0.0), u, strength);
+}
+
+// 用 _basecolorLUT 作为 NdotL ramp 色调（对应参考的 wrapTint），按亮度归一
+vec3 faceWrapTint(vec3 N, vec3 L) {
+    float u = clamp(dot(N, L), -1.0, 1.0) * 0.5 + 0.5;
+    vec3 tint = texture(_basecolorLUT, vec2(u, 0.5)).rgb;
+    float lum = max(max(tint.r, tint.g), tint.b);
+    return mix(vec3(1.0), tint / max(lum, 1e-3), step(0.001, lum));
+}
 
 
 
@@ -104,32 +170,149 @@ void main()
     vec3 baseColor = texture(_Color, v2f.uv).rgb;
     vec3 viewDir = normalize(v2f.viewDir);
 
+    float faceSign = gl_FrontFacing ? 1.0 : -1.0;
+
     //软边缘着色
-    float NdVsoft = clamp(dot(normalWS,viewDir),0.0,1.0);
-    float soft = clamp((1.0 - clamp(NdVsoft * 0.85+0.15,0.0,1.0)) * 2.0,0.0,1.0);
+    float NdotV = clamp(dot(normalWS,viewDir),0.0,1.0);
+    float soft = clamp((1.0 - clamp(NdotV * 0.85+0.15,0.0,1.0)) * 2.0,0.0,1.0);
     baseColor = baseColor * mix(vec3(1.0),vec3(1,1,1),soft);
 
 
     //diffuse
     vec3 diffuse = baseColor * (0.96 - 0.96 * _metallic);
     vec3 F0 = mix(vec3(0.04) * _roughness,baseColor,vec3(_metallic));
-
-    float a = max(_roughness * _roughness,0.0078125);
-    float a2 = a * a;
-    //太阳
-    vec3 sunDir = normalize(-_MainLightDirection);
-    vec3 sunDirFlat = normalize(vec3(sunDir.x,0.0001,sunDir.z));
-    vec3 sunColor = _MainLightColor;
+    //主光阴影
     ivec2 pixel = ivec2(gl_FragCoord.xy);
-    vec4 shadow = texelFetch(shadowMap,pixel,0);
+
+    float shadow  = texelFetch(shadowMap,pixel,0).x;
+
+
+    
+    Surface s;
+    //主方向光
+    Light mainLight = GetMainLight(s);
+    vec3 L = normalize(mainLight.direction);
+    vec3 H = normalize(viewDir + L);
+
+
+    float NdotL_remap = (dot(N, L) + 1) * 0.5;
+    vec3 lutColor = texture(_basecolorLUT,vec2(NdotL_remap,0.0)).xyz;
+
+
+    if(_shadingModel == 6)
+    {
+        // 风格化脸部可调参数（可提升为材质 uniform）
+        const float FACE_SOFT_FRESNEL_A     = 0.35;
+        const float FACE_SOFT_FRESNEL_B     = 1.0;
+        const vec3  FACE_SOFT_FRESNEL_COLOR = vec3(0.85, 0.55, 0.55);
+        const float FACE_WRAP_STRENGTH      = 0.6;
+        const float FACE_FEATURE_LIGHT      = 1.0;
+        const float FACE_RIM_INTENSITY      = 1.0;
+        const vec3  FACE_RIM_COLOR          = vec3(1.0);
+        const float FACE_SPECULAR_BOOST     = 1.0;
+
+        // _sdfcontrol：R=softMask  G=sdfBlend  B=softParamBlend  A=rimMask
+        vec4 ctrl = texture(_sdfcontrol, v2f.uv);
+        vec4 sdf  = sampleFaceSDF(v2f.uv, TBN, L);
+        vec3 featureDir = sdf.xyz * faceSign;
+        float sdfMask   = sdf.w;
+
+        // 主光可见度（Shadow RT）
+        float visibility = shadow;
+
+        vec3 Nflat  = normalize(vec3(normalWS.x, 0.0001, normalWS.z));
+        vec3 Nshade = normalize(mix(normalWS, featureDir, ctrl.y));
+
+        // soft fresnel：朝向项 × softMask × 插值后的 softParam
+        float facingTerm = clamp(dot(Nflat, L) * 0.5 + 0.5, 0.0, 1.0);
+        facingTerm = mix(facingTerm, 1.0, ctrl.y);
+        float softMask  = ctrl.x * facingTerm;
+        float softParam = mix(FACE_SOFT_FRESNEL_A, FACE_SOFT_FRESNEL_B, ctrl.z);
+
+        float NdV      = clamp(dot(Nshade, viewDir), 0.0, 1.0);
+        float softEdge = 1.0 - clamp(NdV * 0.85 + 0.15, 0.0, 1.0);
+        float soft     = clamp(softEdge * softMask * softParam, 0.0, 1.0);
+
+        vec3 albedo = baseColor * mix(vec3(1.0), FACE_SOFT_FRESNEL_COLOR, soft);
+
+        // IBL（用混合后的着色法线）
+        vec3 F_ibl   = F_SchlickRoughness(F0, NdV, _roughness);
+        vec3 ambient = iblDiffuse(Nshade, albedo, _metallic, F_ibl, 1.0)
+                     + iblSpecular(Nshade, viewDir, F0, _roughness, 1.0);
+
+        // wrap 漫反射 + LUT 色调
+        float wrap    = faceWrapDiffuse(Nshade, L, FACE_WRAP_STRENGTH);
+        vec3 wrapTint = faceWrapTint(Nshade, L);
+
+        // 主光 GGX
+        vec3  Hf     = normalize(viewDir + L);
+        float NdotL  = max(dot(Nshade, L), 0.0);
+        float NdotVf = max(dot(Nshade, viewDir), 0.0);
+        float NdotH  = max(dot(Nshade, Hf), 0.0);
+        float VdotH  = max(dot(viewDir, Hf), 0.0);
+
+        float a   = _roughness * _roughness;
+        float a2  = a * a;
+        float D   = D_GGX(NdotH, a2);
+        float Vis = V_SmithGGX(NdotVf, max(NdotL, wrap), a);
+        vec3  Fs  = F_Schlick(F0, VdotH);
+
+        vec3 diffuseTerm = (1.0 - Fs) * (1.0 - _metallic) * albedo / PI;
+        vec3 specTerm    = D * Vis * Fs * FACE_SPECULAR_BOOST;
+        vec3 direct = (diffuseTerm * wrap * wrapTint + specTerm * NdotL) * mainLight.color;
+        direct *= visibility;
+
+        // SDF 特征补光（越风格化越跟随特征方向）
+        float feature = pow(max(dot(featureDir, L), 0.0), 2.0) * sdfMask * ctrl.y;
+        direct += albedo * feature * FACE_FEATURE_LIGHT * mainLight.color * 0.25;
+
+        // 边缘光 × _sdfcontrol.A
+        float rim = pow(1.0 - NdV, 3.0) * ctrl.a * FACE_RIM_INTENSITY;
+        rim *= mix(1.0, smoothstep(0.9, 1.0, abs(Nflat.z)), ctrl.y);
+        vec3 rimCol = FACE_RIM_COLOR * rim * albedo;
+
+        vec3 color = ambient + direct + rimCol;
+        outGBuffer0 = vec4(direct, 1.0);
+    }
+    else
+    {
+        float NdotL = max(dot(N, L), 0.0);
+        float NdotH = max(dot(N, H), 0.0);
+        float VdotH = max(dot(viewDir, H), 0.0);
+            //ibl
+        vec3 F_ibl = F_SchlickRoughness(F0,NdotV,_roughness);
+        vec3 ambient = iblDiffuse(normalWS,diffuse,_metallic,F_ibl,1.0)
+                        +iblSpecular(normalWS,viewDir,F0,_roughness,1.0);
+
+
+        float a  = _roughness * _roughness;
+        float a2 = a * a;
+        float D  = D_GGX(NdotH, a2);
+        float Vis = V_SmithGGX(NdotV, NdotL, a);
+        vec3  F  = F_Schlick(F0, VdotH);
 
 
 
 
-    vec3 finalColor = vec3(shadow.xyz);
 
-    outGBuffer0 = vec4(finalColor,1.0);
+        vec3 spec = D * Vis * F;
+        vec3 kD   = (1.0 - F) * (1.0 - _metallic);
+        vec3 direct = (kD * diffuse / PI + spec) * mainLight.color * lutColor;
+        
+
+        vec3 finalColor =vec3(direct + ambient);
+
+
+
+
+
+
+        outGBuffer0 = vec4(finalColor,1.0);
 }
+    }
+
+
+
 #endif
 
 #endif

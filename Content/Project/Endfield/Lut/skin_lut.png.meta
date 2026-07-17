@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "0575dd4f-7a9b-4d4e-928a-291cef20d35f",
+    "importSettings": {
+        "generateMips": false,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/Endfield/Lut/skin_lut.png",
+    "type": "texture"
+}
