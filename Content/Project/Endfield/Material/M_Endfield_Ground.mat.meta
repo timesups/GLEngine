@@ -1,9 +1,9 @@
 {
     "dependencies": [
-        "Content/Engine/textures/grey.png",
-        "Content/Engine/textures/normal.png",
-        "Content/Engine/textures/white.png",
         "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
+        "Content/Engine/textures/white.png",
+        "Content/Engine/textures/normal.png",
+        "Content/Engine/textures/grey.png",
         "Content/Project/Endfield/Shader/EndfieldScene.glsl"
     ],
     "guid": "5bad3bc9-3e43-4ef9-9478-218c5314a93d",

@@ -11,7 +11,9 @@
         "Content/Engine/textures/black.png",
         "Content/Project/Endfield/Lut/lut_basecolor.png",
         "Content/Project/Endfield/scene/face_attr_tex.png",
-        "Content/Project/Endfield/scene/face_sdf.png"
+        "Content/Project/Endfield/scene/face_sdf.png",
+        "Content/Project/Endfield/Texture/face_attr_tex.png",
+        "Content/Project/Endfield/Texture/face_sdf.png"
     ],
     "guid": "af4271a3-fa1c-4fef-a34c-8cddb3e99ffa",
     "importSettings": {

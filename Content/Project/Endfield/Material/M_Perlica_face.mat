@@ -36,14 +36,14 @@
             "type": "texture2d"
         },
         "_facesdf": {
-            "path": "Content/Project/Endfield/scene/face_sdf.png",
+            "path": "Content/Project/Endfield/Texture/face_sdf.png",
             "srgb": true,
             "type": "texture2d"
         },
         "_metallic": 0.0,
         "_roughness": 0.0,
         "_sdfcontrol": {
-            "path": "Content/Project/Endfield/scene/face_attr_tex.png",
+            "path": "Content/Project/Endfield/Texture/face_attr_tex.png",
             "srgb": true,
             "type": "texture2d"
         },

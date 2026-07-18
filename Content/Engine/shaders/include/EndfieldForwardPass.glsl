@@ -272,7 +272,7 @@ void main()
         vec3 rimCol = FACE_RIM_COLOR * rim * albedo;
 
         vec3 color = ambient + direct + rimCol;
-        outGBuffer0 = vec4(direct, 1.0);
+        outGBuffer0 = vec4(vec3(sdf.y), 1.0);
     }
     else
     {

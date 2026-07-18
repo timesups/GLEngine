@@ -1,11 +1,11 @@
 {
     "dependencies": [],
-    "guid": "eec69b94-b9c8-4c2f-9e04-a7e34c7077d1",
+    "guid": "c69ec958-a214-4019-a993-c49b1b39810b",
     "importSettings": {
         "generateMips": true,
         "showInUi": true,
         "srgb": true
     },
-    "source": "Content/Project/Endfield/scene/face_sdf.png",
+    "source": "Content/Project/Endfield/Texture/face_attr_tex.png",
     "type": "texture"
 }
