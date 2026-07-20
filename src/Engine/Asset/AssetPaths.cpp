@@ -248,4 +248,24 @@ std::string AssetPaths::GetEngineShaderIncludeRoot() const
     return NormalizeSlashes(m_engineContentRoot + "/shaders/include");
 }
 
+std::string AssetPaths::ResolveProjectShaderIncludeRoot(const std::string& includingSourcePath) const
+{
+    const std::string source = NormalizeSlashes(includingSourcePath);
+    const std::string projectRoot = NormalizeSlashes(m_projectContentRoot);
+    if (source.empty() || projectRoot.empty())
+        return {};
+
+    const std::string prefix = projectRoot + "/";
+    if (source.rfind(prefix, 0) != 0)
+        return {};
+
+    const std::string rest = source.substr(prefix.size());
+    const size_t slash = rest.find('/');
+    const std::string projectName = slash == std::string::npos ? rest : rest.substr(0, slash);
+    if (projectName.empty())
+        return {};
+
+    return NormalizeSlashes(projectRoot + "/" + projectName + "/Shader/include");
+}
+
 #undef MODULE

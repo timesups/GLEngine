@@ -1,12 +1,12 @@
 {
     "dependencies": [
         "Content/Engine/shaders/DefaultLit.glsl",
-        "Content/Engine/textures/grey.png",
-        "Content/Engine/textures/normal.png",
-        "Content/Engine/textures/white.png",
         "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
-        "Content/Project/Endfield/Lut/lut_basecolor.png",
+        "Content/Engine/textures/white.png",
+        "Content/Engine/textures/normal.png",
+        "Content/Engine/textures/grey.png",
         "Content/Project/Endfield/Texture/Perlica_Skin_C.png",
+        "Content/Project/Endfield/Lut/lut_basecolor.png",
         "Content/Project/Endfield/Texture/Perlica_Skin_N.png",
         "Content/Engine/textures/black.png",
         "Content/Project/Endfield/Lut/skin_lut.png"

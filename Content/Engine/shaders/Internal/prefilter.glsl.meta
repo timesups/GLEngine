@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/prefilter.glsl",
+    "source": "Content/Engine/shaders/Internal/prefilter.glsl",
     "type": "shader"
 }

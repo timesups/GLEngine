@@ -23,7 +23,7 @@ DeferredRender::DeferredRender() = default;
 bool DeferredRender::OnInit(const int width, const int height)
 {
     m_Gbuffer.CreateGBuffer("Draw GBuffer", width, height);
-    m_shaderDeferredLighting = AssetManager::Get().GetAsset<Shader>("engine://shaders/DeferredLight.glsl");
+    m_shaderDeferredLighting = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/DeferredLight.glsl");
     if (!m_shaderDeferredLighting || m_shaderDeferredLighting->m_passes.empty())
     {
         LogA(LogLevel::ERROR, "DrawScene: DeferredLight shader missing or has no passes");
@@ -36,8 +36,8 @@ bool DeferredRender::OnInit(const int width, const int height)
 
 bool DeferredRender::InitSsao(const int width, const int height)
 {
-    m_shaderSsao = AssetManager::Get().GetAsset<Shader>("engine://shaders/SSAO.glsl");
-    m_shaderSsaoBlur = AssetManager::Get().GetAsset<Shader>("engine://shaders/SSAO_Blur.glsl");
+    m_shaderSsao = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/SSAO.glsl");
+    m_shaderSsaoBlur = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/SSAO_Blur.glsl");
     if (!m_shaderSsao || m_shaderSsao->m_passes.empty() || !m_shaderSsaoBlur || m_shaderSsaoBlur->m_passes.empty())
     {
         LogA(LogLevel::ERROR, "InitSsao: SSAO or SSAO_Blur shader missing or has no passes");

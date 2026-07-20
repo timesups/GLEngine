@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/BloomUpsample.glsl",
+    "source": "Content/Engine/shaders/Internal/BloomUpsample.glsl",
     "type": "shader"
 }

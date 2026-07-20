@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/DeferredLight.glsl",
+    "source": "Content/Engine/shaders/Internal/DeferredLight.glsl",
     "type": "shader"
 }

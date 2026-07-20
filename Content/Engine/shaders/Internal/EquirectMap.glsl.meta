@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": true
     },
-    "source": "Content/Engine/shaders/EquirectMap.glsl",
+    "source": "Content/Engine/shaders/Internal/EquirectMap.glsl",
     "type": "shader"
 }

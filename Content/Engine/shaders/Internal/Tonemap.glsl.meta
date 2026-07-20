@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/Tonemap.glsl",
+    "source": "Content/Engine/shaders/Internal/Tonemap.glsl",
     "type": "shader"
 }

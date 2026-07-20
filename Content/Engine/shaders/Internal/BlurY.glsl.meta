@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/BlurY.glsl",
+    "source": "Content/Engine/shaders/Internal/BlurY.glsl",
     "type": "shader"
 }

@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/SkyBox.glsl",
+    "source": "Content/Engine/shaders/Internal/SkyBox.glsl",
     "type": "shader"
 }

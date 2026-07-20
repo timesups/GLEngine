@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/brdf.glsl",
+    "source": "Content/Engine/shaders/Internal/brdf.glsl",
     "type": "shader"
 }

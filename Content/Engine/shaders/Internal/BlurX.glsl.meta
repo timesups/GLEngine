@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/BlurX.glsl",
+    "source": "Content/Engine/shaders/Internal/BlurX.glsl",
     "type": "shader"
 }

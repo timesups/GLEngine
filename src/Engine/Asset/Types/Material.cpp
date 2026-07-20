@@ -247,7 +247,7 @@ void Material::Apply(const MaterialApplyData& applyData, const std::vector<std::
             LogA(LogLevel::WARNING, "Material '{}' shader pass not ready, using ErrorShader fallback", m_name);
             s_loggedFallback = true;
         }
-        auto errorShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/ErrorShader.glsl");
+        auto errorShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/ErrorShader.glsl");
         errorShader->m_passes[0]->use();
         errorShader->m_passes[0]->SetValue("_UseInstancing", 0);
         errorShader->m_passes[0]->SetValue("GL_MATRIX_M", applyData.mModel);

@@ -13,7 +13,7 @@
 void Light::Init()
 {
     EnsureTransform();
-    m_iconShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Billboard.glsl");
+    m_iconShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/Billboard.glsl");
     if (!m_iconShader)
         LogA(LogLevel::ERROR, "Failed to load icon shader");
 }

@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/ShadowCasterLocal.glsl",
+    "source": "Content/Engine/shaders/Internal/ShadowCasterLocal.glsl",
     "type": "shader"
 }

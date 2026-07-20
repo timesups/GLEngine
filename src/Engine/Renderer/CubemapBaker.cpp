@@ -236,13 +236,13 @@ bool CubemapBaker::BakeIBLFromEquirect(Texture2D& equirect, TextureCube& outPref
             irradianceFaceSize);
         return false;
     }
-    auto equirectShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/EquirectMap.glsl");
+    auto equirectShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/EquirectMap.glsl");
     if (!equirectShader)
     {
         Log(MODULE, LogLevel::ERROR, "CubemapBaker: missing EquirectMap shader");
         return false;
     }
-    auto irradianceShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/irradiance.glsl");
+    auto irradianceShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/irradiance.glsl");
     if (!irradianceShader)
     {
         Log(MODULE, LogLevel::ERROR, "CubemapBaker: missing irradiance shader");
@@ -275,7 +275,7 @@ bool CubemapBaker::BakeIBLFromEquirect(Texture2D& equirect, TextureCube& outPref
             Log(MODULE, LogLevel::ERROR, "CubemapBaker: failed to bake irradiance convolution");
             return false;
         }
-        auto prefilterShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/prefilter.glsl");
+        auto prefilterShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/prefilter.glsl");
         if (!prefilterShader)
         {
             Log(MODULE, LogLevel::ERROR, "CubemapBaker: missing prefilter shader");
@@ -410,7 +410,7 @@ bool CubemapBaker::BakeBrdfLUT(Texture2D& outLut)
         Log(MODULE, LogLevel::ERROR, "CubemapBaker: failed to create BRDF LUT {}x{}", kBrdfLutSize, kBrdfLutSize);
         return false;
     }
-    auto brdfShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/brdf.glsl");
+    auto brdfShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/brdf.glsl");
     if (!brdfShader || brdfShader->m_passes.empty() || !brdfShader->m_passes[0] || !brdfShader->m_passes[0]->IsReady())
     {
         Log(MODULE, LogLevel::ERROR, "CubemapBaker: BRDF shader is not ready");

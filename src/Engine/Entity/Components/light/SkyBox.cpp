@@ -55,10 +55,10 @@ void SkyBox::Init()
     }
     m_cubeMesh->Create(vertexs, index, Bounds());
 
-    m_skyShader = AssetManager::Get().LoadShader("engine://shaders/SkyBox.glsl");
+    m_skyShader = AssetManager::Get().LoadShader("engine://shaders/Internal/SkyBox.glsl");
     if (!m_skyShader)
     {
-        LogA(LogLevel::ERROR, "SkyBox shader load returned null (engine://shaders/SkyBox.glsl)");
+        LogA(LogLevel::ERROR, "SkyBox shader load returned null (engine://shaders/Internal/SkyBox.glsl)");
         return;
     }
     if (m_skyShader->m_passes.empty() || !m_skyShader->m_passes[0])

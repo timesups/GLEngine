@@ -195,28 +195,28 @@ void AssetManager::LoadEngineAssets()
     LoadTexture("engine://textures/normal.png");
     LoadTexture("engine://textures/white.png");
     // Load Shaders
-    LoadShader("engine://shaders/ErrorShader.glsl");
-    LoadShader("engine://shaders/EquirectMap.glsl");
-    LoadShader("engine://shaders/irradiance.glsl");
-    LoadShader("engine://shaders/prefilter.glsl");
-    LoadShader("engine://shaders/brdf.glsl");
-    LoadShader("engine://shaders/SSAO.glsl");
-    LoadShader("engine://shaders/SSAO_Blur.glsl");
-    LoadShader("engine://shaders/BlurX.glsl");
-    LoadShader("engine://shaders/BlurY.glsl");
-    LoadShader("engine://shaders/Copy.glsl");
-    LoadShader("engine://shaders/Tonemap.glsl");
-    LoadShader("engine://shaders/BloomSetup.glsl");
-    LoadShader("engine://shaders/BloomUpsample.glsl");
-    LoadShader("engine://shaders/DownSample.glsl");
-    LoadShader("engine://shaders/DeferredLight.glsl");
-    LoadShader("engine://shaders/Billboard.glsl");
+    LoadShader("engine://shaders/Internal/ErrorShader.glsl");
+    LoadShader("engine://shaders/Internal/EquirectMap.glsl");
+    LoadShader("engine://shaders/Internal/irradiance.glsl");
+    LoadShader("engine://shaders/Internal/prefilter.glsl");
+    LoadShader("engine://shaders/Internal/brdf.glsl");
+    LoadShader("engine://shaders/Internal/SSAO.glsl");
+    LoadShader("engine://shaders/Internal/SSAO_Blur.glsl");
+    LoadShader("engine://shaders/Internal/BlurX.glsl");
+    LoadShader("engine://shaders/Internal/BlurY.glsl");
+    LoadShader("engine://shaders/Internal/Copy.glsl");
+    LoadShader("engine://shaders/Internal/Tonemap.glsl");
+    LoadShader("engine://shaders/Internal/BloomSetup.glsl");
+    LoadShader("engine://shaders/Internal/BloomUpsample.glsl");
+    LoadShader("engine://shaders/Internal/DownSample.glsl");
+    LoadShader("engine://shaders/Internal/DeferredLight.glsl");
+    LoadShader("engine://shaders/Internal/Billboard.glsl");
     LoadShader("engine://shaders/ShowColor.glsl");
     // Load Materials
     CreateMaterial("engine://materials/DefaultMaterial", LoadShader("engine://shaders/DefaultLit.glsl"));
-    CreateMaterial("engine://materials/ShadowGlobal", LoadShader("engine://shaders/ShadowCasterGlobal.glsl"));
-    CreateMaterial("engine://materials/ShadowLocal", LoadShader("engine://shaders/ShadowCasterLocal.glsl"));
-    CreateMaterial("engine://materials/CustomDepth", LoadShader("engine://shaders/CustomDepth.glsl"));
+    CreateMaterial("engine://materials/ShadowGlobal", LoadShader("engine://shaders/Internal/ShadowCasterGlobal.glsl"));
+    CreateMaterial("engine://materials/ShadowLocal", LoadShader("engine://shaders/Internal/ShadowCasterLocal.glsl"));
+    CreateMaterial("engine://materials/CustomDepth", LoadShader("engine://shaders/Internal/CustomDepth.glsl"));
 
     // Load Models
     LoadModel("engine://model/cube.fbx");

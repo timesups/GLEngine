@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/CustomDepth.glsl",
+    "source": "Content/Engine/shaders/Internal/CustomDepth.glsl",
     "type": "shader"
 }

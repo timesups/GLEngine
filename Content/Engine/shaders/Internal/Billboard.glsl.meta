@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/Billboard.glsl",
+    "source": "Content/Engine/shaders/Internal/Billboard.glsl",
     "type": "shader"
 }

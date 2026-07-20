@@ -50,6 +50,9 @@ class AssetPaths
     /// 引擎 shader 公共头目录（相对 engineRoot），默认 {engineContentRoot}/shaders/include
     std::string GetEngineShaderIncludeRoot() const;
 
+    /// 若 including 位于 {projectContentRoot}/<Name>/...，返回 {projectContentRoot}/<Name>/Shader/include；否则空
+    std::string ResolveProjectShaderIncludeRoot(const std::string& includingSourcePath) const;
+
   private:
     AssetPaths() = default;
 

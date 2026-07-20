@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/SSAO_Blur.glsl",
+    "source": "Content/Engine/shaders/Internal/SSAO_Blur.glsl",
     "type": "shader"
 }

@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/SSAO.glsl",
+    "source": "Content/Engine/shaders/Internal/SSAO.glsl",
     "type": "shader"
 }

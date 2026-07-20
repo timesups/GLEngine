@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/ErrorShader.glsl",
+    "source": "Content/Engine/shaders/Internal/ErrorShader.glsl",
     "type": "shader"
 }

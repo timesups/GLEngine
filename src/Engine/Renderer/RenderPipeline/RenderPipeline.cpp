@@ -235,11 +235,11 @@ void RenderPipeline::Bloom(RenderContext& context)
 {
     const int sceneW = context.sceneViewportWidth;
     const int sceneH = context.sceneViewportHeight;
-    auto bloomSetupShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/BloomSetup.glsl");
-    auto downSampleShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/DownSample.glsl");
-    auto blurXShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/BlurX.glsl");
-    auto blurYShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/BlurY.glsl");
-    auto upsampleShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/BloomUpsample.glsl");
+    auto bloomSetupShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/BloomSetup.glsl");
+    auto downSampleShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/DownSample.glsl");
+    auto blurXShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/BlurX.glsl");
+    auto blurYShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/BlurY.glsl");
+    auto upsampleShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/BloomUpsample.glsl");
     if (!bloomSetupShader || !downSampleShader || !blurXShader || !blurYShader || !upsampleShader)
     {
         static bool s_logged = false;
@@ -315,7 +315,7 @@ void RenderPipeline::PostProcessing(RenderContext& context)
     if (context.enable_blooom)
         Bloom(context);
     // Tonemap：线性空间合成后单次 tonemap
-    auto tonemapShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Tonemap.glsl");
+    auto tonemapShader = AssetManager::Get().GetAsset<Shader>("engine://shaders/Internal/Tonemap.glsl");
     glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Tone Map");
     glViewport(context.sceneViewportX, context.sceneViewportY, context.sceneViewportWidth, context.sceneViewportHeight);
     Util::ClearScreen();

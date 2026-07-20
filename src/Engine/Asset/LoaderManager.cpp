@@ -1779,6 +1779,7 @@ std::string ResolveShaderIncludePath(const std::string& includingSourcePath, con
 
     AssetPaths& paths = AssetPaths::Get();
     const std::string engineIncludeRoot = paths.GetEngineShaderIncludeRoot();
+    const std::string projectIncludeRoot = paths.ResolveProjectShaderIncludeRoot(includingSourcePath);
 
     const auto tryPath = [](const std::string& candidate) -> std::string
     {
@@ -1786,34 +1787,46 @@ std::string ResolveShaderIncludePath(const std::string& includingSourcePath, con
         return ShaderIncludeFileExists(normalized) ? normalized : std::string{};
     };
 
-    const auto tryEngineInclude = [&](const std::string& subPath) -> std::string
+    const auto tryIncludeRoot = [&](const std::string& includeRoot, const std::string& subPath) -> std::string
     {
-        if (subPath.empty())
+        if (includeRoot.empty() || subPath.empty())
             return {};
-        return tryPath(JoinSourcePath(engineIncludeRoot, subPath));
+        return tryPath(JoinSourcePath(includeRoot, subPath));
     };
 
-    const std::string engineRelative = StripEngineIncludePrefix(includeToken);
+    const std::string relativeToken = StripEngineIncludePrefix(includeToken);
 
-    // 项目 shader 只能引用引擎头：统一在 engineIncludeRoot 下解析
-    if (std::string resolved = tryEngineInclude(engineRelative); !resolved.empty())
+    // 1) 引擎公共头（Core / Lighting / …）
+    if (std::string resolved = tryIncludeRoot(engineIncludeRoot, relativeToken); !resolved.empty())
         return resolved;
 
-    const size_t slash = engineRelative.find_last_of('/');
-    if (slash != std::string::npos && slash + 1 < engineRelative.size())
+    // 2) 项目管线头（如 Content/Project/Endfield/Shader/include）
+    if (std::string resolved = tryIncludeRoot(projectIncludeRoot, relativeToken); !resolved.empty())
+        return resolved;
+
+    const size_t slash = relativeToken.find_last_of('/');
+    if (slash != std::string::npos && slash + 1 < relativeToken.size())
     {
-        if (std::string resolved = tryEngineInclude(engineRelative.substr(slash + 1)); !resolved.empty())
+        const std::string baseName = relativeToken.substr(slash + 1);
+        if (std::string resolved = tryIncludeRoot(engineIncludeRoot, baseName); !resolved.empty())
+            return resolved;
+        if (std::string resolved = tryIncludeRoot(projectIncludeRoot, baseName); !resolved.empty())
             return resolved;
     }
 
-    // 引擎 include 目录内部的相对引用（如 Core.glsl → GLInput.glsl）
+    // 3) include 目录内部的相对引用（引擎或项目）
     if (!includingSourcePath.empty())
     {
         const size_t folderSlash = includingSourcePath.find_last_of('/');
         const std::string rootFolder =
             folderSlash != std::string::npos ? includingSourcePath.substr(0, folderSlash) : std::string{};
-        const std::string engineRootPrefix = engineIncludeRoot + "/";
-        if (!rootFolder.empty() && (rootFolder == engineIncludeRoot || rootFolder.rfind(engineRootPrefix, 0) == 0))
+        const auto underIncludeRoot = [&](const std::string& includeRoot) -> bool
+        {
+            if (rootFolder.empty() || includeRoot.empty())
+                return false;
+            return rootFolder == includeRoot || rootFolder.rfind(includeRoot + "/", 0) == 0;
+        };
+        if (underIncludeRoot(engineIncludeRoot) || underIncludeRoot(projectIncludeRoot))
         {
             if (std::string resolved = tryPath(JoinSourcePath(rootFolder, includeToken)); !resolved.empty())
                 return resolved;
@@ -1821,9 +1834,10 @@ std::string ResolveShaderIncludePath(const std::string& includingSourcePath, con
     }
 
     LogA(LogLevel::ERROR,
-         "Shader include not found: '{}' (included from '{}', engineIncludeRoot='{}', tried='{}'); only engine "
-         "include headers are supported",
-         includeToken, includingSourcePath, engineIncludeRoot, JoinSourcePath(engineIncludeRoot, engineRelative));
+         "Shader include not found: '{}' (included from '{}', engineIncludeRoot='{}', projectIncludeRoot='{}', "
+         "tried='{}')",
+         includeToken, includingSourcePath, engineIncludeRoot, projectIncludeRoot,
+         JoinSourcePath(projectIncludeRoot.empty() ? engineIncludeRoot : projectIncludeRoot, relativeToken));
     return {};
 }
 

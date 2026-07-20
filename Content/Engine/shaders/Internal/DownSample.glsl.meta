@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/DownSample.glsl",
+    "source": "Content/Engine/shaders/Internal/DownSample.glsl",
     "type": "shader"
 }

@@ -4,6 +4,6 @@
     "importSettings": {
         "showInUi": false
     },
-    "source": "Content/Engine/shaders/BloomSetup.glsl",
+    "source": "Content/Engine/shaders/Internal/BloomSetup.glsl",
     "type": "shader"
 }
