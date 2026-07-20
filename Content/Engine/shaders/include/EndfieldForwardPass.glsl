@@ -49,6 +49,8 @@ in V2f v2f;
 #include "Surface.glsl"
 #include "Lighting.glsl"
 
+const vec3 FaceDirection = vec3(0,0,1);
+
 uniform sampler2D _Color;
 uniform sampler2D _Normal;
 uniform sampler2D _Mask;
@@ -63,6 +65,7 @@ uniform float _NormalScale;
 uniform float _roughness;
 uniform float _metallic;
 uniform float _DoubleSided;
+
 
 uniform int _shadingModel; // 0:衣服, 1:皮肤, 3:eye, 4:hair, 5:scene,6:face
 
@@ -183,96 +186,35 @@ void main()
     vec3 F0 = mix(vec3(0.04) * _roughness,baseColor,vec3(_metallic));
     //主光阴影
     ivec2 pixel = ivec2(gl_FragCoord.xy);
-
     float shadow  = texelFetch(shadowMap,pixel,0).x;
-
-
-    
     Surface s;
     //主方向光
     Light mainLight = GetMainLight(s);
     vec3 L = normalize(mainLight.direction);
     vec3 H = normalize(viewDir + L);
-
-
     float NdotL_remap = (dot(N, L) + 1) * 0.5;
     vec3 lutColor = texture(_basecolorLUT,vec2(NdotL_remap,0.0)).xyz;
 
-
     if(_shadingModel == 6)
     {
-        // 风格化脸部可调参数（可提升为材质 uniform）
-        const float FACE_SOFT_FRESNEL_A     = 0.35;
-        const float FACE_SOFT_FRESNEL_B     = 1.0;
-        const vec3  FACE_SOFT_FRESNEL_COLOR = vec3(0.85, 0.55, 0.55);
-        const float FACE_WRAP_STRENGTH      = 0.6;
-        const float FACE_FEATURE_LIGHT      = 1.0;
-        const float FACE_RIM_INTENSITY      = 1.0;
-        const vec3  FACE_RIM_COLOR          = vec3(1.0);
-        const float FACE_SPECULAR_BOOST     = 1.0;
+        vec4 sdfCon = texture(_sdfcontrol,v2f.uv);
+        vec2 sunDirPlane = vec2(L.x,L.z);
+        float faceShade = dot(sunDirPlane,FaceDirection.xz);
 
-        // _sdfcontrol：R=softMask  G=sdfBlend  B=softParamBlend  A=rimMask
-        vec4 ctrl = texture(_sdfcontrol, v2f.uv);
-        vec4 sdf  = sampleFaceSDF(v2f.uv, TBN, L);
-        vec3 featureDir = sdf.xyz * faceSign;
-        float sdfMask   = sdf.w;
+        float sdfx = texture(_facesdf,v2f.uv).x;
+        faceShade = smoothstep(sdfx,0.0,_metallic);
 
-        // 主光可见度（Shadow RT）
-        float visibility = shadow;
+        
+        if (_metallic < 0.0)
+        {
+            sdfx = texture(_facesdf,v2f.uv * vec2(-1,1)).x;
+            faceShade = 1-smoothstep(sdfx,0.0,-_metallic);
 
-        vec3 Nflat  = normalize(vec3(normalWS.x, 0.0001, normalWS.z));
-        vec3 Nshade = normalize(mix(normalWS, featureDir, ctrl.y));
+        }
+            
 
-        // soft fresnel：朝向项 × softMask × 插值后的 softParam
-        float facingTerm = clamp(dot(Nflat, L) * 0.5 + 0.5, 0.0, 1.0);
-        facingTerm = mix(facingTerm, 1.0, ctrl.y);
-        float softMask  = ctrl.x * facingTerm;
-        float softParam = mix(FACE_SOFT_FRESNEL_A, FACE_SOFT_FRESNEL_B, ctrl.z);
 
-        float NdV      = clamp(dot(Nshade, viewDir), 0.0, 1.0);
-        float softEdge = 1.0 - clamp(NdV * 0.85 + 0.15, 0.0, 1.0);
-        float soft     = clamp(softEdge * softMask * softParam, 0.0, 1.0);
-
-        vec3 albedo = baseColor * mix(vec3(1.0), FACE_SOFT_FRESNEL_COLOR, soft);
-
-        // IBL（用混合后的着色法线）
-        vec3 F_ibl   = F_SchlickRoughness(F0, NdV, _roughness);
-        vec3 ambient = iblDiffuse(Nshade, albedo, _metallic, F_ibl, 1.0)
-                     + iblSpecular(Nshade, viewDir, F0, _roughness, 1.0);
-
-        // wrap 漫反射 + LUT 色调
-        float wrap    = faceWrapDiffuse(Nshade, L, FACE_WRAP_STRENGTH);
-        vec3 wrapTint = faceWrapTint(Nshade, L);
-
-        // 主光 GGX
-        vec3  Hf     = normalize(viewDir + L);
-        float NdotL  = max(dot(Nshade, L), 0.0);
-        float NdotVf = max(dot(Nshade, viewDir), 0.0);
-        float NdotH  = max(dot(Nshade, Hf), 0.0);
-        float VdotH  = max(dot(viewDir, Hf), 0.0);
-
-        float a   = _roughness * _roughness;
-        float a2  = a * a;
-        float D   = D_GGX(NdotH, a2);
-        float Vis = V_SmithGGX(NdotVf, max(NdotL, wrap), a);
-        vec3  Fs  = F_Schlick(F0, VdotH);
-
-        vec3 diffuseTerm = (1.0 - Fs) * (1.0 - _metallic) * albedo / PI;
-        vec3 specTerm    = D * Vis * Fs * FACE_SPECULAR_BOOST;
-        vec3 direct = (diffuseTerm * wrap * wrapTint + specTerm * NdotL) * mainLight.color;
-        direct *= visibility;
-
-        // SDF 特征补光（越风格化越跟随特征方向）
-        float feature = pow(max(dot(featureDir, L), 0.0), 2.0) * sdfMask * ctrl.y;
-        direct += albedo * feature * FACE_FEATURE_LIGHT * mainLight.color * 0.25;
-
-        // 边缘光 × _sdfcontrol.A
-        float rim = pow(1.0 - NdV, 3.0) * ctrl.a * FACE_RIM_INTENSITY;
-        rim *= mix(1.0, smoothstep(0.9, 1.0, abs(Nflat.z)), ctrl.y);
-        vec3 rimCol = FACE_RIM_COLOR * rim * albedo;
-
-        vec3 color = ambient + direct + rimCol;
-        outGBuffer0 = vec4(vec3(sdf.y), 1.0);
+        outGBuffer0 = vec4(vec3(faceShade), 1.0);
     }
     else
     {
@@ -297,7 +239,7 @@ void main()
 
         vec3 spec = D * Vis * F;
         vec3 kD   = (1.0 - F) * (1.0 - _metallic);
-        vec3 direct = (kD * diffuse / PI + spec) * mainLight.color * lutColor;
+        vec3 direct = (kD * diffuse / PI + spec) * mainLight.color * NdotL;
         
 
         vec3 finalColor =vec3(direct + ambient);
@@ -305,9 +247,7 @@ void main()
 
 
 
-
-
-        outGBuffer0 = vec4(finalColor,1.0);
+        outGBuffer0 = vec4(direct,1.0);
 }
     }
 

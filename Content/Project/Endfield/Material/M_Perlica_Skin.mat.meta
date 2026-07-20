@@ -7,7 +7,9 @@
         "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
         "Content/Project/Endfield/Lut/lut_basecolor.png",
         "Content/Project/Endfield/Texture/Perlica_Skin_C.png",
-        "Content/Project/Endfield/Texture/Perlica_Skin_N.png"
+        "Content/Project/Endfield/Texture/Perlica_Skin_N.png",
+        "Content/Engine/textures/black.png",
+        "Content/Project/Endfield/Lut/skin_lut.png"
     ],
     "guid": "d7e062ce-d11e-4b6b-b53a-7cd8e1e0014a",
     "importSettings": {
