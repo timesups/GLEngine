@@ -2,6 +2,7 @@
     "dependencies": [],
     "guid": "448c9d98-1b61-4703-8ad9-357e8b230ffa",
     "importSettings": {
+        "filterMode": "Linear",
         "generateMips": true,
         "kIrradianceFaceSize": 32,
         "kMinPrefilterFaceSize": 512,
@@ -9,7 +10,8 @@
         "kPrefilterFaceSize": 0,
         "kThetaSamples": 1024,
         "showInUi": true,
-        "srgb": false
+        "srgb": false,
+        "wrapMode": "Repeat"
     },
     "source": "Content/Engine/hdr/sunny_rose_garden.hdr",
     "type": "cubemap"

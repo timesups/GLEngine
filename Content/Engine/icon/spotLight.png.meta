@@ -2,9 +2,11 @@
     "dependencies": [],
     "guid": "e0ea1bb7-7ea0-4eb2-a0de-437675d77d1b",
     "importSettings": {
+        "filterMode": "Linear",
         "generateMips": false,
         "showInUi": false,
-        "srgb": true
+        "srgb": true,
+        "wrapMode": "Repeat"
     },
     "source": "Content/Engine/icon/spotLight.png",
     "type": "texture"

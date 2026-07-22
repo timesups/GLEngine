@@ -15,6 +15,8 @@ struct BRDFParam
     float metallic;
     float ao;
 
+    float specular;
+
     float anisotropy;
     float anisotropyShift;
     float anisotropyRotate;
@@ -34,6 +36,8 @@ BRDFParam GetDefaultBRDFParam()
     p.anisotropyRotate = 0.0;
     p.roughness = 0.5;
     p.metallic = 0.0;
+
+    p.specular = 1.0;
 
     return p;
 }
@@ -154,19 +158,18 @@ vec3 PBR(Light l,BRDFParam p,vec3 viewDir)
     vec3 F = fresnelSchlick(HdotV,F0);
     vec3 nom = D*G*F;
     float denom = max(4 * NdotV * NdotL,0.0001);
-    vec3 brdfCookTorr = nom/denom; 
+    vec3 brdfCookTorr = nom/denom * p.specular; 
 
     vec3 kd = vec3(1.0) - F;
     kd *= 1.0 - p.metallic;//将金属表面的漫反射强制归零
 
 
 
-    float lutSample = (dot(p.pixelNormal,l.direction) + 1.0)* 0.5;
-    vec3 NdotLLut = texture(_basecolorLUT,vec2(lutSample,0.0)).xyz;
 
-    vec3 L = (kd * p.baseColor/PI + brdfCookTorr) * l.color *  l.attenuation * NdotL;
 
-    return NdotLLut;
+    vec3 L = (kd * p.baseColor/PI + brdfCookTorr) * l.color *  l.attenuation  * NdotL;
+
+    return L;
 }
 
 

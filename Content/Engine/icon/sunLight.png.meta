@@ -2,9 +2,11 @@
     "dependencies": [],
     "guid": "74338860-a20b-4de9-99d5-947a48dec14e",
     "importSettings": {
+        "filterMode": "Linear",
         "generateMips": false,
         "showInUi": false,
-        "srgb": true
+        "srgb": true,
+        "wrapMode": "Repeat"
     },
     "source": "Content/Engine/icon/sunLight.png",
     "type": "texture"

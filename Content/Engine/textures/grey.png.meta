@@ -2,9 +2,11 @@
     "dependencies": [],
     "guid": "13f54750-22ef-4feb-8f73-a937dfa4b634",
     "importSettings": {
+        "filterMode": "Linear",
         "generateMips": true,
         "showInUi": true,
-        "srgb": true
+        "srgb": true,
+        "wrapMode": "Repeat"
     },
     "source": "Content/Engine/textures/grey.png",
     "type": "texture"

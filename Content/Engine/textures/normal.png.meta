@@ -2,9 +2,11 @@
     "dependencies": [],
     "guid": "aace4fab-5dc7-4313-9e9b-a8eece9a83af",
     "importSettings": {
+        "filterMode": "Linear",
         "generateMips": true,
         "showInUi": true,
-        "srgb": false
+        "srgb": false,
+        "wrapMode": "Repeat"
     },
     "source": "Content/Engine/textures/normal.png",
     "type": "texture"

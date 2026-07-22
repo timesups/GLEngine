@@ -29,6 +29,10 @@ layout(std140,binding=0) uniform camera_buffer
     mat4 GL_I_MATRIX_P;
     float _time;
     float _fov;
+    float _pad0;
+    float _pad1;
+    vec3 _CameraForward;
+    float _pad;
 };
 
 //灯光数据输入

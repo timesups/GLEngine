@@ -9,7 +9,8 @@
         "Content/Project/Endfield/Texture/Perlica_Skirt_N.png",
         "Content/Project/Endfield/Texture/Perlica_Skirt_M.png",
         "Content/Engine/textures/black.png",
-        "Content/Project/Endfield/Texture/Perlica_Skirt_A.png"
+        "Content/Project/Endfield/Texture/Perlica_Skirt_A.png",
+        "Content/Project/Endfield/Lut/cloth_lut.png"
     ],
     "guid": "13598b8f-fe89-48e5-b2aa-75d6ffc0692f",
     "importSettings": {

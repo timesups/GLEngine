@@ -25,6 +25,7 @@ GLSLShader
 
         float _metallic = 1.0
         float _roughness = 1.0
+        float _specular = 1.0
     
 
         float _OutLineWidth = 0.01

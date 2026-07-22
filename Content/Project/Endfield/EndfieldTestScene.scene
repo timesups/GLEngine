@@ -42,13 +42,13 @@
                 },
                 "Transform": {
                     "position": [
-                        0.5456451773643494,
-                        5.351240634918213,
-                        7.004020690917969
+                        1.5253736972808838,
+                        14.092337608337402,
+                        3.029934883117676
                     ],
                     "rotation": [
-                        -4.039900302886963,
-                        -363.47998046875,
+                        -10.639959335327148,
+                        -362.036865234375,
                         0.0
                     ],
                     "scale": [
@@ -329,7 +329,7 @@
                         1.0
                     ],
                     "farPlane": 20.0,
-                    "intensity": 200000.0,
+                    "intensity": 300000.0,
                     "nearPlane": -20.0,
                     "pcfSample": 4,
                     "shadowArea": 20.0,
@@ -343,8 +343,8 @@
                         0.0
                     ],
                     "rotation": [
-                        -33.0,
-                        65.0,
+                        -33.5,
+                        319.5,
                         0.0
                     ],
                     "scale": [
@@ -354,7 +354,7 @@
                     ]
                 }
             },
-            "name": "DirectionalLight"
+            "name": "sun"
         },
         {
             "components": {
@@ -411,6 +411,43 @@
                 }
             },
             "name": "Skybox"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/Endfield/Material/M_Endfield_Ground.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Engine/model/cube.fbx",
+                    "renderSettings": {
+                        "castShadow": false,
+                        "drawCustomDepth": false,
+                        "drawOutline": false,
+                        "perObjectRender": true
+                    }
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        9.199999809265137,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        15.90999984741211,
+                        18.299999237060547,
+                        19.020000457763672
+                    ]
+                }
+            },
+            "name": "Ground"
         }
     ],
     "name": "EndfieldTestScene",

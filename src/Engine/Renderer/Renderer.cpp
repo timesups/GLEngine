@@ -5,8 +5,8 @@
 #include "../Core/Log.h"
 #include "../Core/util.h"
 #include "../Entity/Components/Camera.h"
-#include "AmbientOcclusion.h"
 #include "../Entity/EntityManager.h"
+#include "AmbientOcclusion.h"
 #include "glm/ext/vector_float3.hpp"
 
 #include "../Core/LightingConvention.h"
@@ -19,15 +19,16 @@
 #include "../Asset/Types/Texture/IBLImage.h"
 #include "../Asset/Types/Texture/TextureCube.h"
 
-#include "RenderPipeline/RenderPipelineRegistry.h"
 #include "RenderPipeline/RenderPipeline.h"
+#include "RenderPipeline/RenderPipelineRegistry.h"
 
 #include "../Asset/LoaderManager.h"
 #include "InstanceBuffer.h"
 
 #define MODULE "Renderer"
 
-static_assert(sizeof(PostProcessSetting) == 64, "PostProcessSetting must match post_processing_buffer std140 layout (64 bytes)");
+static_assert(sizeof(PostProcessSetting) == 64,
+              "PostProcessSetting must match post_processing_buffer std140 layout (64 bytes)");
 
 Renderer::Renderer() = default;
 
@@ -175,8 +176,7 @@ void Renderer::UploadLightData()
             lightData.param1.z = sky->IsIBLLightingEnabled() ? 1.0f : 0.0f;
             lightData.param1.w = sky->GetIBLLightingIntensity();
             if (std::shared_ptr<IBLImage>& ibl = sky->GetIBL(); ibl && ibl->prefiltered)
-                lightData._MaxReflectionLOD =
-                    static_cast<float>(std::max(0, ibl->prefiltered->GetMipLevels() - 1));
+                lightData._MaxReflectionLOD = static_cast<float>(std::max(0, ibl->prefiltered->GetMipLevels() - 1));
         }
     }
 
@@ -222,6 +222,7 @@ void Renderer::UpdateCameraData(RenderContext& context)
     camData._zFar_pad.z = context.sceneViewportHeight;
     camData._time_pad.x = context.engineTime;
     camData._time_pad.y = cam->GetFov();
+    camData._cameraForward = glm::vec4(cam->GetForwardVector(), 0.0);
     cameraBuffer.UploadStruct(camData);
     // 后处理信息传递
     context.enable_blooom = cam->postSetting.bloom_setting.w > 0;

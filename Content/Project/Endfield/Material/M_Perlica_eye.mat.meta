@@ -1,10 +1,10 @@
 {
     "dependencies": [
         "Content/Engine/shaders/DefaultLit.glsl",
-        "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
-        "Content/Engine/textures/white.png",
-        "Content/Engine/textures/normal.png",
         "Content/Engine/textures/grey.png",
+        "Content/Engine/textures/normal.png",
+        "Content/Engine/textures/white.png",
+        "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
         "Content/Project/Endfield/Texture/Perlica_Eye_C.png"
     ],
     "guid": "d5a2e5e1-9eb4-4e33-bcba-96adc4a1b28d",

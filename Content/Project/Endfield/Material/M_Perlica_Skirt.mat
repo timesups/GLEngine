@@ -1,6 +1,7 @@
 {
     "name": "M_Perlica_Skirt",
     "properties": {
+        "_Anisotropy": 0.0,
         "_Attribute": {
             "path": "Content/Project/Endfield/Texture/Perlica_Skirt_A.png",
             "srgb": true,
@@ -11,7 +12,6 @@
             "srgb": true,
             "type": "texture2d"
         },
-        "_DoubleSided": 1.0,
         "_IsCharacter": true,
         "_Mask": {
             "path": "Content/Project/Endfield/Texture/Perlica_Skirt_M.png",
@@ -30,11 +30,13 @@
             0.0
         ],
         "_OutLineWidth": 0.009999999776482582,
+        "_anisotropyRotation": 0.0,
         "_basecolorLUT": {
-            "path": "Content/Engine/textures/white.png",
+            "path": "Content/Project/Endfield/Lut/cloth_lut.png",
             "srgb": true,
             "type": "texture2d"
         },
+        "_brightness": 1.0,
         "_facesdf": {
             "path": "Content/Engine/textures/black.png",
             "srgb": true,
@@ -47,7 +49,8 @@
             "srgb": true,
             "type": "texture2d"
         },
-        "_shadingModel": 1
+        "_shadingModel": 1,
+        "_specular": 1.0
     },
     "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
     "showInUi": true

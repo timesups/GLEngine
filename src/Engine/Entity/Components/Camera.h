@@ -25,6 +25,7 @@ struct alignas(16) CameraInputData
     w:pad
     */
     glm::vec4 _time_pad{};
+    glm::vec4 _cameraForward{};
 };
 
 struct alignas(16) PostProcessSetting

@@ -1,6 +1,7 @@
 {
     "name": "M_Endfield_Ground",
     "properties": {
+        "_Anisotropy": 0.0,
         "_Attribute": {
             "path": "Content/Engine/textures/grey.png",
             "srgb": true,
@@ -11,7 +12,7 @@
             "srgb": true,
             "type": "texture2d"
         },
-        "_DoubleSided": 1.0,
+        "_IsCharacter": false,
         "_Mask": {
             "path": "Content/Engine/textures/white.png",
             "srgb": true,
@@ -29,8 +30,25 @@
             0.0
         ],
         "_OutLineWidth": 0.019999999552965164,
+        "_anisotropyRotation": 0.0,
+        "_basecolorLUT": {
+            "path": "Content/Engine/textures/white.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_brightness": 1.0,
+        "_facesdf": {
+            "path": "Content/Engine/textures/black.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
         "_metallic": 0.0,
         "_roughness": 1.0,
+        "_sdfcontrol": {
+            "path": "Content/Engine/textures/black.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
         "_shadingModel": 5
     },
     "shader": "Content/Project/Endfield/Shader/EndfieldScene.glsl",

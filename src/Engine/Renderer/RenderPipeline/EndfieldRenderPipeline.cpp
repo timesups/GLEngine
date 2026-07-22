@@ -87,8 +87,8 @@ void EndfieldRenderPipeline::Render(RenderContext& context)
     // Forward Pass 只写 RT0（最终色），限制 draw buffers 以免污染几何阶段填好的 RT1~4
     m_GBuffer.GetFramebuffer().SetDrawBuffers({GL_COLOR_ATTACHMENT0});
     m_GBuffer.GetFramebuffer().ApplyDrawBuffers();
-    m_Shadow.GetColorAttachmentTexture(0)->Bind(6);
     BindIBLTextures();
+    m_Shadow.GetColorAttachmentTexture(0)->Bind(10);
     DrawSetting lightingSetting;
     lightingSetting.shaderTags.push_back("LightMode:Forward");
     RenderUnitFilter forwardFilter =
@@ -96,8 +96,8 @@ void EndfieldRenderPipeline::Render(RenderContext& context)
     EntityManager::Get().DrawRenderQueue(lightingSetting, forwardFilter);
     m_Shadow.GetColorAttachmentTexture(0)->UnBind();
     // 恢复全部 draw buffers，供下一帧几何阶段写 RT0~4
-    m_GBuffer.GetFramebuffer().SetDrawBuffers({GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
-                                              GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4});
+    m_GBuffer.GetFramebuffer().SetDrawBuffers(
+        {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4});
     m_GBuffer.UnBind();
     glPopDebugGroup();
 
