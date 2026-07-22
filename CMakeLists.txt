@@ -82,7 +82,6 @@ set(GLEngine_SOURCES
     src/Engine/Asset/Types/Texture/Texture2DArray.cpp
     src/Engine/Asset/Types/ShaderPass.cpp
     src/Engine/Renderer/RenderPipeline/DeferredRender.cpp
-    src/Engine/Renderer/RenderPipeline/EndfieldRenderPipeline.cpp
     src/Engine/Renderer/RenderPipeline/ForwardRender.cpp
     src/Engine/Renderer/RenderPipeline/RenderPipeline.cpp
     src/Engine/Renderer/RenderPipeline/RenderPipelineRegistry.cpp

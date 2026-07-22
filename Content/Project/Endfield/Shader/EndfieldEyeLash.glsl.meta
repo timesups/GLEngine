@@ -1,9 +1,0 @@
-{
-    "dependencies": [],
-    "guid": "d8b517e5-f332-4c25-a6bc-bf592bd64a5f",
-    "importSettings": {
-        "showInUi": true
-    },
-    "source": "Content/Project/Endfield/Shader/EndfieldEyeLash.glsl",
-    "type": "shader"
-}

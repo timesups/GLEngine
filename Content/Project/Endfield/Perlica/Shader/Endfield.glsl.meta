@@ -1,9 +1,0 @@
-{
-    "dependencies": [],
-    "guid": "bef43be4-11db-4176-8920-f47d012b2970",
-    "importSettings": {
-        "showInUi": true
-    },
-    "source": "Content/Project/Endfield/Perlica/Shader/Endfield.glsl",
-    "type": "shader"
-}

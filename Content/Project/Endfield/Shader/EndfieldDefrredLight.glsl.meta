@@ -1,9 +1,0 @@
-{
-    "dependencies": [],
-    "guid": "f9b97017-a1d5-4cf1-9f0b-abb9e1742aea",
-    "importSettings": {
-        "showInUi": false
-    },
-    "source": "Content/Project/Endfield/Shader/EndfieldDefrredLight.glsl",
-    "type": "shader"
-}
