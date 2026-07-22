@@ -47,7 +47,7 @@
             "srgb": true,
             "type": "texture2d"
         },
-        "_shadingModel": 1
+        "_shadingModel": 2
     },
     "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
     "showInUi": true

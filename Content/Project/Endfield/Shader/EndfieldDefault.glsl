@@ -3,7 +3,13 @@ GLSLShader
     Properties
     {
         sampler2D _Color = "white"
+        float _brightness = 1.0
+
+
+
         sampler2D _Normal = "normal"
+        float _NormalScale = 1.0
+
         sampler2D _Mask = "white"
         sampler2D _Attribute = "grey"
         sampler2D _basecolorLUT = "white"
@@ -12,10 +18,14 @@ GLSLShader
         sampler2D _sdfcontrol = "black"
 
 
-        float _NormalScale = 1.0
-        float _roughness = 0.5
-        float _metallic = 0.0
-        float _DoubleSided = 1.0
+
+        float _Anisotropy = 0.0
+        float _anisotropyRotation = 0.0
+
+
+        float _metallic = 1.0
+        float _roughness = 1.0
+    
 
         float _OutLineWidth = 0.01
         vec3 _OutLineColor = (0,0,0)

@@ -6,7 +6,10 @@
         "Content/Engine/textures/white.png",
         "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
         "Content/Project/Endfield/Texture/Perlica_Outfit_C.png",
-        "Content/Project/Endfield/Texture/Perlica_Outfit_N.png"
+        "Content/Project/Endfield/Texture/Perlica_Outfit_N.png",
+        "Content/Engine/textures/black.png",
+        "Content/Project/Endfield/Texture/Perlica_Outfit_A.png",
+        "Content/Project/Endfield/Lut/cloth_lut.png"
     ],
     "guid": "e04e068b-4e67-4d3b-8652-65621b8240c9",
     "importSettings": {

@@ -2,7 +2,7 @@
     "name": "M_Perlica_Outfit",
     "properties": {
         "_Attribute": {
-            "path": "Content/Engine/textures/grey.png",
+            "path": "Content/Project/Endfield/Texture/Perlica_Outfit_A.png",
             "srgb": true,
             "type": "texture2d"
         },
@@ -31,13 +31,23 @@
         ],
         "_OutLineWidth": 0.009999999776482582,
         "_basecolorLUT": {
-            "path": "Content/Engine/textures/white.png",
+            "path": "Content/Project/Endfield/Lut/cloth_lut.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_facesdf": {
+            "path": "Content/Engine/textures/black.png",
             "srgb": true,
             "type": "texture2d"
         },
         "_metallic": 0.0,
         "_roughness": 0.0,
-        "_shadingModel": 0
+        "_sdfcontrol": {
+            "path": "Content/Engine/textures/black.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_shadingModel": 1
     },
     "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
     "showInUi": true

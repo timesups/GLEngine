@@ -1,8 +1,9 @@
 {
     "name": "M_Perlica_Leg",
     "properties": {
+        "_Anisotropy": 0.4399999976158142,
         "_Attribute": {
-            "path": "Content/Engine/textures/grey.png",
+            "path": "Content/Project/Endfield/Texture/Perlica_Outfit_A.png",
             "srgb": true,
             "type": "texture2d"
         },
@@ -11,7 +12,6 @@
             "srgb": true,
             "type": "texture2d"
         },
-        "_DoubleSided": 1.0,
         "_IsCharacter": true,
         "_Mask": {
             "path": "Content/Engine/textures/white.png",
@@ -30,9 +30,26 @@
             0.0
         ],
         "_OutLineWidth": 0.009999999776482582,
-        "_metallic": 0.25200000405311584,
-        "_roughness": 0.0,
-        "_shadingModel": 0
+        "_anisotropyRotation": 1.2100000381469727,
+        "_basecolorLUT": {
+            "path": "Content/Project/Endfield/Lut/cloth_lut.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_brightness": 0.11999999731779099,
+        "_facesdf": {
+            "path": "Content/Engine/textures/black.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_metallic": 1.0,
+        "_roughness": 1.149999976158142,
+        "_sdfcontrol": {
+            "path": "Content/Engine/textures/black.png",
+            "srgb": true,
+            "type": "texture2d"
+        },
+        "_shadingModel": 1
     },
     "shader": "Content/Project/Endfield/Shader/EndfieldDefault.glsl",
     "showInUi": true

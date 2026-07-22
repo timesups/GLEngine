@@ -13,4 +13,12 @@ struct Surface
 };
 
 
+struct SurfaceN
+{
+    vec3 position;
+    vec4 posMainLight;
+    vec3 vertexNormal;
+    vec3 viewDir;
+};
+
 #endif

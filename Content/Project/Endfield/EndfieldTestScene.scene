@@ -42,13 +42,13 @@
                 },
                 "Transform": {
                     "position": [
-                        -0.08251599967479706,
-                        14.311392784118652,
-                        3.9523563385009766
+                        0.5456451773643494,
+                        5.351240634918213,
+                        7.004020690917969
                     ],
                     "rotation": [
-                        0.04009855538606644,
-                        -361.0769958496094,
+                        -4.039900302886963,
+                        -363.47998046875,
                         0.0
                     ],
                     "scale": [
@@ -329,7 +329,7 @@
                         1.0
                     ],
                     "farPlane": 20.0,
-                    "intensity": 196000.0,
+                    "intensity": 200000.0,
                     "nearPlane": -20.0,
                     "pcfSample": 4,
                     "shadowArea": 20.0,
@@ -343,8 +343,8 @@
                         0.0
                     ],
                     "rotation": [
-                        -44.0,
-                        -71.0,
+                        -33.0,
+                        65.0,
                         0.0
                     ],
                     "scale": [
@@ -392,68 +392,6 @@
                 }
             },
             "name": "EyeLash"
-        },
-        {
-            "components": {
-                "MeshRender": {
-                    "materials": [
-                        {
-                            "material": "Content/Project/Endfield/Material/M_Endfield_Ground.mat",
-                            "slot": 0
-                        }
-                    ],
-                    "model": "Content/Engine/model/plane.fbx"
-                },
-                "Transform": {
-                    "position": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        24.809999465942383,
-                        10.34000015258789,
-                        26.809999465942383
-                    ]
-                }
-            },
-            "name": "Ground"
-        },
-        {
-            "components": {
-                "MeshRender": {
-                    "materials": [
-                        {
-                            "material": "Content/Project/Endfield/Material/M_Endfield_Ground.mat",
-                            "slot": 0
-                        }
-                    ],
-                    "model": "Content/Engine/model/plane.fbx"
-                },
-                "Transform": {
-                    "position": [
-                        0.15000000596046448,
-                        14.300000190734863,
-                        -13.0
-                    ],
-                    "rotation": [
-                        90.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        50.0,
-                        1.0,
-                        50.0
-                    ]
-                }
-            },
-            "name": "Wall"
         },
         {
             "components": {

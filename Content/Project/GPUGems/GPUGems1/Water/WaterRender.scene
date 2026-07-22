@@ -42,13 +42,13 @@
                 },
                 "Transform": {
                     "position": [
-                        -117.58612060546875,
-                        50.35799789428711,
-                        116.13331604003906
+                        -107.75794219970703,
+                        63.2328987121582,
+                        110.8240966796875
                     ],
                     "rotation": [
-                        -20.039813995361328,
-                        -674.2764282226563,
+                        -32.39982223510742,
+                        -676.4364013671875,
                         0.0
                     ],
                     "scale": [
@@ -78,37 +78,6 @@
                 }
             },
             "name": "New Entity"
-        },
-        {
-            "components": {
-                "MeshRender": {
-                    "materials": [
-                        {
-                            "material": "Content/Project/GPUGems/GPUGems1/Water/Water.mat",
-                            "slot": 0
-                        }
-                    ],
-                    "model": "Content/Project/models/PlaneHighRes.fbx"
-                },
-                "Transform": {
-                    "position": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "rotation": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "scale": [
-                        1.0,
-                        1.0,
-                        1.0
-                    ]
-                }
-            },
-            "name": "Plane"
         },
         {
             "components": {
@@ -146,6 +115,58 @@
                 }
             },
             "name": "DirectionalLight"
+        },
+        {
+            "components": {
+                "MeshRender": {
+                    "materials": [
+                        {
+                            "material": "Content/Project/GPUGems/GPUGems1/Water/Water.mat",
+                            "slot": 0
+                        }
+                    ],
+                    "model": "Content/Project/models/PlaneHighRes.fbx",
+                    "renderSettings": {
+                        "castShadow": true,
+                        "drawCustomDepth": true,
+                        "drawOutline": false,
+                        "perObjectRender": true
+                    }
+                },
+                "Ocean": {
+                    "amplitude": 3.4200000762939453,
+                    "autoConfigureMeshRender": true,
+                    "direction": [
+                        -1.409999966621399,
+                        -0.49000000953674316
+                    ],
+                    "gravity": 9.800000190734863,
+                    "materialSlot": 0,
+                    "speed": 21.420000076293945,
+                    "steepness": 0.7099999785423279,
+                    "waveCount": 15,
+                    "waveSeed": 1,
+                    "wavelength": 800.0
+                },
+                "Transform": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "rotation": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ],
+                    "scale": [
+                        1.0,
+                        1.0,
+                        1.0
+                    ]
+                }
+            },
+            "name": "Ocean"
         }
     ],
     "name": "WaterRender",

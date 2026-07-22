@@ -1,0 +1,11 @@
+{
+    "dependencies": [],
+    "guid": "c10ba5a7-083d-454c-83d2-25300e61d787",
+    "importSettings": {
+        "generateMips": true,
+        "showInUi": true,
+        "srgb": true
+    },
+    "source": "Content/Project/Endfield/Lut/cloth_lut.png",
+    "type": "texture"
+}
