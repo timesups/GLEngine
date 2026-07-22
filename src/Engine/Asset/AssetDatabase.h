@@ -56,7 +56,7 @@ class AssetDataBase
 
     static bool IsFloatTextureExtension(const std::string& sourcePath);
     static bool DefaultTextureGenerateMips(AssetType type, const std::string& sourcePath);
-    /// 补全贴图 importSettings（showInUi / srgb / generateMips，仅写入缺失项）
+    /// 补全贴图 importSettings（showInUi / srgb / generateMips / wrapMode / filterMode，仅写入缺失项）
     static bool EnsureTextureImportSettings(AssetMeta& meta, const std::string& sourcePath);
     /// 补全 cubemap 的 type / srgb / showInUi / generateMips（仅写入缺失项）
     static bool EnsureCubemapImportSettings(AssetMeta& meta, const std::string& sourcePath);

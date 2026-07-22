@@ -367,6 +367,16 @@ bool AssetDataBase::EnsureTextureImportSettings(AssetMeta& meta, const std::stri
         SetImportBool(meta, "generateMips", DefaultTextureGenerateMipsImpl(meta.type, sourcePath));
         changed = true;
     }
+    if (!HasImportKey(meta, "wrapMode"))
+    {
+        SetImportString(meta, "wrapMode", "Repeat");
+        changed = true;
+    }
+    if (!HasImportKey(meta, "filterMode"))
+    {
+        SetImportString(meta, "filterMode", "Linear");
+        changed = true;
+    }
     return changed;
 }
 
@@ -385,6 +395,8 @@ AssetMeta CreateDefaultMeta(const std::string& sourcePath)
     {
         meta.importSettings["srgb"] = DefaultCubemapSrgb(sourcePath);
         meta.importSettings["generateMips"] = DefaultTextureGenerateMipsImpl(meta.type, sourcePath);
+        meta.importSettings["wrapMode"] = "Repeat";
+        meta.importSettings["filterMode"] = "Linear";
     }
     if (meta.type == AssetType::TextureCube)
     {

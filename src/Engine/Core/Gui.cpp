@@ -2118,6 +2118,47 @@ void Gui::ShowAssetDetail()
         if (m_assetDetailMeta.type == AssetType::TextureCube && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
             ImGui::SetTooltip("为镜面 IBL 烘焙 prefilter cubemap mip 链");
 
+        if (m_assetDetailMeta.type == AssetType::Texture2D)
+        {
+            static const char* kWrapModes[] = {"Repeat", "ClampToEdge", "ClampToBorder", "MirroredRepeat"};
+            std::string wrapMode = AssetDataBase::GetImportString(m_assetDetailMeta, "wrapMode");
+            if (wrapMode.empty())
+                wrapMode = "Repeat";
+            wrapMode = TextureWrapModeToString(ParseTextureWrapMode(wrapMode));
+            int wrapIdx = 0;
+            for (int i = 0; i < IM_ARRAYSIZE(kWrapModes); ++i)
+            {
+                if (wrapMode == kWrapModes[i])
+                {
+                    wrapIdx = i;
+                    break;
+                }
+            }
+            if (ImGui::Combo("Wrap Mode", &wrapIdx, kWrapModes, IM_ARRAYSIZE(kWrapModes)))
+            {
+                AssetDataBase::SetImportString(m_assetDetailMeta, "wrapMode", kWrapModes[wrapIdx]);
+                AssetDataBase::Get().SaveMeta(m_assetDetailMeta);
+                ReloadTextureFromImportSettings(m_assetDetailPath, m_assetDetailMeta.type);
+            }
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("S/T/R 使用同一 Wrap 模式");
+
+            static const char* kFilterModes[] = {"Nearest", "Linear"};
+            std::string filterMode = AssetDataBase::GetImportString(m_assetDetailMeta, "filterMode");
+            if (filterMode.empty())
+                filterMode = "Linear";
+            filterMode = TextureFilterModeToString(ParseTextureFilterMode(filterMode));
+            int filterIdx = filterMode == "Nearest" ? 0 : 1;
+            if (ImGui::Combo("Filter Mode", &filterIdx, kFilterModes, IM_ARRAYSIZE(kFilterModes)))
+            {
+                AssetDataBase::SetImportString(m_assetDetailMeta, "filterMode", kFilterModes[filterIdx]);
+                AssetDataBase::Get().SaveMeta(m_assetDetailMeta);
+                ReloadTextureFromImportSettings(m_assetDetailPath, m_assetDetailMeta.type);
+            }
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                ImGui::SetTooltip("Min/Mag 使用同一 Filter；开启 Mip 时 Min 自动使用对应 mipmap 变体");
+        }
+
         if (m_assetDetailMeta.type == AssetType::TextureCube)
         {
             ImGui::Separator();

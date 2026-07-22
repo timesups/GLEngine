@@ -798,21 +798,31 @@ bool LoaderManager::LoadTextureFromFile(const std::string& path, std::shared_ptr
     const bool useSrgb = AssetDataBase::GetImportBool(meta, "srgb", Util::TextureLoadUsesSrgb(resolvedPath));
     const bool useGenerateMips = AssetDataBase::GetImportBool(
         meta, "generateMips", AssetDataBase::DefaultTextureGenerateMips(meta.type, resolvedPath));
+    std::string useWrapMode = AssetDataBase::GetImportString(meta, "wrapMode");
+    if (useWrapMode.empty())
+        useWrapMode = "Repeat";
+    std::string useFilterMode = AssetDataBase::GetImportString(meta, "filterMode");
+    if (useFilterMode.empty())
+        useFilterMode = "Linear";
+    // 规范化为规范写法，便于缓存比较与 meta 回写一致
+    useWrapMode = TextureWrapModeToString(ParseTextureWrapMode(useWrapMode));
+    useFilterMode = TextureFilterModeToString(ParseTextureFilterMode(useFilterMode));
     const std::string ioPath = AssetPaths::Get().ToAbsolutePath(resolvedPath);
 
     const auto cached = m_TextureFiles.find(resolvedPath);
     if (cached != m_TextureFiles.end())
     {
         const std::shared_ptr<Texture2D>& existing = cached->second.relativeAsset[0];
-        const bool importMatches =
-            existing && existing->m_srgb == useSrgb && existing->m_generateMips == useGenerateMips;
+        const bool importMatches = existing && existing->m_srgb == useSrgb &&
+                                   existing->m_generateMips == useGenerateMips && existing->m_wrapMode == useWrapMode &&
+                                   existing->m_filterMode == useFilterMode;
         if (!forceReload && !cached->second.IsNeedReload() && importMatches)
         {
             tex = existing;
             return true;
         }
-        LogA(LogLevel::INFO, "Reloading texture: {} (srgb={}, generateMips={})", resolvedPath, useSrgb,
-             useGenerateMips);
+        LogA(LogLevel::INFO, "Reloading texture: {} (srgb={}, generateMips={}, wrap={}, filter={})", resolvedPath,
+             useSrgb, useGenerateMips, useWrapMode, useFilterMode);
         tex = existing;
     }
 
@@ -825,12 +835,14 @@ bool LoaderManager::LoadTextureFromFile(const std::string& path, std::shared_ptr
     }
     TextureDesc desc = TextureDesc::MakeAuto(width, height, channels, useSrgb);
     desc.generateMips = useGenerateMips;
-    if (useGenerateMips)
-        desc.sampler.minFilter = GL_LINEAR;
+    desc.sampler.SetUnifiedWrap(ParseTextureWrapMode(useWrapMode));
+    desc.sampler.SetUnifiedFilter(ParseTextureFilterMode(useFilterMode));
     tex->Create(desc, data);
     tex->m_path = resolvedPath;
     tex->m_name = Util::GetNameFromPath(resolvedPath);
     tex->m_generateMips = useGenerateMips;
+    tex->m_wrapMode = useWrapMode;
+    tex->m_filterMode = useFilterMode;
 
     stbi_image_free(data); // 释放内存
 
@@ -839,14 +851,14 @@ bool LoaderManager::LoadTextureFromFile(const std::string& path, std::shared_ptr
         FileState<Texture2D> file(resolvedPath);
         file.AddRelativeAsset(tex);
         m_TextureFiles[resolvedPath] = file;
-        LogA(LogLevel::INFO, "Texture loaded: {} ({}x{}, {} ch, srgb={}, generateMips={})", resolvedPath, width, height,
-             channels, useSrgb, useGenerateMips);
+        LogA(LogLevel::INFO, "Texture loaded: {} ({}x{}, {} ch, srgb={}, generateMips={}, wrap={}, filter={})",
+             resolvedPath, width, height, channels, useSrgb, useGenerateMips, useWrapMode, useFilterMode);
     }
     else
     {
         cached->second.UpdateModifyTime();
-        LogA(LogLevel::INFO, "Texture reloaded: {} ({}x{}, {} ch, srgb={}, generateMips={})", resolvedPath, width,
-             height, channels, useSrgb, useGenerateMips);
+        LogA(LogLevel::INFO, "Texture reloaded: {} ({}x{}, {} ch, srgb={}, generateMips={}, wrap={}, filter={})",
+             resolvedPath, width, height, channels, useSrgb, useGenerateMips, useWrapMode, useFilterMode);
     }
     return true;
 }

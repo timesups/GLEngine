@@ -26,6 +26,10 @@ struct TextureSamplerDesc
     GLenum compareMode = GL_NONE;
     GLenum compareFunc = GL_LEQUAL;
     glm::vec4 borderColor = glm::vec4(1.f, 1.f, 1.f, 1.f);
+
+    /// wrapMode / filterMode 同时作用于 S/T/R 与 Min/Mag
+    void SetUnifiedWrap(GLenum wrap);
+    void SetUnifiedFilter(GLenum filter);
 };
 
 struct TextureDesc
@@ -71,6 +75,12 @@ struct ResolvedTextureLayout
 bool ResolveTextureLayout(const TextureDesc& desc, ResolvedTextureLayout& out);
 void ApplySampler(GLenum target, const TextureDesc& desc);
 
+/// meta importSettings.wrapMode / filterMode 字符串 ↔ GL 枚举
+GLenum ParseTextureWrapMode(const std::string& mode);
+GLenum ParseTextureFilterMode(const std::string& mode);
+const char* TextureWrapModeToString(GLenum wrap);
+const char* TextureFilterModeToString(GLenum filter);
+
 class Texture
 {
   public:
@@ -95,6 +105,10 @@ class Texture
     bool m_srgb = false;
     bool m_generateMips = false;
     bool m_showInUi = true;
+    /// 与 meta importSettings 一致：Repeat / ClampToEdge / ClampToBorder / MirroredRepeat
+    std::string m_wrapMode = "Repeat";
+    /// 与 meta importSettings 一致：Nearest / Linear（Min/Mag 共用）
+    std::string m_filterMode = "Linear";
 
   protected:
     unsigned int m_id = 0;

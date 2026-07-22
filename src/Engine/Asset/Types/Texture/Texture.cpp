@@ -44,7 +44,7 @@ void ApplySampler(GLenum target, const TextureDesc& desc)
 
     glTexParameteri(target, GL_TEXTURE_WRAP_S, s.wrapS);
     glTexParameteri(target, GL_TEXTURE_WRAP_T, s.wrapT);
-    if (s.wrapR == GL_CLAMP_TO_BORDER or s.wrapS == GL_CLAMP_TO_BORDER)
+    if (s.wrapR == GL_CLAMP_TO_BORDER || s.wrapS == GL_CLAMP_TO_BORDER)
     {
         glTexParameterfv(target, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(s.borderColor));
     }
@@ -66,6 +66,73 @@ void ApplySampler(GLenum target, const TextureDesc& desc)
 #endif
         glTexParameteri(target, GL_TEXTURE_CUBE_MAP_SEAMLESS, GL_TRUE);
     }
+}
+
+void TextureSamplerDesc::SetUnifiedWrap(GLenum wrap)
+{
+    wrapS = wrap;
+    wrapT = wrap;
+    wrapR = wrap;
+}
+
+void TextureSamplerDesc::SetUnifiedFilter(GLenum filter)
+{
+    minFilter = filter;
+    magFilter = filter;
+}
+
+namespace
+{
+std::string ToLowerAscii(std::string s)
+{
+    for (char& c : s)
+    {
+        if (c >= 'A' && c <= 'Z')
+            c = static_cast<char>(c - 'A' + 'a');
+    }
+    return s;
+}
+} // namespace
+
+GLenum ParseTextureWrapMode(const std::string& mode)
+{
+    const std::string key = ToLowerAscii(mode);
+    if (key == "clamptoedge" || key == "clamp" || key == "clamp_to_edge")
+        return GL_CLAMP_TO_EDGE;
+    if (key == "clamptoborder" || key == "border" || key == "clamp_to_border")
+        return GL_CLAMP_TO_BORDER;
+    if (key == "mirroredrepeat" || key == "mirror" || key == "mirrored_repeat")
+        return GL_MIRRORED_REPEAT;
+    return GL_REPEAT;
+}
+
+GLenum ParseTextureFilterMode(const std::string& mode)
+{
+    const std::string key = ToLowerAscii(mode);
+    if (key == "nearest" || key == "point")
+        return GL_NEAREST;
+    return GL_LINEAR;
+}
+
+const char* TextureWrapModeToString(GLenum wrap)
+{
+    switch (wrap)
+    {
+    case GL_CLAMP_TO_EDGE:
+        return "ClampToEdge";
+    case GL_CLAMP_TO_BORDER:
+        return "ClampToBorder";
+    case GL_MIRRORED_REPEAT:
+        return "MirroredRepeat";
+    case GL_REPEAT:
+    default:
+        return "Repeat";
+    }
+}
+
+const char* TextureFilterModeToString(GLenum filter)
+{
+    return filter == GL_NEAREST ? "Nearest" : "Linear";
 }
 
 TexFormatType ChannelsToFormat(int channels, bool SRGB)
